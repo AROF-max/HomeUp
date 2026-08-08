@@ -1,0 +1,147 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f3f4f6;
+    overflow-x: hidden;
+}
+
+/* ==========================================================
+   VARIABLES
+========================================================== */
+
+@keyframes moveDown {
+
+    from {
+        opacity: 0;
+        transform: translateY(-100px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+:root {
+    --blue: #4f8ef7;
+    --dark-blue: #3968b7;
+    --green: #7ed957;
+    --dark-green: #3ea53d;
+    --bg: #f3f4f6;
+    --text: #333;
+
+    --shadow:
+        0 4px 12px rgba(0,0,0,0.15),
+        inset 0 2px 4px rgba(255,255,255,0.4);
+}
+
+/* 1. Ensure the outermost sidebar container spans full height */
+.sidebar-rec {
+    height: 100vh;
+    width: 120px; /* Matched to the .side width to keep it responsive */
+    box-shadow: 0 2px 10px rgba(0,0,0,.1);
+    z-index: 1;
+    animation: moveDown 1.5s ease forwards;
+}
+
+/* 2. Turn the aside tag into a full height flex column container */
+.side {
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
+    border-right: 1px solid #ECECEC;
+    padding: 20px 14px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 3. Turn the navigation element into a full-height flex column */
+#navi {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: none;
+    background: none;
+    font-weight: bold;
+    height: 100%; /* Spans the full height of the sidebar */
+}
+
+/* 4. Let the top navigation items take up natural space */
+.nav-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px; /* Optional spacing between icons */
+    animation: moveDown 1.75s ease forwards;
+}
+
+/* 5. Force the bottom navigation item to slide to the very bottom */
+.nav-bottom {
+    margin-top: auto; /* Automatically pushes everything below to the baseline */
+    padding-top: 20px;
+    animation: moveDown 1.6s ease forwards;
+}
+
+
+.dashb {
+  color: #222;
+  top: 1rem;
+  margin-left: 8rem;
+}
+
+.profile{
+    width:54px;
+    height:54px;
+    border-radius:50%;
+    object-fit:cover;
+    border:2px solid #E5E7EB;
+    transition:.25s;
+}
+
+.profile:hover{
+    border-color: #4f8ef7;
+    transform:scale(1.05);
+}
+
+#navi a{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    width:70px;
+    height:70px;
+
+    border-radius:18px;
+
+    text-decoration:none;
+    color:#374151;
+
+    transition:.25s;
+}
+
+#navi a:hover{
+    background:#EEF2FF;
+    color:#4f8ef7;
+}
+
+#navi svg{
+    width:34px;
+    height:34px;
+    margin-bottom:10px;
+}
+
+#navi span{
+    font-size:14px;
+    text-align:center;
+    font-weight:500;
+}
