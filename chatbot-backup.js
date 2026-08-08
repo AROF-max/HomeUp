@@ -9,6 +9,11 @@ const form = document.querySelector(".talk");
 // SPEECH RECOGNITION + AUTO SEND
 // ==========================================================
 
+let microphoneStream = null;
+let audioContext = null;
+let analyser = null;
+let animationFrame = null;
+
 let recognition = null;
 let isListening = false;
 let finalTranscript = "";
@@ -22,13 +27,8 @@ if (SpeechRecognition) {
     recognition = new SpeechRecognition();
 
     recognition.lang = "en-US";
-
-    // Important:
-    recognition.continuous = false;
-
-    // Allows us to see the words while speaking
+    recognition.continuous = true;
     recognition.interimResults = true;
-
     recognition.maxAlternatives = 1;
 
     console.log("Speech Recognition Loaded");
@@ -68,60 +68,34 @@ if (SpeechRecognition) {
 
     recognition.onresult = (event) => {
 
-        let transcript = "";
+    const field = document.getElementById("chatbot-talk");
 
-        // Rebuild the complete transcript
-        for (
-            let i = event.resultIndex;
-            i < event.results.length;
-            i++
-        ) {
+    if (!field) return;
 
-            transcript +=
-                event.results[i][0].transcript;
+    let currentTranscript = "";
 
-        }
+    for (let i = 0; i < event.results.length; i++) {
 
-        transcript = transcript.trim();
+        currentTranscript +=
+            event.results[i][0].transcript;
 
-        // Make sure inputField exists
-        const field =
-            document.getElementById("chatbot-talk");
+    }
 
-        if (!field) return;
+    currentTranscript = currentTranscript.trim();
 
-        // THIS makes the words appear in the input box
-        field.value =
-            finalTranscript + transcript;
+    // Put the recognized words directly into the input
+    field.value = currentTranscript;
 
-        field.focus();
+    // Put cursor at the end
+    field.focus();
 
-        field.setSelectionRange(
-            field.value.length,
-            field.value.length
-        );
+    field.setSelectionRange(
+        field.value.length,
+        field.value.length
+    );
 
-
-        // Save finalized speech
-        for (
-            let i = event.resultIndex;
-            i < event.results.length;
-            i++
-        ) {
-
-            if (event.results[i].isFinal) {
-
-                finalTranscript +=
-                    event.results[i][0].transcript + " ";
-
-            }
-
-        }
-
-        finalTranscript =
-            finalTranscript.trim();
-
-    };
+    console.log("Speech:", currentTranscript);
+};
 
 
     recognition.onend = () => {
@@ -627,8 +601,8 @@ const scanInput = document.getElementById("scanInput");
 const fileUpload = document.getElementById("fileUpload");
 
 console.log("imageUpload =", imageUpload);
-console.log("imageUpload id:", imageUpload.id);
-console.log("imageUpload type:", imageUpload.type);
+console.log("imageUpload id:", imageUpload?.id);
+console.log("imageUpload type:", imageUpload?.type);
 console.log("cameraInput =", cameraInput);
 console.log("scanInput =", scanInput);
 console.log("fileUpload =", fileUpload);
@@ -714,50 +688,64 @@ if (fileBtn) {
 
 // ---------------- File Inputs ----------------
 
-imageUpload.addEventListener("change", (e) => {
+if (imageUpload) {
 
-    console.log("CHANGE FIRED");
-    console.log("Files:", e.target.files);
-    console.log("Length:", e.target.files.length);
+    imageUpload.addEventListener("change", (e) => {
 
-    if (e.target.files.length) {
+        console.log("IMAGE CHANGE FIRED");
+        console.log("Files:", e.target.files);
 
-        attachments.push({
-            file: e.target.files[0],
-            status: "waiting"
-        });
+        if (e.target.files && e.target.files.length > 0) {
 
-        console.log("Attachments:", attachments);
+            attachments.push({
+                file: e.target.files[0],
+                status: "waiting"
+            });
 
-        showAttachment();
-    }
+            console.log("Attachments:", attachments);
 
-});
+            showAttachment();
 
+        }
 
+    });
+
+}
 
 if (cameraInput) {
+
     cameraInput.addEventListener("change", () => {
-        if (cameraInput.files.length) {
+
+        if (cameraInput.files && cameraInput.files.length > 0) {
             addFiles(cameraInput.files);
         }
+
     });
+
 }
 
 if (scanInput) {
+
     scanInput.addEventListener("change", () => {
-        if (scanInput.files.length) {
+
+        if (scanInput.files && scanInput.files.length > 0) {
             addFiles(scanInput.files);
         }
+
     });
+
 }
 
 if (fileUpload) {
+
     fileUpload.addEventListener("change", () => {
-        if (fileUpload.files.length) {
+
+        if (fileUpload.files && fileUpload.files.length > 0) {
             addFiles(fileUpload.files);
         }
+
     });
+
 }
 
 // ---------------- Suggestion Chips ----------------
