@@ -399,7 +399,7 @@ body {
 #greeting-text{
     font-size:clamp(2rem,3vw,4rem);
     margin:0;
-    font-weight:700;
+    font-weight:700 !important;
     transition:opacity .35s ease;
 }
 
