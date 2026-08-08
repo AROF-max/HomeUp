@@ -3,95 +3,231 @@
 // PART 1 - Initialization
 // ==========================================================
 
-// ==========================================================
-// SPEECH RECOGNITION
-// ==========================================================
+const form = document.querySelector(".talk");
 
-let audioContext = null;
-let analyser = null;
-let microphoneStream = null;
-let animationFrame = null;
+// ==========================================================
+// SPEECH RECOGNITION + AUTO SEND
+// ==========================================================
 
 let recognition = null;
+let isListening = false;
+let finalTranscript = "";
 
-if (
-    "SpeechRecognition" in window ||
-    "webkitSpeechRecognition" in window
-) {
+const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
 
-    const SpeechRecognition =
-        window.SpeechRecognition ||
-        window.webkitSpeechRecognition;
+if (SpeechRecognition) {
 
     recognition = new SpeechRecognition();
-    console.log("Speech Recognition Loaded");
-    alert("Speech Recognition Loaded");
 
     recognition.lang = "en-US";
+
+    // Important:
     recognition.continuous = false;
-    recognition.interimResults = false;
 
-recognition.onstart = () => {
+    // Allows us to see the words while speaking
+    recognition.interimResults = true;
 
-    alert("Listening...");
+    recognition.maxAlternatives = 1;
 
-    const greeting =
-        document.getElementById("greeting-text");
+    console.log("Speech Recognition Loaded");
 
-    const visualizer =
-        document.getElementById("voice-visualizer");
+    recognition.onstart = () => {
 
-    if (greeting) {
-        greeting.classList.add("voice-hidden");
-    }
+        isListening = true;
+        finalTranscript = "";
+
+        const button =
+            document.getElementById("micButton");
+
+        if (button) {
+            button.classList.add("listening");
+            button.disabled = true;
+        }
+
+        const greeting =
+            document.getElementById("greeting-text");
+
+        const visualizer =
+            document.getElementById("voice-visualizer");
+
+        if (greeting) {
+            greeting.classList.add("voice-hidden");
+        }
 
         if (visualizer) {
-        visualizer.classList.add("active");
-    }
+            visualizer.classList.add("active");
+        }
 
-    startVoiceVisualizer();
+        startVoiceVisualizer();
 
-};
+        console.log("Listening...");
+    };
 
-recognition.onend = () => {
 
-    micButton.classList.remove("listening");
-    micButton.disabled = false;
+    recognition.onresult = (event) => {
 
-    const greeting =
-        document.getElementById("greeting-text");
+        let transcript = "";
 
-    const visualizer =
-        document.getElementById("voice-visualizer");
+        // Rebuild the complete transcript
+        for (
+            let i = event.resultIndex;
+            i < event.results.length;
+            i++
+        ) {
 
-    if (visualizer) {
-        visualizer.classList.remove("active");
-    }
+            transcript +=
+                event.results[i][0].transcript;
 
-    if (greeting) {
-        greeting.classList.remove("voice-hidden");
-    }
+        }
 
-    alert("Stopped listening");
+        transcript = transcript.trim();
 
-};
+        // Make sure inputField exists
+        const field =
+            document.getElementById("chatbot-talk");
 
-recognition.onerror = (event) => {
+        if (!field) return;
 
-    micButton.classList.remove("listening");
+        // THIS makes the words appear in the input box
+        field.value =
+            finalTranscript + transcript;
 
-    micButton.disabled = false;
+        field.focus();
 
-    console.log("Speech error:", event.error);
+        field.setSelectionRange(
+            field.value.length,
+            field.value.length
+        );
 
-    alert("Error: " + event.error);
 
-};
+        // Save finalized speech
+        for (
+            let i = event.resultIndex;
+            i < event.results.length;
+            i++
+        ) {
+
+            if (event.results[i].isFinal) {
+
+                finalTranscript +=
+                    event.results[i][0].transcript + " ";
+
+            }
+
+        }
+
+        finalTranscript =
+            finalTranscript.trim();
+
+    };
+
+
+    recognition.onend = () => {
+
+        isListening = false;
+
+        const button =
+            document.getElementById("micButton");
+
+        if (button) {
+
+            button.classList.remove("listening");
+            button.disabled = false;
+
+        }
+
+        const greeting =
+            document.getElementById("greeting-text");
+
+        const visualizer =
+            document.getElementById("voice-visualizer");
+
+        if (visualizer) {
+            visualizer.classList.remove("active");
+        }
+
+        if (greeting) {
+            greeting.classList.remove("voice-hidden");
+        }
+
+        stopVoiceVisualizer();
+
+        const field =
+            document.getElementById("chatbot-talk");
+
+        if (!field) return;
+
+        const message =
+            field.value.trim();
+
+        // ------------------------------------------
+        // AUTOMATICALLY SEND THE MESSAGE
+        // ------------------------------------------
+
+        if (message) {
+
+            console.log(
+                "Voice message finished:",
+                message
+            );
+
+            // Let the input update visually first
+            setTimeout(() => {
+
+                if (form) {
+                    form.requestSubmit();
+                }
+
+            }, 150);
+
+        }
+
+    };
+
+
+    recognition.onerror = (event) => {
+
+        console.error(
+            "Speech Recognition Error:",
+            event.error
+        );
+
+        isListening = false;
+
+        const button =
+            document.getElementById("micButton");
+
+        if (button) {
+
+            button.classList.remove("listening");
+            button.disabled = false;
+
+        }
+
+        stopVoiceVisualizer();
+
+        const visualizer =
+            document.getElementById("voice-visualizer");
+
+        if (visualizer) {
+            visualizer.classList.remove("active");
+        }
+
+        const greeting =
+            document.getElementById("greeting-text");
+
+        if (greeting) {
+            greeting.classList.remove("voice-hidden");
+        }
+
+    };
 
 }
 
 // ==========================================================
-// VOICE AUDIO VISUALIZER
+// REAL-TIME VOICE VISUALIZER
 // ==========================================================
 
 async function startVoiceVisualizer() {
@@ -103,19 +239,37 @@ async function startVoiceVisualizer() {
 
     try {
 
+        // Don't create multiple microphone streams
+        if (microphoneStream) {
+            return;
+        }
+
         microphoneStream =
             await navigator.mediaDevices.getUserMedia({
-                audio: true
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true
+                }
             });
 
         audioContext =
-            new (window.AudioContext ||
-                window.webkitAudioContext)();
+            new (
+                window.AudioContext ||
+                window.webkitAudioContext
+            )();
+
+        if (audioContext.state === "suspended") {
+            await audioContext.resume();
+        }
 
         analyser =
             audioContext.createAnalyser();
 
-        analyser.fftSize = 256;
+        // More resolution
+        analyser.fftSize = 512;
+
+        analyser.smoothingTimeConstant = 0.75;
 
         const source =
             audioContext.createMediaStreamSource(
@@ -124,71 +278,159 @@ async function startVoiceVisualizer() {
 
         source.connect(analyser);
 
+        const bufferLength =
+            analyser.frequencyBinCount;
+
         const data =
-            new Uint8Array(
-                analyser.frequencyBinCount
-            );
+            new Uint8Array(bufferLength);
 
         const bars =
-            visualizer.querySelectorAll(".voice-bar");
+            visualizer.querySelectorAll(
+                ".voice-bar"
+            );
 
         function animate() {
 
             if (!analyser) return;
 
-            analyser.getByteTimeDomainData(data);
+            // Get REAL frequency information
+            analyser.getByteFrequencyData(data);
 
-            let sum = 0;
-
-            for (let i = 0; i < data.length; i++) {
-
-                const value =
-                    (data[i] - 128) / 128;
-
-                sum += value * value;
-
-            }
-
-            const volume =
-                Math.sqrt(sum / data.length);
-
-            const intensity =
-                Math.min(volume * 8, 1);
+            const barCount = bars.length;
 
             bars.forEach((bar, index) => {
 
-                const wave =
-                    Math.sin(
-                        Date.now() / 120 +
-                        index * 0.7
+                // Divide the frequency spectrum
+                // between all the bars
+                const start =
+                    Math.floor(
+                        index *
+                        bufferLength /
+                        barCount
                     );
 
-                const baseHeight = 8;
-                const soundHeight =
-                    intensity * 35;
+                const end =
+                    Math.floor(
+                        (index + 1) *
+                        bufferLength /
+                        barCount
+                    );
+
+                let total = 0;
+                let count = 0;
+
+                for (
+                    let i = start;
+                    i < end;
+                    i++
+                ) {
+
+                    total += data[i];
+                    count++;
+
+                }
+
+                const average =
+                    count > 0
+                        ? total / count
+                        : 0;
+
+                // Convert 0-255 into 0-1
+                const level =
+                    average / 255;
+
+                // Minimum height
+                const minHeight = 6;
+
+                // Maximum movement
+                const maxHeight = 55;
 
                 const height =
-                    baseHeight +
-                    soundHeight *
-                    (0.5 + Math.abs(wave) * 0.5);
+                    minHeight +
+                    level * maxHeight;
 
                 bar.style.height =
                     `${height}px`;
+
+                // Slightly change opacity with sound
+                bar.style.opacity =
+                    `${0.45 + level * 0.55}`;
 
             });
 
             animationFrame =
                 requestAnimationFrame(animate);
+
         }
 
         animate();
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
         console.error(
             "Microphone visualizer error:",
             error
         );
+
+    }
+
+}
+
+
+// ==========================================================
+// STOP VOICE VISUALIZER
+// ==========================================================
+
+function stopVoiceVisualizer() {
+
+    if (animationFrame) {
+
+        cancelAnimationFrame(
+            animationFrame
+        );
+
+        animationFrame = null;
+
+    }
+
+    if (microphoneStream) {
+
+        microphoneStream
+            .getTracks()
+            .forEach(track => track.stop());
+
+        microphoneStream = null;
+
+    }
+
+    if (audioContext) {
+
+        audioContext.close().catch(() => {});
+
+        audioContext = null;
+
+    }
+
+    analyser = null;
+
+    // Reset bars
+    const visualizer =
+        document.getElementById(
+            "voice-visualizer"
+        );
+
+    if (visualizer) {
+
+        visualizer
+            .querySelectorAll(".voice-bar")
+            .forEach(bar => {
+
+                bar.style.height = "6px";
+                bar.style.opacity = "0.5";
+
+            });
 
     }
 
@@ -362,8 +604,6 @@ window.addEventListener(
 // PART 2 - Forms, Attachments & Menus
 // ==========================================================
 
-const form = document.querySelector(".talk");
-
 const attachButton = document.querySelector(".attach-btn");
 const attachMenu = document.querySelector(".attach-menu");
 const micButton =
@@ -536,42 +776,31 @@ document.querySelectorAll(".chip").forEach(chip => {
 
 if (micButton && recognition) {
 
-    micButton.addEventListener("click", () => {
+    micButton.addEventListener("click", async () => {
 
-        alert("Mic button clicked");
+        if (isListening) return;
 
-        setTimeout(() => {
-    recognition.start();
-}, 100);
+        try {
+
+            // Make sure microphone permission is available
+            await navigator.mediaDevices.getUserMedia({
+                audio: true
+            });
+
+            recognition.start();
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Could not start microphone:",
+                error
+            );
+
+        }
 
     });
-
-}
-
-
-if (recognition) {
-
-    recognition.onresult = (event) => {
-
-    let transcript = "";
-
-    for (let i = 0; i < event.results.length; i++) {
-
-        transcript += event.results[i][0].transcript;
-
-    }
-
-    inputField.value = transcript.trim();
-
-    inputField.focus();
-
-    // Put the cursor at the end
-    inputField.setSelectionRange(
-        inputField.value.length,
-        inputField.value.length
-    );
-
-};
 
 }
 

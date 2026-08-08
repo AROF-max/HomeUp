@@ -1242,7 +1242,7 @@ body {
     transform: scaleY(0.35);
     transform-origin: center;
 
-    animation: voiceWave 0.8s ease-in-out infinite alternate;
+    transition: transform 0.05s linear;
 }
 
 /* Different timing for each bar */
@@ -1273,18 +1273,6 @@ body {
 
 #voice-visualizer span:nth-child(7) {
     animation-delay: -0.6s;
-}
-
-@keyframes voiceWave {
-
-    from {
-        transform: scaleY(0.35);
-    }
-
-    to {
-        transform: scaleY(2.2);
-    }
-
 }
 
 @keyframes fadeBack{
