@@ -68,49 +68,54 @@ if (SpeechRecognition) {
 
     recognition.onresult = (event) => {
 
-    const field =
-        document.getElementById("chatbot-talk");
+    console.log("🔥 ONRESULT FIRED");
+    console.log("🔥 RESULTS:", event.results);
+    console.log("🔥 RESULT INDEX:", event.resultIndex);
+
+
+    const field = document.getElementById("chatbot-talk");
 
     if (!field) {
-        console.error("Chat input not found");
+        console.error("❌ Chat input #chatbot-talk not found");
         return;
     }
 
     let transcript = "";
 
-    for (
-        let i = event.resultIndex;
-        i < event.results.length;
-        i++
-    ) {
+    // Go through ALL results
+    for (let i = 0; i < event.results.length; i++) {
 
-        transcript +=
-            event.results[i][0].transcript;
+        transcript += event.results[i][0].transcript;
 
     }
 
     transcript = transcript.trim();
 
+    // Put speech directly into the input
     if (transcript) {
 
         field.value = transcript;
 
+        // Tell the browser that the input changed
+        field.dispatchEvent(new Event("input", {
+            bubbles: true
+        }));
+
+        // Keep cursor at the end
         field.focus();
 
-        field.setSelectionRange(
-            field.value.length,
-            field.value.length
-        );
+        try {
+            field.setSelectionRange(
+                field.value.length,
+                field.value.length
+            );
+        } catch (e) {}
 
     }
 
-    console.log(
-        "Speech recognition result:",
-        transcript
-    );
-
+    console.log("🎤 RECOGNIZED:", transcript);
+    console.log("📝 INPUT VALUE:", field.value);
 };
-
 
     recognition.onend = () => {
 
