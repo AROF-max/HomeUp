@@ -839,7 +839,6 @@ body {
 
 #hero.hidden {
     opacity: 0;
-    transform: translateY(-20px);
     pointer-events: none;
     display: none;
 }
@@ -1210,7 +1209,7 @@ body {
     position: absolute;
 
     left: 50%;
-    top: 50%;
+    top: 30%;
 
     transform: translate(-50%, -50%);
 
