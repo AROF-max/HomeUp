@@ -324,7 +324,7 @@ body {
 }
 
 .talk{
-    position: absolute;
+    position: relative;
     left: 50%;
     transform: translateX(-50%);
     width: min(760px, calc(100% - 40px));
@@ -815,29 +815,38 @@ body {
     animation-delay:.4s;
 }
 
-#hero{
-    position:relative;
-    padding: 0px;
+#hero {
+    position: absolute;
+    inset: 0;
 
-    width:100%;
-    bottom: 50%;
-    text-align:center;
-    inset:0;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    gap: 7rem;
+    width: 100%;
+    height: 100%;
 
-    transition:.35s ease;
+    text-align: center;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    gap: 0;
+
+    transition: .35s ease;
     z-index: 10;
+
+    pointer-events: none;
 }
 
-#hero.hidden{
-    opacity:0;
-    transform:translateY(-20px);
+#hero.hidden {
+    opacity: 0;
+    transform: translateY(-20px);
     pointer-events: none;
     display: none;
+}
+
+#hero .suggestions,
+#hero #greeting-text {
+    pointer-events: auto;
 }
 
 .menu-container{
@@ -1198,12 +1207,25 @@ body {
 ========================================================== */
 
 #voice-visualizer {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
     display: none;
+
     align-items: center;
     justify-content: center;
+
     gap: 6px;
+
     height: 70px;
+
     color: #4f8ef7;
+
+    pointer-events: none;
 }
 
 #voice-visualizer.active {
@@ -1213,7 +1235,9 @@ body {
 #voice-visualizer span {
     width: 5px;
     height: 22px;
+
     border-radius: 999px;
+
     background: currentColor;
 
     transform: scaleY(0.35);
