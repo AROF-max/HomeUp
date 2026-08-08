@@ -399,7 +399,12 @@ body {
 #greeting-text{
     font-size:clamp(2rem,3vw,4rem);
     margin:0;
-    transition:opacity .35s;
+    font-weight:700;
+    transition:opacity .35s ease;
+}
+
+#greeting-text.voice-hidden{
+    opacity:0;
 }
 
 @keyframes fadeIn {
@@ -1190,55 +1195,60 @@ body {
 
 /* ==========================================================
    VOICE LISTENING WAVES
-   ========================================================== */
+========================================================== */
 
-.voice-waves {
+#voice-visualizer {
     display: none;
     align-items: center;
     justify-content: center;
     gap: 6px;
     height: 70px;
+    color: #4f8ef7;
 }
 
-.voice-waves span {
+#voice-visualizer.active {
+    display: flex;
+}
+
+#voice-visualizer span {
     width: 5px;
     height: 22px;
     border-radius: 999px;
     background: currentColor;
 
-    transform: scaleY(1);
+    transform: scaleY(0.35);
     transform-origin: center;
 
     animation: voiceWave 0.8s ease-in-out infinite alternate;
 }
 
-/* Different heights/timing make the wave feel natural */
+/* Different timing for each bar */
 
-.voice-waves span:nth-child(1) {
+#voice-visualizer span:nth-child(1) {
     animation-delay: -0.6s;
 }
 
-.voice-waves span:nth-child(2) {
+#voice-visualizer span:nth-child(2) {
     animation-delay: -0.4s;
 }
 
-.voice-waves span:nth-child(3) {
+#voice-visualizer span:nth-child(3) {
     animation-delay: -0.2s;
 }
 
-.voice-waves span:nth-child(4) {
+#voice-visualizer span:nth-child(4) {
     animation-delay: 0s;
 }
 
-.voice-waves span:nth-child(5) {
+#voice-visualizer span:nth-child(5) {
     animation-delay: -0.2s;
 }
 
-.voice-waves span:nth-child(6) {
+#voice-visualizer span:nth-child(6) {
     animation-delay: -0.4s;
 }
 
-.voice-waves span:nth-child(7) {
+#voice-visualizer span:nth-child(7) {
     animation-delay: -0.6s;
 }
 
