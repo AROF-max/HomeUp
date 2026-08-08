@@ -68,33 +68,47 @@ if (SpeechRecognition) {
 
     recognition.onresult = (event) => {
 
-    const field = document.getElementById("chatbot-talk");
+    const field =
+        document.getElementById("chatbot-talk");
 
-    if (!field) return;
+    if (!field) {
+        console.error("Chat input not found");
+        return;
+    }
 
-    let currentTranscript = "";
+    let transcript = "";
 
-    for (let i = 0; i < event.results.length; i++) {
+    for (
+        let i = event.resultIndex;
+        i < event.results.length;
+        i++
+    ) {
 
-        currentTranscript +=
+        transcript +=
             event.results[i][0].transcript;
 
     }
 
-    currentTranscript = currentTranscript.trim();
+    transcript = transcript.trim();
 
-    // Put the recognized words directly into the input
-    field.value = currentTranscript;
+    if (transcript) {
 
-    // Put cursor at the end
-    field.focus();
+        field.value = transcript;
 
-    field.setSelectionRange(
-        field.value.length,
-        field.value.length
+        field.focus();
+
+        field.setSelectionRange(
+            field.value.length,
+            field.value.length
+        );
+
+    }
+
+    console.log(
+        "Speech recognition result:",
+        transcript
     );
 
-    console.log("Speech:", currentTranscript);
 };
 
 
@@ -764,25 +778,18 @@ document.querySelectorAll(".chip").forEach(chip => {
 
 if (micButton && recognition) {
 
-    micButton.addEventListener("click", async () => {
+    micButton.addEventListener("click", () => {
 
         if (isListening) return;
 
         try {
 
-            // Make sure microphone permission is available
-            await navigator.mediaDevices.getUserMedia({
-                audio: true
-            });
-
             recognition.start();
 
-        }
-
-        catch (error) {
+        } catch (error) {
 
             console.error(
-                "Could not start microphone:",
+                "Could not start speech recognition:",
                 error
             );
 
