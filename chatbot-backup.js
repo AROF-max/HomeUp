@@ -5,18 +5,15 @@
 
 const form = document.querySelector(".talk");
 
+
+        
+
 // ==========================================================
 // SPEECH RECOGNITION + AUTO SEND
 // ==========================================================
 
-let microphoneStream = null;
-let audioContext = null;
-let analyser = null;
-let animationFrame = null;
-
 let recognition = null;
 let isListening = false;
-let finalTranscript = "";
 
 const SpeechRecognition =
     window.SpeechRecognition ||
@@ -31,19 +28,15 @@ if (SpeechRecognition) {
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
 
-    console.log("Speech Recognition Loaded");
-
-    recognition.onstart = () => {
+    recognition.onstart = function () {
 
         isListening = true;
-        finalTranscript = "";
 
         const button =
             document.getElementById("micButton");
 
         if (button) {
             button.classList.add("listening");
-            button.disabled = true;
         }
 
         const greeting =
@@ -61,63 +54,55 @@ if (SpeechRecognition) {
         }
 
         startVoiceVisualizer();
-
-        console.log("Listening...");
     };
 
 
-    recognition.onresult = (event) => {
+    recognition.onresult = function (event) {
 
-    console.log("🔥 ONRESULT FIRED");
-    console.log("🔥 RESULTS:", event.results);
-    console.log("🔥 RESULT INDEX:", event.resultIndex);
+        const field =
+            document.getElementById("chatbot-talk");
 
+        if (!field) return;
 
-    const field = document.getElementById("chatbot-talk");
+        let text = "";
 
-    if (!field) {
-        console.error("❌ Chat input #chatbot-talk not found");
-        return;
-    }
+        for (
+            let i = 0;
+            i < event.results.length;
+            i++
+        ) {
 
-    let transcript = "";
+            text +=
+                event.results[i][0].transcript;
 
-    // Go through ALL results
-    for (let i = 0; i < event.results.length; i++) {
+        }
 
-        transcript += event.results[i][0].transcript;
+        text = text.trim();
 
-    }
+        if (text) {
 
-    transcript = transcript.trim();
+            field.value = text;
 
-    // Put speech directly into the input
-    if (transcript) {
+            // Force the browser/UI to notice the change
+            field.dispatchEvent(
+                new Event("input", {
+                    bubbles: true
+                })
+            );
 
-        field.value = transcript;
+            field.focus();
 
-        // Tell the browser that the input changed
-        field.dispatchEvent(new Event("input", {
-            bubbles: true
-        }));
-
-        // Keep cursor at the end
-        field.focus();
-
-        try {
             field.setSelectionRange(
                 field.value.length,
                 field.value.length
             );
-        } catch (e) {}
 
-    }
+        }
 
-    console.log("🎤 RECOGNIZED:", transcript);
-    console.log("📝 INPUT VALUE:", field.value);
-};
+    };
 
-    recognition.onend = () => {
+
+    recognition.onend = function () {
 
         isListening = false;
 
@@ -125,10 +110,7 @@ if (SpeechRecognition) {
             document.getElementById("micButton");
 
         if (button) {
-
             button.classList.remove("listening");
-            button.disabled = false;
-
         }
 
         const greeting =
@@ -155,35 +137,25 @@ if (SpeechRecognition) {
         const message =
             field.value.trim();
 
-        // ------------------------------------------
-        // AUTOMATICALLY SEND THE MESSAGE
-        // ------------------------------------------
-
         if (message) {
 
-            console.log(
-                "Voice message finished:",
-                message
-            );
-
-            // Let the input update visually first
-            setTimeout(() => {
+            setTimeout(function () {
 
                 if (form) {
                     form.requestSubmit();
                 }
 
-            }, 150);
+            }, 300);
 
         }
 
     };
 
 
-    recognition.onerror = (event) => {
+    recognition.onerror = function (event) {
 
         console.error(
-            "Speech Recognition Error:",
+            "Speech recognition error:",
             event.error
         );
 
@@ -193,29 +165,18 @@ if (SpeechRecognition) {
             document.getElementById("micButton");
 
         if (button) {
-
             button.classList.remove("listening");
-            button.disabled = false;
-
         }
 
         stopVoiceVisualizer();
 
-        const visualizer =
-            document.getElementById("voice-visualizer");
-
-        if (visualizer) {
-            visualizer.classList.remove("active");
-        }
-
-        const greeting =
-            document.getElementById("greeting-text");
-
-        if (greeting) {
-            greeting.classList.remove("voice-hidden");
-        }
-
     };
+
+} else {
+
+    console.error(
+        "Speech Recognition is NOT supported in this browser."
+    );
 
 }
 
@@ -781,11 +742,27 @@ document.querySelectorAll(".chip").forEach(chip => {
 
 });
 
-if (micButton && recognition) {
+if (micButton) {
 
-    micButton.addEventListener("click", () => {
+    micButton.addEventListener("click", function () {
+
+        if (!recognition) {
+
+            alert(
+                "Speech recognition is not supported by this browser."
+            );
+
+            return;
+        }
 
         if (isListening) return;
+
+        const field =
+            document.getElementById("chatbot-talk");
+
+        if (field) {
+            field.value = "";
+        }
 
         try {
 
