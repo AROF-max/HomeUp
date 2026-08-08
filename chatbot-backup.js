@@ -7,6 +7,11 @@
 // SPEECH RECOGNITION
 // ==========================================================
 
+let audioContext = null;
+let analyser = null;
+let microphoneStream = null;
+let animationFrame = null;
+
 let recognition = null;
 
 if (
@@ -40,9 +45,11 @@ recognition.onstart = () => {
         greeting.classList.add("voice-hidden");
     }
 
-    if (visualizer) {
+        if (visualizer) {
         visualizer.classList.add("active");
     }
+
+    startVoiceVisualizer();
 
 };
 
@@ -80,6 +87,110 @@ recognition.onerror = (event) => {
     alert("Error: " + event.error);
 
 };
+
+}
+
+// ==========================================================
+// VOICE AUDIO VISUALIZER
+// ==========================================================
+
+async function startVoiceVisualizer() {
+
+    const visualizer =
+        document.getElementById("voice-visualizer");
+
+    if (!visualizer) return;
+
+    try {
+
+        microphoneStream =
+            await navigator.mediaDevices.getUserMedia({
+                audio: true
+            });
+
+        audioContext =
+            new (window.AudioContext ||
+                window.webkitAudioContext)();
+
+        analyser =
+            audioContext.createAnalyser();
+
+        analyser.fftSize = 256;
+
+        const source =
+            audioContext.createMediaStreamSource(
+                microphoneStream
+            );
+
+        source.connect(analyser);
+
+        const data =
+            new Uint8Array(
+                analyser.frequencyBinCount
+            );
+
+        const bars =
+            visualizer.querySelectorAll(".voice-bar");
+
+        function animate() {
+
+            if (!analyser) return;
+
+            analyser.getByteTimeDomainData(data);
+
+            let sum = 0;
+
+            for (let i = 0; i < data.length; i++) {
+
+                const value =
+                    (data[i] - 128) / 128;
+
+                sum += value * value;
+
+            }
+
+            const volume =
+                Math.sqrt(sum / data.length);
+
+            const intensity =
+                Math.min(volume * 8, 1);
+
+            bars.forEach((bar, index) => {
+
+                const wave =
+                    Math.sin(
+                        Date.now() / 120 +
+                        index * 0.7
+                    );
+
+                const baseHeight = 8;
+                const soundHeight =
+                    intensity * 35;
+
+                const height =
+                    baseHeight +
+                    soundHeight *
+                    (0.5 + Math.abs(wave) * 0.5);
+
+                bar.style.height =
+                    `${height}px`;
+
+            });
+
+            animationFrame =
+                requestAnimationFrame(animate);
+        }
+
+        animate();
+
+    } catch (error) {
+
+        console.error(
+            "Microphone visualizer error:",
+            error
+        );
+
+    }
 
 }
 
