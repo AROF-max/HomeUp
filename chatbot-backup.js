@@ -3098,15 +3098,15 @@ async function handleMicButton(
     }
 
 
-    if (isListening) {
+    if (
+    isListening ||
+    shouldKeepListening
+) {
 
-        stopListening(
-            true
-        );
+    stopListening(true);
 
-        return;
-
-    }
+    return;
+}
 
 
     await startListening();
@@ -3120,11 +3120,7 @@ async function handleMicButton(
 
 async function startListening() {
 
-    if (
-        !recognition ||
-        isListening ||
-        shouldKeepListening
-    ) {
+    if (!recognition || isListening) {
         return;
     }
 
@@ -3140,12 +3136,10 @@ async function startListening() {
 
         recognition.start();
 
-        console.log("Starting speech recognition...");
-
     } catch (error) {
 
-        console.error(
-            "Could not start speech recognition:",
+        console.warn(
+            "Speech recognition could not start:",
             error
         );
 
@@ -3492,6 +3486,33 @@ function handleSpeechEnd() {
 
     }
 
+    clearTimeout(speechRestartTimer);
+
+    speechRestartTimer = setTimeout(() => {
+
+        if (
+            shouldKeepListening &&
+            !isListening &&
+            recognition
+        ) {
+
+            try {
+
+                recognition.start();
+
+            } catch (error) {
+
+                console.warn(
+                    "Speech recognition restart failed:",
+                    error
+                );
+
+            }
+
+        }
+
+    }, 300);
+
     return;
 }
 
@@ -3645,7 +3666,7 @@ function setMicVisualState(
    VOICE VISUALIZER
    ========================================================== */
 
-async function startVoiceVisualizer() {
+//async function startVoiceVisualizer() {
 
     if (!voiceVisualizer) {
         return;
