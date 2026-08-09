@@ -3157,14 +3157,6 @@ async function startListening() {
 
         interimTranscript = "";
 
-
-        if (inputField) {
-
-            inputField.value = "";
-
-        }
-
-
         shouldKeepListening =
             true;
 
@@ -3519,49 +3511,20 @@ function handleSpeechEnd() {
        restart instead of submitting.
     */
 
-    if (shouldKeepListening) {
+  if (shouldKeepListening) {
 
-        clearTimeout(
-            speechRestartTimer
-        );
+    if (inputField) {
 
-
-        speechRestartTimer =
-            setTimeout(
-                () => {
-
-                    if (
-                        shouldKeepListening &&
-                        !isListening &&
-                        recognition
-                    ) {
-
-                        try {
-
-                            recognition.start();
-
-                        }
-
-                        catch (error) {
-
-                            console.warn(
-                                "Speech restart failed:",
-                                error
-                            );
-
-                        }
-
-                    }
-
-                },
-                300
-            );
-
-
-        return;
+        inputField.value =
+            (
+                finalTranscript +
+                interimTranscript
+            ).trim();
 
     }
 
+    return;
+}
 
     /*
        User intentionally stopped.
