@@ -1,24 +1,18 @@
-"use strict";
+ "use strict";
 
 /* ==========================================================
    HOMEUP CHATBOT
-   COMPLETE REWRITE
+   COMPLETE JS FILE
    ========================================================== */
 
+
 /* ==========================================================
-   CONFIGURATION
+   CONFIG
    ========================================================== */
 
 const API_URL = "https://homeup-ai.onrender.com/chat";
 
-/*
-   Your current backend accepts JSON for normal chat.
-
-   When this is true, attachments are sent as multipart/form-data.
-   Your backend must support multipart/form-data for attachments.
-
-   If your current backend only accepts JSON, change this to false.
-*/
+// Set false if your backend does not support multipart uploads.
 const SEND_ATTACHMENTS_TO_BACKEND = true;
 
 
@@ -26,30 +20,30 @@ const SEND_ATTACHMENTS_TO_BACKEND = true;
    DOM REFERENCES
    ========================================================== */
 
-let form;
-let messages;
-let inputField;
+let form = null;
+let messages = null;
+let inputField = null;
 
-let hero;
-let greetingText;
-let voiceVisualizer;
+let hero = null;
+let greetingText = null;
+let voiceVisualizer = null;
 
-let scrollDownBtn;
+let scrollDownBtn = null;
 
-let attachButton;
-let attachMenu;
+let attachButton = null;
+let attachMenu = null;
 
-let micButton;
+let micButton = null;
 
-let imageBtn;
-let photoBtn;
-let scanBtn;
-let fileBtn;
+let imageBtn = null;
+let photoBtn = null;
+let scanBtn = null;
+let fileBtn = null;
 
-let imageUpload;
-let cameraInput;
-let scanInput;
-let fileUpload;
+let imageUpload = null;
+let cameraInput = null;
+let scanInput = null;
+let fileUpload = null;
 
 
 /* ==========================================================
@@ -65,24 +59,23 @@ let isSending = false;
 
 
 /* ==========================================================
-   SPEECH STATE
+   VOICE STATE
    ========================================================== */
 
 let recognition = null;
 
 let speechSupported = false;
 let isListening = false;
-let shouldKeepListening = false;
+let manuallyStopped = false;
 
 let finalTranscript = "";
 let interimTranscript = "";
 
 let speechRestartTimer = null;
-let speechSubmitTimer = null;
 
 
 /* ==========================================================
-   MICROPHONE VISUALIZER STATE
+   VOICE VISUALIZER STATE
    ========================================================== */
 
 let microphoneStream = null;
@@ -92,7 +85,7 @@ let animationFrame = null;
 
 
 /* ==========================================================
-   PLACEHOLDER STATE
+   PLACEHOLDER
    ========================================================== */
 
 const placeholderWords = [
@@ -131,19 +124,17 @@ const greetings = [
    STARTUP
    ========================================================== */
 
-document.addEventListener("DOMContentLoaded", initializeHomeUp);
+document.addEventListener(
+    "DOMContentLoaded",
+    initializeHomeUp
+);
 
 
 /* ==========================================================
-   INITIALIZE EVERYTHING
+   INITIALIZE
    ========================================================== */
 
 function initializeHomeUp() {
-
-    /*
-       Get all DOM elements only after the HTML exists.
-       This fixes the old "used before declaration" problems.
-    */
 
     form =
         document.querySelector(".talk");
@@ -204,23 +195,14 @@ function initializeHomeUp() {
 
 
     initializeGreeting();
-
     initializePlaceholder();
-
     initializeSidebar();
-
     initializeAttachments();
-
     initializeSuggestions();
-
     initializeDropdown();
-
     initializeChatScrolling();
-
     initializeSpeechRecognition();
-
     initializeForm();
-
 }
 
 
@@ -252,7 +234,6 @@ function initializeSidebar() {
             );
 
         });
-
 }
 
 
@@ -307,30 +288,24 @@ function initializeGreeting() {
 
     greetingText.textContent =
         greetings[randomIndex];
-
 }
 
 
 /* ==========================================================
-   PLACEHOLDER ANIMATION
+   PLACEHOLDER
    ========================================================== */
 
 function initializePlaceholder() {
 
     if (!inputField) return;
 
-
     selectedPlaceholder =
         getRandomPlaceholder();
 
-
     placeholderIndex = 0;
-
     isDeletingPlaceholder = false;
 
-
     runPlaceholderAnimation();
-
 }
 
 
@@ -342,7 +317,6 @@ function getRandomPlaceholder() {
             placeholderWords.length
         )
     ];
-
 }
 
 
@@ -350,10 +324,8 @@ function runPlaceholderAnimation() {
 
     if (!inputField) return;
 
-
     const word =
         selectedPlaceholder;
-
 
     if (!word) return;
 
@@ -369,15 +341,11 @@ function runPlaceholderAnimation() {
     }
 
 
-    const visibleText =
+    inputField.placeholder =
         word.substring(
             0,
             placeholderIndex
         );
-
-
-    inputField.placeholder =
-        visibleText;
 
 
     let delay =
@@ -415,7 +383,6 @@ function runPlaceholderAnimation() {
 
         let nextPlaceholder;
 
-
         do {
 
             nextPlaceholder =
@@ -430,13 +397,14 @@ function runPlaceholderAnimation() {
         selectedPlaceholder =
             nextPlaceholder;
 
-
         delay = 500;
 
     }
 
 
-    clearTimeout(placeholderTimer);
+    clearTimeout(
+        placeholderTimer
+    );
 
 
     placeholderTimer =
@@ -444,27 +412,22 @@ function runPlaceholderAnimation() {
             runPlaceholderAnimation,
             delay
         );
-
 }
 
 
 /* ==========================================================
-   CONVERSATION START
+   START CONVERSATION
    ========================================================== */
 
 function startConversation() {
 
     if (hero) {
-
         hero.classList.add("hidden");
-
     }
 
 
     if (form) {
-
         form.classList.add("bottom");
-
     }
 
 
@@ -479,7 +442,6 @@ function startConversation() {
         );
 
     }
-
 }
 
 
@@ -496,12 +458,9 @@ function initializeAttachments() {
             event => {
 
                 event.preventDefault();
-
                 event.stopPropagation();
 
-                attachMenu.classList.toggle(
-                    "show"
-                );
+                attachMenu.classList.toggle("show");
 
             }
         );
@@ -512,17 +471,11 @@ function initializeAttachments() {
             event => {
 
                 if (
-                    !attachMenu.contains(
-                        event.target
-                    ) &&
-                    !attachButton.contains(
-                        event.target
-                    )
+                    !attachMenu.contains(event.target) &&
+                    !attachButton.contains(event.target)
                 ) {
 
-                    attachMenu.classList.remove(
-                        "show"
-                    );
+                    attachMenu.classList.remove("show");
 
                 }
 
@@ -539,12 +492,9 @@ function initializeAttachments() {
             event => {
 
                 event.preventDefault();
-
                 event.stopPropagation();
 
-                attachMenu?.classList.remove(
-                    "show"
-                );
+                closeAttachmentMenu();
 
                 imageUpload.click();
 
@@ -561,12 +511,9 @@ function initializeAttachments() {
             event => {
 
                 event.preventDefault();
-
                 event.stopPropagation();
 
-                attachMenu?.classList.remove(
-                    "show"
-                );
+                closeAttachmentMenu();
 
                 cameraInput.click();
 
@@ -583,12 +530,9 @@ function initializeAttachments() {
             event => {
 
                 event.preventDefault();
-
                 event.stopPropagation();
 
-                attachMenu?.classList.remove(
-                    "show"
-                );
+                closeAttachmentMenu();
 
                 scanInput.click();
 
@@ -605,12 +549,9 @@ function initializeAttachments() {
             event => {
 
                 event.preventDefault();
-
                 event.stopPropagation();
 
-                attachMenu?.classList.remove(
-                    "show"
-                );
+                closeAttachmentMenu();
 
                 fileUpload.click();
 
@@ -626,15 +567,9 @@ function initializeAttachments() {
             "change",
             event => {
 
-                addFiles(
-                    event.target.files
-                );
+                addFiles(event.target.files);
 
-                /*
-                   Reset the input so selecting the
-                   same image again still triggers change.
-                */
-                imageUpload.value = "";
+                event.target.value = "";
 
             }
         );
@@ -648,11 +583,9 @@ function initializeAttachments() {
             "change",
             event => {
 
-                addFiles(
-                    event.target.files
-                );
+                addFiles(event.target.files);
 
-                cameraInput.value = "";
+                event.target.value = "";
 
             }
         );
@@ -666,11 +599,9 @@ function initializeAttachments() {
             "change",
             event => {
 
-                addFiles(
-                    event.target.files
-                );
+                addFiles(event.target.files);
 
-                scanInput.value = "";
+                event.target.value = "";
 
             }
         );
@@ -684,11 +615,9 @@ function initializeAttachments() {
             "change",
             event => {
 
-                addFiles(
-                    event.target.files
-                );
+                addFiles(event.target.files);
 
-                fileUpload.value = "";
+                event.target.value = "";
 
             }
         );
@@ -697,7 +626,16 @@ function initializeAttachments() {
 
 
     showAttachment();
+}
 
+
+function closeAttachmentMenu() {
+
+    if (attachMenu) {
+
+        attachMenu.classList.remove("show");
+
+    }
 }
 
 
@@ -712,18 +650,10 @@ function addFiles(fileList) {
     }
 
 
-    const incomingFiles =
-        Array.from(fileList);
-
-
-    incomingFiles.forEach(file => {
+    Array.from(fileList).forEach(file => {
 
         if (!file) return;
 
-
-        /*
-           Prevent accidental duplicate files.
-        */
 
         const duplicate =
             attachments.some(
@@ -735,29 +665,23 @@ function addFiles(fileList) {
             );
 
 
-        if (duplicate) {
-            return;
-        }
+        if (duplicate) return;
 
 
         attachments.push({
-
-            file,
-
+            file: file,
             status: "waiting"
-
         });
 
     });
 
 
     showAttachment();
-
 }
 
 
 /* ==========================================================
-   SHOW ATTACHMENT PREVIEW
+   SHOW ATTACHMENTS
    ========================================================== */
 
 function showAttachment() {
@@ -768,9 +692,7 @@ function showAttachment() {
         );
 
 
-    if (!container) {
-        return;
-    }
+    if (!container) return;
 
 
     container.innerHTML = "";
@@ -792,45 +714,25 @@ function showAttachment() {
         (item, index) => {
 
             const card =
-                document.createElement(
-                    "div"
-                );
-
+                document.createElement("div");
 
             card.className =
                 "attachment-preview";
 
 
-            /*
-               IMAGE PREVIEW
-            */
-
             if (
                 item.file.type &&
-                item.file.type.startsWith(
-                    "image/"
-                )
+                item.file.type.startsWith("image/")
             ) {
 
                 const img =
-                    document.createElement(
-                        "img"
-                    );
-
+                    document.createElement("img");
 
                 const objectURL =
-                    URL.createObjectURL(
-                        item.file
-                    );
+                    URL.createObjectURL(item.file);
 
-
-                img.src =
-                    objectURL;
-
-
-                img.alt =
-                    item.file.name;
-
+                img.src = objectURL;
+                img.alt = item.file.name;
 
                 img.onload = () => {
 
@@ -840,100 +742,59 @@ function showAttachment() {
 
                 };
 
-
                 card.appendChild(img);
 
-            }
-
-
-            /*
-               NON-IMAGE FILE
-            */
-
-            else {
+            } else {
 
                 const fileCard =
-                    document.createElement(
-                        "div"
-                    );
-
+                    document.createElement("div");
 
                 fileCard.className =
                     "file-card";
 
 
                 const icon =
-                    document.createElement(
-                        "div"
-                    );
-
+                    document.createElement("div");
 
                 icon.className =
                     "file-icon";
 
-
                 icon.textContent =
-                    getFileIcon(
-                        item.file
-                    );
+                    getFileIcon(item.file);
 
 
                 const name =
-                    document.createElement(
-                        "div"
-                    );
-
+                    document.createElement("div");
 
                 name.className =
                     "file-name";
-
 
                 name.textContent =
                     item.file.name;
 
 
-                fileCard.appendChild(
-                    icon
-                );
+                fileCard.appendChild(icon);
+                fileCard.appendChild(name);
 
-
-                fileCard.appendChild(
-                    name
-                );
-
-
-                card.appendChild(
-                    fileCard
-                );
+                card.appendChild(fileCard);
 
             }
 
 
-            /*
-               REMOVE BUTTON
-            */
-
             const remove =
-                document.createElement(
-                    "button"
-                );
-
+                document.createElement("button");
 
             remove.type = "button";
 
             remove.className =
                 "remove-attachment";
 
-
             remove.setAttribute(
                 "aria-label",
-                "Remove " +
-                    item.file.name
+                "Remove " + item.file.name
             );
 
-
-            remove.textContent =
-                "×";
+            remove.textContent = "×";
 
 
             remove.addEventListener(
@@ -941,13 +802,9 @@ function showAttachment() {
                 event => {
 
                     event.preventDefault();
-
                     event.stopPropagation();
 
-                    attachments.splice(
-                        index,
-                        1
-                    );
+                    attachments.splice(index, 1);
 
                     showAttachment();
 
@@ -955,81 +812,48 @@ function showAttachment() {
             );
 
 
-            card.appendChild(
-                remove
-            );
+            card.appendChild(remove);
 
-
-            /*
-               STATUS
-            */
 
             const status =
-                document.createElement(
-                    "div"
-                );
-
+                document.createElement("div");
 
             status.className =
                 "attachment-status";
 
 
-            if (
-                item.status ===
-                "waiting"
-            ) {
+            if (item.status === "waiting") {
 
-                status.textContent =
-                    "🕓";
+                status.textContent = "🕓";
 
             }
 
-
-            else if (
-                item.status ===
-                "uploading"
-            ) {
+            else if (item.status === "uploading") {
 
                 status.innerHTML =
                     `<div class="upload-spinner"></div>`;
 
             }
 
+            else if (item.status === "success") {
 
-            else if (
-                item.status ===
-                "success"
-            ) {
+                status.textContent = "✓";
 
-                status.textContent =
-                    "✓";
+            }
+
+            else if (item.status === "error") {
+
+                status.textContent = "⚠";
 
             }
 
 
-            else if (
-                item.status ===
-                "error"
-            ) {
+            card.appendChild(status);
 
-                status.textContent =
-                    "⚠";
-
-            }
-
-
-            card.appendChild(
-                status
-            );
-
-
-            container.appendChild(
-                card
-            );
+            container.appendChild(card);
 
         }
     );
-
 }
 
 
@@ -1043,12 +867,7 @@ function getFileIcon(file) {
         file.type || "";
 
 
-    if (
-        type.includes("pdf")
-    ) {
-        return "📕";
-    }
-
+    if (type.includes("pdf")) return "📕";
 
     if (
         type.includes("word") ||
@@ -1057,7 +876,6 @@ function getFileIcon(file) {
         return "📘";
     }
 
-
     if (
         type.includes("spreadsheet") ||
         type.includes("excel")
@@ -1065,16 +883,9 @@ function getFileIcon(file) {
         return "📗";
     }
 
-
-    if (
-        type.includes("text")
-    ) {
-        return "📄";
-    }
-
+    if (type.includes("text")) return "📄";
 
     return "📎";
-
 }
 
 
@@ -1099,12 +910,7 @@ function initializeSuggestions() {
                         chip.dataset.prompt;
 
 
-                    if (!prompt) {
-                        return;
-                    }
-
-
-                    if (!inputField) {
+                    if (!prompt || !inputField) {
                         return;
                     }
 
@@ -1112,11 +918,6 @@ function initializeSuggestions() {
                     inputField.value =
                         prompt;
 
-
-                    /*
-                       Use the same submit path as
-                       normal messages.
-                    */
 
                     if (form) {
 
@@ -1128,12 +929,11 @@ function initializeSuggestions() {
             );
 
         });
-
 }
 
 
 /* ==========================================================
-   MOBILE DROPDOWN
+   MOBILE DROPDOWN / MENU
    ========================================================== */
 
 function initializeDropdown() {
@@ -1151,35 +951,49 @@ function initializeDropdown() {
 
 
     if (!menu || !trigger) {
+
+        console.warn(
+            "HomeUp: dropdown menu elements not found."
+        );
+
         return;
+
     }
 
 
     /*
-       The HTML currently has:
+       IMPORTANT:
+
+       We deliberately DO NOT add another click
+       listener if the HTML already contains:
+
        onclick="toggleMenu()"
 
-       We keep the global function below,
-       but also attach a listener here.
+       Otherwise the menu would open and immediately
+       close because it gets toggled twice.
     */
 
-    trigger.addEventListener(
-        "click",
-        event => {
 
-            /*
-               Prevent the inline onclick from
-               firing twice.
-            */
+    const inlineHandler =
+        trigger.getAttribute("onclick");
 
-            event.preventDefault();
 
-            event.stopPropagation();
+    if (!inlineHandler) {
 
-            toggleMenu();
+        trigger.addEventListener(
+            "click",
+            event => {
 
-        }
-    );
+                event.preventDefault();
+
+                event.stopPropagation();
+
+                toggleMenu();
+
+            }
+        );
+
+    }
 
 
     document.addEventListener(
@@ -1187,12 +1001,8 @@ function initializeDropdown() {
         event => {
 
             if (
-                !trigger.contains(
-                    event.target
-                ) &&
-                !menu.contains(
-                    event.target
-                )
+                !trigger.contains(event.target) &&
+                !menu.contains(event.target)
             ) {
 
                 closeDropdown();
@@ -1211,26 +1021,19 @@ function initializeDropdown() {
 
 
     document
-        .querySelectorAll(
-            ".dropdown-item"
-        )
+        .querySelectorAll(".dropdown-item")
         .forEach(link => {
 
             const href =
-                link.getAttribute(
-                    "href"
-                );
+                link.getAttribute("href");
 
 
             if (
                 href &&
-                href.toLowerCase() ===
-                    currentPage
+                href.toLowerCase() === currentPage
             ) {
 
-                link.classList.add(
-                    "active"
-                );
+                link.classList.add("active");
 
             }
 
@@ -1250,7 +1053,7 @@ function initializeDropdown() {
 
 
 /* ==========================================================
-   MOBILE MENU FUNCTION
+   TOGGLE MENU
    ========================================================== */
 
 function toggleMenu() {
@@ -1272,18 +1075,23 @@ function toggleMenu() {
     }
 
 
-    const isHidden =
-        menu.classList.contains(
-            "hidden"
-        );
+    /*
+       Supports either:
+
+       class="hidden"
+
+       or
+
+       aria-expanded
+    */
+
+    const currentlyHidden =
+        menu.classList.contains("hidden");
 
 
-    if (isHidden) {
+    if (currentlyHidden) {
 
-        menu.classList.remove(
-            "hidden"
-        );
-
+        menu.classList.remove("hidden");
 
         trigger.setAttribute(
             "aria-expanded",
@@ -1300,7 +1108,7 @@ function toggleMenu() {
 
 
 /* ==========================================================
-   CLOSE DROPDOWN
+   CLOSE MENU
    ========================================================== */
 
 function closeDropdown() {
@@ -1319,9 +1127,7 @@ function closeDropdown() {
 
     if (menu) {
 
-        menu.classList.add(
-            "hidden"
-        );
+        menu.classList.add("hidden");
 
     }
 
@@ -1338,29 +1144,30 @@ function closeDropdown() {
 }
 
 
+/*
+   Make toggleMenu globally available.
+
+   This is important if your HTML still contains:
+
+   onclick="toggleMenu()"
+*/
+
+window.toggleMenu =
+    toggleMenu;
+
+
 /* ==========================================================
    CHAT SCROLLING
    ========================================================== */
 
 function initializeChatScrolling() {
 
-    if (!messages) {
-        return;
-    }
+    if (!messages) return;
 
 
     messages.addEventListener(
         "scroll",
         () => {
-
-            if (scrollDownBtn) {
-
-                scrollDownBtn.classList.remove(
-                    "show"
-                );
-
-            }
-
 
             const distanceFromBottom =
                 messages.scrollHeight -
@@ -1372,9 +1179,16 @@ function initializeChatScrolling() {
                 distanceFromBottom < 60;
 
 
-            clearTimeout(
-                scrollTimer
-            );
+            if (scrollDownBtn) {
+
+                scrollDownBtn.classList.remove(
+                    "show"
+                );
+
+            }
+
+
+            clearTimeout(scrollTimer);
 
 
             scrollTimer =
@@ -1408,14 +1222,9 @@ function initializeChatScrolling() {
 
                 event.preventDefault();
 
-
-                scrollToBottom(
-                    true
-                );
-
+                scrollToBottom(true);
 
                 autoScroll = true;
-
 
                 scrollDownBtn.classList.remove(
                     "show"
@@ -1433,11 +1242,11 @@ function initializeChatScrolling() {
    SCROLL TO BOTTOM
    ========================================================== */
 
-function scrollToBottom(smooth = true) {
+function scrollToBottom(
+    smooth = true
+) {
 
-    if (!messages) {
-        return;
-    }
+    if (!messages) return;
 
 
     messages.scrollTo({
@@ -1464,9 +1273,7 @@ function addMessage(
     className
 ) {
 
-    if (!messages) {
-        return null;
-    }
+    if (!messages) return null;
 
 
     const safeText =
@@ -1476,9 +1283,7 @@ function addMessage(
 
 
     const wrapper =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
 
     wrapper.className =
@@ -1488,18 +1293,15 @@ function addMessage(
     wrapper.style.display =
         "flex";
 
-
     wrapper.style.flexDirection =
         "column";
-
 
     wrapper.style.margin =
         "12px 0";
 
 
     const isUser =
-        className ===
-        "user-message";
+        className === "user-message";
 
 
     wrapper.style.alignItems =
@@ -1507,11 +1309,6 @@ function addMessage(
             ? "flex-end"
             : "flex-start";
 
-
-    /*
-       Save user message on the wrapper.
-       Retry uses this.
-    */
 
     if (isUser) {
 
@@ -1522,18 +1319,14 @@ function addMessage(
 
 
     const bubbleContainer =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
 
     bubbleContainer.style.display =
         "flex";
 
-
     bubbleContainer.style.flexDirection =
         "column";
-
 
     bubbleContainer.style.alignItems =
         isUser
@@ -1542,19 +1335,14 @@ function addMessage(
 
 
     const bubble =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
 
     bubble.className =
         className;
 
 
-    if (
-        className ===
-        "ai-message"
-    ) {
+    if (className === "ai-message") {
 
         animateWords(
             bubble,
@@ -1574,19 +1362,10 @@ function addMessage(
     );
 
 
-    /*
-       AI ACTION BUTTONS
-    */
-
-    if (
-        className ===
-        "ai-message"
-    ) {
+    if (className === "ai-message") {
 
         const actions =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
 
         actions.className =
@@ -1596,42 +1375,20 @@ function addMessage(
         actions.style.display =
             "flex";
 
-
         actions.style.gap =
             "10px";
-
 
         actions.style.marginTop =
             "6px";
 
 
-        /*
-           COPY
-        */
-
-        const copyBtn =
-            createCopyButton(
-                safeText
-            );
-
-
-        /*
-           RETRY
-        */
-
-        const retryBtn =
-            createRetryButton(
-                wrapper
-            );
-
-
         actions.appendChild(
-            copyBtn
+            createCopyButton(safeText)
         );
 
 
         actions.appendChild(
-            retryBtn
+            createRetryButton(wrapper)
         );
 
 
@@ -1657,9 +1414,7 @@ function addMessage(
         requestAnimationFrame(
             () => {
 
-                scrollToBottom(
-                    true
-                );
+                scrollToBottom(true);
 
             }
         );
@@ -1668,7 +1423,6 @@ function addMessage(
 
 
     return wrapper;
-
 }
 
 
@@ -1679,9 +1433,7 @@ function addMessage(
 function createCopyButton(text) {
 
     const button =
-        document.createElement(
-            "button"
-        );
+        document.createElement("button");
 
 
     button.type =
@@ -1710,15 +1462,11 @@ function createCopyButton(text) {
 
             try {
 
-                await copyText(
-                    text
-                );
-
+                await copyText(text);
 
                 button.classList.add(
                     "success"
                 );
-
 
                 setCopyIcon(
                     button,
@@ -1733,7 +1481,6 @@ function createCopyButton(text) {
                             "success"
                         );
 
-
                         setCopyIcon(
                             button,
                             false
@@ -1744,7 +1491,6 @@ function createCopyButton(text) {
                 );
 
             }
-
 
             catch (error) {
 
@@ -1760,7 +1506,6 @@ function createCopyButton(text) {
 
 
     return button;
-
 }
 
 
@@ -1784,14 +1529,8 @@ async function copyText(text) {
     }
 
 
-    /*
-       Fallback for older/mobile browsers.
-    */
-
     const textarea =
-        document.createElement(
-            "textarea"
-        );
+        document.createElement("textarea");
 
 
     textarea.value =
@@ -1800,7 +1539,6 @@ async function copyText(text) {
 
     textarea.style.position =
         "fixed";
-
 
     textarea.style.opacity =
         "0";
@@ -1813,17 +1551,13 @@ async function copyText(text) {
 
     textarea.focus();
 
-
     textarea.select();
 
 
-    document.execCommand(
-        "copy"
-    );
+    document.execCommand("copy");
 
 
     textarea.remove();
-
 }
 
 
@@ -1880,12 +1614,11 @@ function setCopyIcon(
         `;
 
     }
-
 }
 
 
 /* ==========================================================
-   RETRY BUTTON
+   RETRY
    ========================================================== */
 
 function createRetryButton(
@@ -1893,9 +1626,7 @@ function createRetryButton(
 ) {
 
     const button =
-        document.createElement(
-            "button"
-        );
+        document.createElement("button");
 
 
     button.type =
@@ -1932,9 +1663,7 @@ function createRetryButton(
         "click",
         async () => {
 
-            if (isSending) {
-                return;
-            }
+            if (isSending) return;
 
 
             const userMessage =
@@ -1943,9 +1672,7 @@ function createRetryButton(
                 );
 
 
-            if (!userMessage) {
-                return;
-            }
+            if (!userMessage) return;
 
 
             aiWrapper.remove();
@@ -1960,7 +1687,6 @@ function createRetryButton(
 
 
     return button;
-
 }
 
 
@@ -1995,7 +1721,6 @@ function findPreviousUserMessage(
 
 
     return "";
-
 }
 
 
@@ -2005,15 +1730,11 @@ function findPreviousUserMessage(
 
 function createThinkingBubble() {
 
-    if (!messages) {
-        return null;
-    }
+    if (!messages) return null;
 
 
     const wrapper =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
 
     wrapper.className =
@@ -2023,23 +1744,18 @@ function createThinkingBubble() {
     wrapper.style.display =
         "flex";
 
-
     wrapper.style.flexDirection =
         "column";
 
-
     wrapper.style.alignItems =
         "flex-start";
-
 
     wrapper.style.margin =
         "12px 0";
 
 
     const bubble =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
 
     bubble.className =
@@ -2065,20 +1781,17 @@ function createThinkingBubble() {
 
     if (autoScroll) {
 
-        scrollToBottom(
-            true
-        );
+        scrollToBottom(true);
 
     }
 
 
     return wrapper;
-
 }
 
 
 /* ==========================================================
-   ANIMATE AI WORDS
+   AI WORD ANIMATION
    ========================================================== */
 
 function animateWords(
@@ -2101,12 +1814,8 @@ function animateWords(
 
     function nextWord() {
 
-        if (
-            index >= words.length
-        ) {
-
+        if (index >= words.length) {
             return;
-
         }
 
 
@@ -2124,15 +1833,12 @@ function animateWords(
             requestAnimationFrame(
                 () => {
 
-                    scrollToBottom(
-                        false
-                    );
+                    scrollToBottom(false);
 
                 }
             );
 
-        }
-        else if (scrollDownBtn) {
+        } else if (scrollDownBtn) {
 
             scrollDownBtn.classList.add(
                 "show"
@@ -2169,12 +1875,11 @@ function animateWords(
 
 
     nextWord();
-
 }
 
 
 /* ==========================================================
-   SEND MESSAGE TO AI
+   SEND TO AI
    ========================================================== */
 
 async function sendToAI(
@@ -2183,25 +1888,19 @@ async function sendToAI(
 ) {
 
     const cleanMessage =
-        String(
-            message ?? ""
-        ).trim();
+        String(message ?? "").trim();
 
 
     if (
         !cleanMessage &&
         !files.length
     ) {
-
         return;
-
     }
 
 
     if (isSending) {
-
         return;
-
     }
 
 
@@ -2229,14 +1928,8 @@ async function sendToAI(
         }
 
 
-        const reply =
-            extractReply(
-                data
-            );
-
-
         addMessage(
-            reply,
+            extractReply(data),
             "ai-message"
         );
 
@@ -2257,9 +1950,7 @@ async function sendToAI(
 
 
         addMessage(
-            getFriendlyError(
-                error
-            ),
+            getFriendlyError(error),
             "ai-message"
         );
 
@@ -2271,7 +1962,6 @@ async function sendToAI(
         isSending = false;
 
     }
-
 }
 
 
@@ -2284,31 +1974,15 @@ async function requestAI(
     files
 ) {
 
-    /*
-       NORMAL CHAT
-       Sends JSON exactly like your current backend expects.
-    */
-
     if (
         !files.length ||
         !SEND_ATTACHMENTS_TO_BACKEND
     ) {
 
-        return await fetchJSON(
-            message
-        );
+        return await fetchJSON(message);
 
     }
 
-
-    /*
-       ATTACHMENT CHAT
-       Sends multipart/form-data.
-
-       IMPORTANT:
-       Do NOT manually set Content-Type.
-       The browser creates the correct multipart boundary.
-    */
 
     const formData =
         new FormData();
@@ -2373,7 +2047,6 @@ async function requestAI(
     return await parseResponse(
         response
     );
-
 }
 
 
@@ -2416,8 +2089,7 @@ async function fetchJSON(
 
                     body:
                         JSON.stringify({
-                            message:
-                                message
+                            message: message
                         }),
 
                     signal:
@@ -2462,12 +2134,9 @@ async function fetchJSON(
 
     finally {
 
-        clearTimeout(
-            timeout
-        );
+        clearTimeout(timeout);
 
     }
-
 }
 
 
@@ -2500,19 +2169,11 @@ async function parseResponse(
         await response.text();
 
 
-    /*
-       Some servers incorrectly return JSON
-       with text/plain.
-    */
-
     try {
 
-        return JSON.parse(
-            text
-        );
+        return JSON.parse(text);
 
     }
-
 
     catch {
 
@@ -2521,7 +2182,6 @@ async function parseResponse(
         };
 
     }
-
 }
 
 
@@ -2544,12 +2204,11 @@ async function safeResponseText(
         return "";
 
     }
-
 }
 
 
 /* ==========================================================
-   EXTRACT AI REPLY
+   EXTRACT REPLY
    ========================================================== */
 
 function extractReply(
@@ -2604,7 +2263,6 @@ function extractReply(
 
 
     return "I received a response, but I couldn't read the AI message.";
-
 }
 
 
@@ -2628,8 +2286,7 @@ function getFriendlyError(
 
     if (
         error &&
-        error.name ===
-            "AbortError"
+        error.name === "AbortError"
     ) {
 
         return (
@@ -2658,13 +2315,12 @@ function getFriendlyError(
         (
             error.status === 415 ||
             error.status === 400
-        ) &&
-        error.serverMessage
+        )
     ) {
 
         return (
             "The server could not process that request. " +
-            "Your normal chat connection is working, but the attachment format may not be supported yet."
+            "Please check the message or attachment and try again."
         );
 
     }
@@ -2687,12 +2343,11 @@ function getFriendlyError(
         "Something went wrong while contacting HomeUp AI. " +
         "Please try again."
     );
-
 }
 
 
 /* ==========================================================
-   MAIN FORM
+   FORM
    ========================================================== */
 
 function initializeForm() {
@@ -2716,9 +2371,7 @@ function initializeForm() {
 
 
             if (isSending) {
-
                 return;
-
             }
 
 
@@ -2743,24 +2396,18 @@ function initializeForm() {
 
 
             /*
-               Stop speech if it is still running.
+               Stop voice WITHOUT clearing the text.
             */
 
             if (isListening) {
 
-                stopListening(
-                    false
-                );
+                stopListening(false);
 
             }
 
 
             startConversation();
 
-
-            /*
-               Show user's text immediately.
-            */
 
             if (message) {
 
@@ -2772,20 +2419,12 @@ function initializeForm() {
             }
 
 
-            /*
-               Clear input.
-            */
-
             if (inputField) {
 
                 inputField.value = "";
 
             }
 
-
-            /*
-               Show attachment status.
-            */
 
             if (filesToSend.length) {
 
@@ -2804,10 +2443,6 @@ function initializeForm() {
             }
 
 
-            /*
-               Send everything.
-            */
-
             await sendMessageWithFiles(
                 message,
                 filesToSend
@@ -2820,7 +2455,7 @@ function initializeForm() {
 
 
 /* ==========================================================
-   SEND FORM MESSAGE + ATTACHMENTS
+   SEND MESSAGE + FILES
    ========================================================== */
 
 async function sendMessageWithFiles(
@@ -2854,10 +2489,6 @@ async function sendMessageWithFiles(
         }
 
 
-        /*
-           Mark attachments successful.
-        */
-
         if (files.length) {
 
             attachments.forEach(
@@ -2866,8 +2497,7 @@ async function sendMessageWithFiles(
                     const wasSent =
                         files.some(
                             sent =>
-                                sent.file ===
-                                item.file
+                                sent.file === item.file
                         );
 
 
@@ -2887,23 +2517,11 @@ async function sendMessageWithFiles(
         }
 
 
-        const reply =
-            extractReply(
-                data
-            );
-
-
         addMessage(
-            reply,
+            extractReply(data),
             "ai-message"
         );
 
-
-        /*
-           Clear successfully sent files
-           after the success indicator
-           has been visible.
-        */
 
         if (files.length) {
 
@@ -2950,8 +2568,7 @@ async function sendMessageWithFiles(
                     const wasSent =
                         files.some(
                             sent =>
-                                sent.file ===
-                                item.file
+                                sent.file === item.file
                         );
 
 
@@ -2972,9 +2589,7 @@ async function sendMessageWithFiles(
 
 
         addMessage(
-            getFriendlyError(
-                error
-            ),
+            getFriendlyError(error),
             "ai-message"
         );
 
@@ -2991,10 +2606,28 @@ async function sendMessageWithFiles(
 
 
 /* ==========================================================
-   SPEECH RECOGNITION
+   ==========================================================
+   VOICE RECOGNITION
+   ==========================================================
+   ========================================================== */
+
+
+/* ==========================================================
+   INITIALIZE VOICE
    ========================================================== */
 
 function initializeSpeechRecognition() {
+
+    if (!micButton) {
+
+        console.warn(
+            "HomeUp: #micButton not found."
+        );
+
+        return;
+
+    }
+
 
     const SpeechRecognition =
         window.SpeechRecognition ||
@@ -3004,7 +2637,7 @@ function initializeSpeechRecognition() {
     if (!SpeechRecognition) {
 
         console.warn(
-            "Speech recognition is not supported in this browser."
+            "Speech recognition is not supported."
         );
 
 
@@ -3012,17 +2645,14 @@ function initializeSpeechRecognition() {
             false;
 
 
-        if (micButton) {
+        micButton.disabled =
+            true;
 
-            micButton.disabled =
-                true;
 
-            micButton.setAttribute(
-                "aria-label",
-                "Speech recognition is not supported"
-            );
-
-        }
+        micButton.setAttribute(
+            "aria-label",
+            "Speech recognition is not supported"
+        );
 
 
         return;
@@ -3042,8 +2672,18 @@ function initializeSpeechRecognition() {
         "en-US";
 
 
+    /*
+       IMPORTANT:
+
+       We intentionally use non-continuous recognition.
+       Android Chrome is much more reliable this way.
+
+       When it ends while the user is still listening,
+       we start it again automatically.
+    */
+
     recognition.continuous =
-        true;
+        false;
 
 
     recognition.interimResults =
@@ -3070,15 +2710,25 @@ function initializeSpeechRecognition() {
         handleSpeechEnd;
 
 
-    if (micButton) {
+    /*
+       ONE click listener only.
+    */
 
-        micButton.addEventListener(
-            "click",
-            handleMicButton
-        );
+    micButton.addEventListener(
+        "click",
+        handleMicButton
+    );
 
-    }
 
+    micButton.setAttribute(
+        "aria-pressed",
+        "false"
+    );
+
+
+    console.log(
+        "HomeUp voice recognition initialized"
+    );
 }
 
 
@@ -3091,6 +2741,7 @@ async function handleMicButton(
 ) {
 
     event.preventDefault();
+    event.stopPropagation();
 
 
     if (!speechSupported) {
@@ -3098,19 +2749,25 @@ async function handleMicButton(
     }
 
 
-    if (
-    isListening ||
-    shouldKeepListening
-) {
+    /*
+       If currently listening,
+       clicking again means STOP.
+    */
 
-    stopListening(true);
+    if (isListening) {
 
-    return;
-}
+        stopListening(true);
 
+        return;
+
+    }
+
+
+    /*
+       Otherwise START.
+    */
 
     await startListening();
-
 }
 
 
@@ -3120,38 +2777,93 @@ async function handleMicButton(
 
 async function startListening() {
 
-    if (!recognition || isListening) {
+    if (!recognition) {
         return;
     }
 
-    clearTimeout(speechRestartTimer);
-    clearTimeout(speechSubmitTimer);
 
-    finalTranscript = "";
-    interimTranscript = "";
+    if (isListening) {
+        return;
+    }
 
-    shouldKeepListening = true;
+
+    clearTimeout(
+        speechRestartTimer
+    );
+
+
+    manuallyStopped =
+        false;
+
+
+    /*
+       Start a fresh recognition session.
+
+       DO NOT erase existing typed text.
+       This allows voice to continue after typed text.
+    */
+
+    finalTranscript =
+        inputField
+            ? inputField.value.trim()
+            : "";
+
+
+    interimTranscript =
+        "";
+
+
+    try {
+
+        /*
+           Request microphone permission.
+           This is especially important on Android.
+        */
+
+        await requestMicrophone();
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Microphone permission error:",
+            error
+        );
+
+
+        manuallyStopped =
+            true;
+
+
+        setMicVisualState(false);
+
+        return;
+
+    }
+
 
     try {
 
         recognition.start();
 
-    } catch (error) {
+    }
 
-        console.warn(
+
+    catch (error) {
+
+        console.error(
             "Speech recognition could not start:",
             error
         );
 
-        shouldKeepListening = false;
-        isListening = false;
-
-        setMicVisualState(false);
     }
 }
 
+
 /* ==========================================================
-   REQUEST MICROPHONE
+   MICROPHONE PERMISSION
    ========================================================== */
 
 async function requestMicrophone() {
@@ -3162,18 +2874,11 @@ async function requestMicrophone() {
     ) {
 
         throw new Error(
-            "Microphone API is unavailable."
+            "Microphone API unavailable."
         );
 
     }
 
-
-    /*
-       This temporary stream only exists
-       to trigger permission.
-
-       The actual visualizer gets its own stream.
-    */
 
     const stream =
         await navigator.mediaDevices.getUserMedia(
@@ -3187,12 +2892,17 @@ async function requestMicrophone() {
         );
 
 
+    /*
+       This stream is ONLY for permission.
+
+       The visualizer creates its own stream.
+    */
+
     stream
         .getTracks()
         .forEach(
             track => track.stop()
         );
-
 }
 
 
@@ -3206,9 +2916,7 @@ function handleSpeechStart() {
         true;
 
 
-    setMicVisualState(
-        true
-    );
+    setMicVisualState(true);
 
 
     if (greetingText) {
@@ -3233,9 +2941,8 @@ function handleSpeechStart() {
 
 
     console.log(
-        "HomeUp speech recognition started"
+        "HomeUp speech started"
     );
-
 }
 
 
@@ -3252,13 +2959,13 @@ function handleSpeechResult(
     }
 
 
-    let newInterim =
+    let sessionFinal =
         "";
 
 
-    /*
-       Only process results from resultIndex onward.
-    */
+    let sessionInterim =
+        "";
+
 
     for (
         let i = event.resultIndex;
@@ -3270,53 +2977,61 @@ function handleSpeechResult(
             event.results[i];
 
 
-        const text =
-            result[0]
-                .transcript;
+        const transcript =
+            result[0].transcript;
 
 
         if (result.isFinal) {
 
-            finalTranscript +=
-                text;
+            sessionFinal +=
+                transcript;
 
         } else {
 
-            newInterim +=
-                text;
+            sessionInterim +=
+                transcript;
 
         }
 
     }
 
 
+    /*
+       Add finalized words permanently.
+    */
+
+    if (sessionFinal) {
+
+        finalTranscript =
+            (
+                finalTranscript +
+                " " +
+                sessionFinal
+            ).trim();
+
+    }
+
+
     interimTranscript =
-        newInterim;
+        sessionInterim;
 
 
     /*
-       IMPORTANT:
+       THIS is what gets displayed.
 
-       final + current interim
-
-       This prevents:
-
-       hello
-       hello hello
-       hello hello hello
-
-       duplication.
+       Final speech + current interim speech.
     */
 
-    const displayText =
+    inputField.value =
         (
             finalTranscript +
-            interimTranscript
+            (
+                interimTranscript
+                    ? " " +
+                      interimTranscript
+                    : ""
+            )
         ).trim();
-
-
-    inputField.value =
-        displayText;
 
 
     inputField.focus();
@@ -3332,19 +3047,6 @@ function handleSpeechResult(
     }
 
     catch {}
-
-
-    console.log(
-        "Final:",
-        finalTranscript
-    );
-
-
-    console.log(
-        "Interim:",
-        interimTranscript
-    );
-
 }
 
 
@@ -3363,57 +3065,84 @@ function handleSpeechError(
 
 
     /*
-       These errors mean we should not
-       attempt to restart automatically.
+       Permission denied.
     */
 
-    const fatalErrors = [
-        "not-allowed",
-        "service-not-allowed",
-        "audio-capture"
-    ];
-
-
     if (
-        fatalErrors.includes(
-            event.error
-        )
+        event.error === "not-allowed" ||
+        event.error === "service-not-allowed"
     ) {
 
-        shouldKeepListening =
+        manuallyStopped =
+            true;
+
+
+        isListening =
             false;
 
 
-        finalTranscript =
-            "";
+        setMicVisualState(false);
 
 
-        interimTranscript =
-            "";
+        stopVoiceVisualizer();
 
 
-        if (
-            event.error ===
-            "not-allowed"
-        ) {
-
-            console.warn(
-                "Microphone permission was denied."
-            );
-
-        }
+        return;
 
     }
 
 
     /*
-       Network errors can happen on mobile.
-       Don't destroy the transcript.
+       Microphone unavailable.
     */
 
     if (
-        event.error ===
-        "network"
+        event.error === "audio-capture"
+    ) {
+
+        manuallyStopped =
+            true;
+
+
+        isListening =
+            false;
+
+
+        setMicVisualState(false);
+
+
+        stopVoiceVisualizer();
+
+
+        return;
+
+    }
+
+
+    /*
+       "no-speech" is not fatal.
+
+       If the user still has the mic active,
+       the recognition session will restart.
+    */
+
+    if (
+        event.error === "no-speech"
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+       Network errors can happen on Android.
+
+       Keep the transcript.
+    */
+
+    if (
+        event.error === "network"
     ) {
 
         console.warn(
@@ -3421,7 +3150,6 @@ function handleSpeechError(
         );
 
     }
-
 }
 
 
@@ -3440,9 +3168,7 @@ function handleSpeechEnd() {
         false;
 
 
-    setMicVisualState(
-        false
-    );
+    setMicVisualState(false);
 
 
     stopVoiceVisualizer();
@@ -3467,63 +3193,49 @@ function handleSpeechEnd() {
 
 
     /*
-       Android/Chrome sometimes stops
-       continuous recognition automatically.
+       If the user DID NOT press the microphone
+       to stop, automatically restart.
 
-       If the user still wants to listen,
-       restart instead of submitting.
+       This is what makes Android Chrome's
+       non-continuous recognition behave like
+       continuous recognition.
     */
 
-  if (shouldKeepListening) {
+    if (!manuallyStopped) {
 
-    if (inputField) {
+        clearTimeout(
+            speechRestartTimer
+        );
 
-        inputField.value =
-            (
-                finalTranscript +
-                interimTranscript
-            ).trim();
+
+        speechRestartTimer =
+            setTimeout(
+                () => {
+
+                    if (
+                        !manuallyStopped &&
+                        !isListening
+                    ) {
+
+                        startRecognitionAgain();
+
+                    }
+
+                },
+                250
+            );
+
+
+        return;
 
     }
 
-    clearTimeout(speechRestartTimer);
-
-    speechRestartTimer = setTimeout(() => {
-
-        if (
-            shouldKeepListening &&
-            !isListening &&
-            recognition
-        ) {
-
-            try {
-
-                recognition.start();
-
-            } catch (error) {
-
-                console.warn(
-                    "Speech recognition restart failed:",
-                    error
-                );
-
-            }
-
-        }
-
-    }, 300);
-
-    return;
-}
 
     /*
        User intentionally stopped.
-       Only final text gets sent.
+
+       Only finalized speech is used.
     */
-
-    const message =
-        finalTranscript.trim();
-
 
     interimTranscript =
         "";
@@ -3532,44 +3244,99 @@ function handleSpeechEnd() {
     if (inputField) {
 
         inputField.value =
-            message;
+            finalTranscript.trim();
 
     }
 
+
+    /*
+       Do NOT automatically submit here.
+
+       The user can now look at/edit the
+       transcription before pressing Send.
+    */
 
     console.log(
-        "FINAL VOICE MESSAGE:",
-        message
+        "Final voice text:",
+        finalTranscript
     );
+}
 
 
-    if (!message) {
+/* ==========================================================
+   RESTART RECOGNITION
+   ========================================================== */
+
+async function startRecognitionAgain() {
+
+    if (
+        manuallyStopped ||
+        isListening ||
+        !recognition
+    ) {
+
         return;
+
     }
 
 
-    clearTimeout(
-        speechSubmitTimer
-    );
+    try {
+
+        recognition.start();
+
+    }
 
 
-    speechSubmitTimer =
-        setTimeout(
-            () => {
+    catch (error) {
 
-                if (
-                    form &&
-                    !isSending
-                ) {
+        /*
+           InvalidStateError can happen if
+           Chrome thinks recognition is already
+           starting. Wait and try once more.
+        */
 
-                    form.requestSubmit();
-
-                }
-
-            },
-            200
+        console.warn(
+            "Speech restart failed:",
+            error
         );
 
+
+        clearTimeout(
+            speechRestartTimer
+        );
+
+
+        speechRestartTimer =
+            setTimeout(
+                () => {
+
+                    if (
+                        !manuallyStopped &&
+                        !isListening
+                    ) {
+
+                        try {
+
+                            recognition.start();
+
+                        }
+
+                        catch (retryError) {
+
+                            console.warn(
+                                "Second speech restart failed:",
+                                retryError
+                            );
+
+                        }
+
+                    }
+
+                },
+                500
+            );
+
+    }
 }
 
 
@@ -3578,11 +3345,11 @@ function handleSpeechEnd() {
    ========================================================== */
 
 function stopListening(
-    submitMessage
+    keepText = true
 ) {
 
-    shouldKeepListening =
-        false;
+    manuallyStopped =
+        true;
 
 
     clearTimeout(
@@ -3590,53 +3357,94 @@ function stopListening(
     );
 
 
-    clearTimeout(
-        speechSubmitTimer
-    );
+    if (keepText && inputField) {
+
+        /*
+           Preserve whatever is currently visible.
+        */
+
+        const currentText =
+            inputField.value.trim();
 
 
-    if (!recognition) {
-        return;
-    }
+        if (currentText) {
 
+            finalTranscript =
+                currentText;
 
-    /*
-       If we don't want automatic submission,
-       clear the transcript first.
-    */
-
-    if (!submitMessage) {
-
-        finalTranscript =
-            "";
-
-
-        interimTranscript =
-            "";
+        }
 
     }
 
 
-    try {
+    interimTranscript =
+        "";
 
-        recognition.stop();
+
+    if (recognition) {
+
+        try {
+
+            recognition.stop();
+
+        }
+
+        catch (error) {
+
+            console.warn(
+                "Speech stop error:",
+                error
+            );
+
+        }
 
     }
 
-    catch (error) {
 
-        console.warn(
-            "Speech stop error:",
-            error
+    isListening =
+        false;
+
+
+    setMicVisualState(false);
+
+
+    stopVoiceVisualizer();
+
+
+    if (voiceVisualizer) {
+
+        voiceVisualizer.classList.remove(
+            "active"
         );
 
     }
 
+
+    if (greetingText) {
+
+        greetingText.classList.remove(
+            "voice-hidden"
+        );
+
+    }
+
+
+    if (inputField) {
+
+        inputField.value =
+            finalTranscript.trim();
+
+    }
+
+
+    console.log(
+        "Voice manually stopped"
+    );
 }
 
 
 /* ==========================================================
-   MICROPHONE VISUAL STATE
+   MIC VISUAL STATE
    ========================================================== */
 
 function setMicVisualState(
@@ -3666,7 +3474,7 @@ function setMicVisualState(
    VOICE VISUALIZER
    ========================================================== */
 
-//async function startVoiceVisualizer() {
+async function startVoiceVisualizer() {
 
     if (!voiceVisualizer) {
         return;
@@ -3674,7 +3482,7 @@ function setMicVisualState(
 
 
     /*
-       Don't create multiple microphone streams.
+       Don't create multiple streams.
     */
 
     if (microphoneStream) {
@@ -3682,22 +3490,17 @@ function setMicVisualState(
     }
 
 
+    if (
+        !navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia
+    ) {
+
+        return;
+
+    }
+
+
     try {
-
-        if (
-            !navigator.mediaDevices ||
-            !navigator.mediaDevices.getUserMedia
-        ) {
-
-            console.warn(
-                "Microphone visualizer unavailable."
-            );
-
-
-            return;
-
-        }
-
 
         microphoneStream =
             await navigator.mediaDevices.getUserMedia(
@@ -3717,11 +3520,6 @@ function setMicVisualState(
 
 
         if (!AudioContextClass) {
-
-            console.warn(
-                "Web Audio API unavailable."
-            );
-
 
             stopVoiceVisualizer();
 
@@ -3791,11 +3589,6 @@ function setMicVisualState(
 
         if (!bars.length) {
 
-            console.warn(
-                "No .voice-bar elements found."
-            );
-
-
             return;
 
         }
@@ -3828,10 +3621,6 @@ function setMicVisualState(
                 timeData
             );
 
-
-            /*
-               RMS microphone volume
-            */
 
             let sum =
                 0;
@@ -3894,12 +3683,8 @@ function setMicVisualState(
                         );
 
 
-                    let total =
-                        0;
-
-
-                    let count =
-                        0;
+                    let total = 0;
+                    let count = 0;
 
 
                     for (
@@ -3910,7 +3695,6 @@ function setMicVisualState(
 
                         total +=
                             frequencyData[i];
-
 
                         count++;
 
@@ -3927,12 +3711,10 @@ function setMicVisualState(
 
                     let level =
                         (
-                            volume *
-                            0.75
+                            volume * 0.75
                         ) +
                         (
-                            frequencyLevel *
-                            0.9
+                            frequencyLevel * 0.9
                         );
 
 
@@ -3950,12 +3732,8 @@ function setMicVisualState(
                         );
 
 
-                    const minHeight =
-                        6;
-
-
-                    const maxHeight =
-                        55;
+                    const minHeight = 6;
+                    const maxHeight = 55;
 
 
                     const variation =
@@ -3964,9 +3742,8 @@ function setMicVisualState(
                             Math.sin(
                                 index * 1.7 +
                                 performance.now() /
-                                    120
-                            ) *
-                            0.25
+                                120
+                            ) * 0.25
                         );
 
 
@@ -4030,19 +3807,18 @@ function setMicVisualState(
 
 
         /*
-           Speech recognition can still work
-           even if the visualizer fails.
+           Visualizer failure does NOT
+           stop speech recognition.
         */
 
         stopVoiceVisualizer();
 
     }
-
 }
 
 
 /* ==========================================================
-   STOP VOICE VISUALIZER
+   STOP VISUALIZER
    ========================================================== */
 
 function stopVoiceVisualizer() {
@@ -4052,7 +3828,6 @@ function stopVoiceVisualizer() {
         cancelAnimationFrame(
             animationFrame
         );
-
 
         animationFrame =
             null;
@@ -4095,7 +3870,6 @@ function stopVoiceVisualizer() {
 
         catch {}
 
-
         audioContext =
             null;
 
@@ -4118,7 +3892,6 @@ function stopVoiceVisualizer() {
                     bar.style.height =
                         "6px";
 
-
                     bar.style.opacity =
                         "0.5";
 
@@ -4126,29 +3899,23 @@ function stopVoiceVisualizer() {
             );
 
     }
-
 }
 
 
 /* ==========================================================
-   CLEANUP WHEN LEAVING PAGE
+   PAGE CLEANUP
    ========================================================== */
 
 window.addEventListener(
     "pagehide",
     () => {
 
-        shouldKeepListening =
-            false;
+        manuallyStopped =
+            true;
 
 
         clearTimeout(
             speechRestartTimer
-        );
-
-
-        clearTimeout(
-            speechSubmitTimer
         );
 
 
@@ -4177,7 +3944,7 @@ window.addEventListener(
 
 
 /* ==========================================================
-   GLOBAL SAFETY
+   GLOBAL ERROR LOGGING
    ========================================================== */
 
 window.addEventListener(
@@ -4186,7 +3953,8 @@ window.addEventListener(
 
         console.error(
             "HomeUp JavaScript error:",
-            event.error || event.message
+            event.error ||
+            event.message
         );
 
     }
@@ -4194,5 +3962,5 @@ window.addEventListener(
 
 
 /* ==========================================================
-   END OF HOMEUP CHATBOT
+   END
    ========================================================== */
