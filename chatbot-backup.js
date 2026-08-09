@@ -3122,70 +3122,39 @@ async function startListening() {
 
     if (
         !recognition ||
-        isListening
+        isListening ||
+        shouldKeepListening
     ) {
-
         return;
-
     }
 
+    clearTimeout(speechRestartTimer);
+    clearTimeout(speechSubmitTimer);
 
-    clearTimeout(
-        speechRestartTimer
-    );
+    finalTranscript = "";
+    interimTranscript = "";
 
-
-    clearTimeout(
-        speechSubmitTimer
-    );
-
+    shouldKeepListening = true;
 
     try {
 
-        /*
-           Ask for microphone permission first.
-
-           This prevents Android from rejecting
-           recognition because permission hasn't
-           been granted yet.
-        */
-
-        await requestMicrophone();
-
-
-        finalTranscript = "";
-
-        interimTranscript = "";
-
-        shouldKeepListening =
-            true;
-
-
         recognition.start();
 
-    }
+        console.log("Starting speech recognition...");
 
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
-            "Could not start microphone:",
+            "Could not start speech recognition:",
             error
         );
 
+        shouldKeepListening = false;
+        isListening = false;
 
-        shouldKeepListening =
-            false;
-
-
-        setMicVisualState(
-            false
-        );
-
+        setMicVisualState(false);
     }
-
 }
-
 
 /* ==========================================================
    REQUEST MICROPHONE
