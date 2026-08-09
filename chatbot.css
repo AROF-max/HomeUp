@@ -442,7 +442,7 @@ body {
     position:absolute;
 
     right:15px;
-
+    padding: 5px 5px;
     width:40px;
     height:40px;
 
@@ -493,20 +493,13 @@ body {
 
 }
 
-.mic-btn:hover{
-
-    background-color: var(--green);
-    color: white;
-
-}
-
 .mic-btn.listening{
 
     color:white;
     background:#4f8ef7;
 
     box-shadow:
-        0 0 20px rgba(79,142,247,.45);
+        var(--shadow);
 
 }
 
@@ -532,9 +525,7 @@ body {
 
 }
 
-.send-btn:hover{
-
-    background:#3968b7;
+.send-btn:hover {
 
     transform:translateY(-50%) scale(1.05);
 
@@ -862,15 +853,15 @@ body {
     box-shadow: 0 4px 12px rgba(0,0,0,0.15),
         inset 0 2px 4px rgba(255,255,255,0.4);;
     border-radius: 50%;
-
+    backdrop-filter: blur(10px);
     border: none;
 
     cursor:pointer;
-    transition: background 0.5s ease;
+    
 }
 
-#menu-trigger:hover {
-  background: #cfcfcf;
+#menu-trigger svg:hover {
+  rotate: 180deg;
 }
 
 #menu-trigger svg {
@@ -880,7 +871,7 @@ body {
     width:30px;
 
     height:30px;
-    transition: color 0.8s ease;
+    transition: rotate 0.5s ease;
 }
 
 .hidden-file {
@@ -1100,21 +1091,70 @@ body {
     cursor:pointer;
 }
 
-.retry-btn{
-    margin-top:6px;
-    margin-left:8px;
+.speech-btn {
+
+    margin-top:8px;
+    margin-left:4px;
+
+    align-self:flex-start;
+
     display:flex;
     align-items:center;
     justify-content:center;
+
     background:none;
     box-shadow: var(--shadow);
     border-radius: 50px;
     padding: 5px 5px;
     border:none;
-
     cursor:pointer;
 
+    transition:
+        background-color 0.2s ease,
+        transform 0.15s ease,
+        opacity 0.2s ease;
+}
+
+
+.speech-btn:hover {
+    background-color: rgba(128, 128, 128, 0.12);
+}
+
+
+.speech-btn:active {
+    transform: scale(0.9);
+}
+
+
+.speech-btn.speaking {
+    background-color: rgba(128, 128, 128, 0.15);
+}
+
+
+.speech-icon {
+    width: 18px;
+    height: 18px;
+
+    display: block;
+}
+
+.retry-btn{
+    margin-top:8px;
+    margin-left:4px;
+
+    align-self:flex-start;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:none;
+    box-shadow: var(--shadow);
+    border-radius: 50px;
+    padding: 5px 5px;
+    border:none;
     transition:.25s;
+    cursor:pointer;
 }
 
 .copy-btn:hover{

@@ -1,8 +1,9 @@
- "use strict";
+"use strict";
 
 /* ==========================================================
    HOMEUP CHATBOT
    COMPLETE JS FILE
+   WITH CHATGPT-STYLE STOP BUTTON
    ========================================================== */
 
 
@@ -12,7 +13,6 @@
 
 const API_URL = "https://homeup-ai.onrender.com/chat";
 
-// Set false if your backend does not support multipart uploads.
 const SEND_ATTACHMENTS_TO_BACKEND = true;
 
 
@@ -27,7 +27,6 @@ let inputField = null;
 let hero = null;
 let greetingText = null;
 let voiceVisualizer = null;
-
 let scrollDownBtn = null;
 
 let attachButton = null;
@@ -47,6 +46,19 @@ let fileUpload = null;
 
 
 /* ==========================================================
+   AI GENERATION STATE
+   ========================================================== */
+
+let isSending = false;
+
+let currentAbortController = null;
+
+let activeTypingAnimation = null;
+
+let activeAIWrapper = null;
+
+
+/* ==========================================================
    APPLICATION STATE
    ========================================================== */
 
@@ -54,8 +66,6 @@ let attachments = [];
 
 let autoScroll = true;
 let scrollTimer = null;
-
-let isSending = false;
 
 
 /* ==========================================================
@@ -203,6 +213,12 @@ function initializeHomeUp() {
     initializeChatScrolling();
     initializeSpeechRecognition();
     initializeForm();
+
+    /*
+       Make sure the button starts as SEND.
+    */
+
+    setSendButtonState(false);
 }
 
 
@@ -961,19 +977,6 @@ function initializeDropdown() {
     }
 
 
-    /*
-       IMPORTANT:
-
-       We deliberately DO NOT add another click
-       listener if the HTML already contains:
-
-       onclick="toggleMenu()"
-
-       Otherwise the menu would open and immediately
-       close because it gets toggled twice.
-    */
-
-
     const inlineHandler =
         trigger.getAttribute("onclick");
 
@@ -985,7 +988,6 @@ function initializeDropdown() {
             event => {
 
                 event.preventDefault();
-
                 event.stopPropagation();
 
                 toggleMenu();
@@ -1075,16 +1077,6 @@ function toggleMenu() {
     }
 
 
-    /*
-       Supports either:
-
-       class="hidden"
-
-       or
-
-       aria-expanded
-    */
-
     const currentlyHidden =
         menu.classList.contains("hidden");
 
@@ -1143,14 +1135,6 @@ function closeDropdown() {
 
 }
 
-
-/*
-   Make toggleMenu globally available.
-
-   This is important if your HTML still contains:
-
-   onclick="toggleMenu()"
-*/
 
 window.toggleMenu =
     toggleMenu;
@@ -1265,6 +1249,251 @@ function scrollToBottom(
 
 
 /* ==========================================================
+   SEND / STOP BUTTON
+   ========================================================== */
+
+function setSendButtonState(
+    stopping
+) {
+
+    if (!form) return;
+
+
+    /*
+       Find the actual submit button.
+
+       This supports common button structures.
+    */
+
+    const sendButton =
+        form.querySelector(
+            'button[type="submit"]'
+        ) ||
+        form.querySelector(
+            ".send-btn"
+        );
+
+
+    if (!sendButton) {
+        return;
+    }
+
+
+    if (stopping) {
+
+        sendButton.classList.add(
+            "stop-active"
+        );
+
+
+        sendButton.setAttribute(
+            "aria-label",
+            "Stop generating"
+        );
+
+
+        sendButton.setAttribute(
+            "title",
+            "Stop generating"
+        );
+
+
+        sendButton.dataset.mode =
+            "stop";
+
+
+        /*
+           ChatGPT-style stop icon:
+           simple filled square.
+        */
+
+        sendButton.innerHTML = `
+            <svg
+                class="stop-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+            >
+                <rect
+                    x="6"
+                    y="6"
+                    width="12"
+                    height="12"
+                    rx="2"
+                />
+            </svg>
+        `;
+
+    } else {
+
+        sendButton.classList.remove(
+            "stop-active"
+        );
+
+
+        sendButton.setAttribute(
+            "aria-label",
+            "Send message"
+        );
+
+
+        sendButton.setAttribute(
+            "title",
+            "Send message"
+        );
+
+
+        sendButton.dataset.mode =
+            "send";
+
+      sendButton.innerHTML = `
+            <svg
+            class="send-icon"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2.2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+>
+    <path d="M12 18V6"/>
+    <path d="M7 11l5-5 5 5"/>
+</svg>`;
+
+    }
+}
+
+
+/* ==========================================================
+   STOP AI GENERATION
+   ========================================================== */
+
+function stopAIGeneration() {
+
+    if (!isSending) {
+        return;
+    }
+
+
+    console.log(
+        "HomeUp: stopping AI generation..."
+    );
+
+
+    /*
+       Stop network request.
+    */
+
+    if (currentAbortController) {
+
+        try {
+
+            currentAbortController.abort();
+
+        }
+
+        catch (error) {
+
+            console.warn(
+                "Abort error:",
+                error
+            );
+
+        }
+
+    }
+
+
+    currentAbortController =
+        null;
+
+
+    /*
+       Stop word animation.
+    */
+
+    stopTypingAnimation();
+
+
+    /*
+       Keep whatever text has already appeared.
+
+       We deliberately DO NOT remove
+       activeAIWrapper.
+    */
+
+    if (activeAIWrapper) {
+
+        activeAIWrapper.classList.add(
+            "generation-stopped"
+        );
+
+    }
+
+
+    /*
+       Reset state.
+    */
+
+    isSending =
+        false;
+
+
+    setSendButtonState(false);
+
+
+    /*
+       Remove thinking bubble if one exists.
+    */
+
+    document
+        .querySelectorAll(".thinking-row")
+        .forEach(
+            bubble => bubble.remove()
+        );
+
+
+    console.log(
+        "HomeUp: AI generation stopped."
+    );
+}
+
+
+/* ==========================================================
+   STOP TYPING ANIMATION
+   ========================================================== */
+
+function stopTypingAnimation() {
+
+    if (activeTypingAnimation) {
+
+        activeTypingAnimation.stopped =
+            true;
+
+
+        if (
+            activeTypingAnimation.timer
+        ) {
+
+            clearTimeout(
+                activeTypingAnimation.timer
+            );
+
+        }
+
+
+        activeTypingAnimation =
+            null;
+
+    }
+
+}
+
+
+/* ==========================================================
    ADD MESSAGE
    ========================================================== */
 
@@ -1344,6 +1573,10 @@ function addMessage(
 
     if (className === "ai-message") {
 
+        activeAIWrapper =
+            wrapper;
+
+
         animateWords(
             bubble,
             safeText
@@ -1364,40 +1597,37 @@ function addMessage(
 
     if (className === "ai-message") {
 
-        const actions =
-            document.createElement("div");
+    const actions =
+        document.createElement("div");
 
+    actions.className =
+        "ai-message-actions";
 
-        actions.className =
-            "ai-message-actions";
+    actions.style.display =
+        "flex";
 
+    actions.style.gap =
+        "10px";
 
-        actions.style.display =
-            "flex";
+    actions.style.marginTop =
+        "6px";
 
-        actions.style.gap =
-            "10px";
+    actions.appendChild(
+        createCopyButton(safeText)
+    );
 
-        actions.style.marginTop =
-            "6px";
+    actions.appendChild(
+        createSpeechButton(safeText)
+    );
 
+    actions.appendChild(
+        createRetryButton(wrapper)
+    );
 
-        actions.appendChild(
-            createCopyButton(safeText)
-        );
-
-
-        actions.appendChild(
-            createRetryButton(wrapper)
-        );
-
-
-        bubbleContainer.appendChild(
-            actions
-        );
-
-    }
-
+    bubbleContainer.appendChild(
+        actions
+    );
+}
 
     wrapper.appendChild(
         bubbleContainer
@@ -1616,6 +1846,305 @@ function setCopyIcon(
     }
 }
 
+/* ==========================================================
+   TEXT TO SPEECH BUTTON
+   ========================================================== */
+
+let currentlySpeakingButton = null;
+let currentlySpeakingText = "";
+
+
+function createSpeechButton(text) {
+
+    const button =
+        document.createElement("button");
+
+    button.type =
+        "button";
+
+    button.className =
+        "speech-btn";
+
+    button.setAttribute(
+        "aria-label",
+        "Read message aloud"
+    );
+
+    setSpeechIcon(
+        button,
+        false
+    );
+
+
+    button.addEventListener(
+        "click",
+        event => {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+
+            /*
+               If THIS message is currently speaking,
+               stop it.
+            */
+
+            if (
+                currentlySpeakingButton ===
+                button &&
+                window.speechSynthesis.speaking
+            ) {
+
+                stopTextToSpeech();
+
+                return;
+            }
+
+
+            /*
+               Stop anything else currently speaking.
+            */
+
+            stopTextToSpeech();
+
+
+            if (
+                !("speechSynthesis" in window)
+            ) {
+
+                console.warn(
+                    "Text-to-speech is not supported."
+                );
+
+                return;
+            }
+
+
+            const utterance =
+                new SpeechSynthesisUtterance(
+                    text
+                );
+
+
+            utterance.lang =
+                "en-US";
+
+
+            /*
+               Adjust these if you want
+               a different voice style.
+            */
+
+            utterance.rate =
+                1;
+
+            utterance.pitch =
+                1;
+
+            utterance.volume =
+                1;
+
+
+            currentlySpeakingButton =
+                button;
+
+            currentlySpeakingText =
+                text;
+
+
+            setSpeechIcon(
+                button,
+                true
+            );
+
+
+            button.classList.add(
+                "speaking"
+            );
+
+
+            button.setAttribute(
+                "aria-label",
+                "Stop reading"
+            );
+
+
+            utterance.onend =
+                () => {
+
+                    resetSpeechButton(
+                        button
+                    );
+
+                };
+
+
+            utterance.onerror =
+                error => {
+
+                    console.error(
+                        "Text-to-speech error:",
+                        error
+                    );
+
+                    resetSpeechButton(
+                        button
+                    );
+
+                };
+
+
+            window.speechSynthesis.speak(
+                utterance
+            );
+
+        }
+    );
+
+
+    return button;
+}
+
+
+/* ==========================================================
+   STOP TEXT TO SPEECH
+   ========================================================== */
+
+function stopTextToSpeech() {
+
+    if (
+        "speechSynthesis" in window
+    ) {
+
+        window.speechSynthesis.cancel();
+
+    }
+
+
+    if (currentlySpeakingButton) {
+
+        resetSpeechButton(
+            currentlySpeakingButton
+        );
+
+    }
+
+
+    currentlySpeakingButton =
+        null;
+
+    currentlySpeakingText =
+        "";
+}
+
+
+/* ==========================================================
+   RESET SPEECH BUTTON
+   ========================================================== */
+
+function resetSpeechButton(
+    button
+) {
+
+    if (!button) {
+        return;
+    }
+
+
+    button.classList.remove(
+        "speaking"
+    );
+
+
+    setSpeechIcon(
+        button,
+        false
+    );
+
+
+    button.setAttribute(
+        "aria-label",
+        "Read message aloud"
+    );
+
+
+    if (
+        currentlySpeakingButton ===
+        button
+    ) {
+
+        currentlySpeakingButton =
+            null;
+
+        currentlySpeakingText =
+            "";
+
+    }
+}
+
+
+/* ==========================================================
+   SPEECH ICON
+   ========================================================== */
+
+function setSpeechIcon(
+    button,
+    speaking
+) {
+
+    if (speaking) {
+
+        button.innerHTML = `
+            <svg
+                class="speech-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <rect
+                    x="6"
+                    y="6"
+                    width="12"
+                    height="12"
+                    rx="2"
+                />
+            </svg>
+        `;
+
+    } else {
+
+        button.innerHTML = `
+            <svg
+                class="speech-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 26 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <polygon
+                    points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"
+                />
+
+                <path
+                    d="M19 9c1.2 1.6 1.2 4.4 0 6"
+                />
+
+                <path
+                    d="M22 6.5c2.2 3.2 2.2 7.8 0 11"
+                />
+            </svg>
+        `;
+
+    }
+}
+
 
 /* ==========================================================
    RETRY
@@ -1663,7 +2192,13 @@ function createRetryButton(
         "click",
         async () => {
 
-            if (isSending) return;
+            if (isSending) {
+
+                stopAIGeneration();
+
+                return;
+
+            }
 
 
             const userMessage =
@@ -1799,6 +2334,13 @@ function animateWords(
     text
 ) {
 
+    /*
+       Stop any previous animation first.
+    */
+
+    stopTypingAnimation();
+
+
     const words =
         String(text ?? "")
             .split(/\s+/)
@@ -1809,13 +2351,42 @@ function animateWords(
         "";
 
 
+    const animation = {
+        stopped: false,
+        timer: null
+    };
+
+
+    activeTypingAnimation =
+        animation;
+
+
     let index = 0;
 
 
     function nextWord() {
 
-        if (index >= words.length) {
+        if (animation.stopped) {
+
             return;
+
+        }
+
+
+        if (index >= words.length) {
+
+            if (
+                activeTypingAnimation ===
+                animation
+            ) {
+
+                activeTypingAnimation =
+                    null;
+
+            }
+
+            return;
+
         }
 
 
@@ -1866,10 +2437,11 @@ function animateWords(
                 : 45;
 
 
-        setTimeout(
-            nextWord,
-            delay
-        );
+        animation.timer =
+            setTimeout(
+                nextWord,
+                delay
+            );
 
     }
 
@@ -1895,16 +2467,24 @@ async function sendToAI(
         !cleanMessage &&
         !files.length
     ) {
+
         return;
+
     }
 
 
     if (isSending) {
+
         return;
+
     }
 
 
-    isSending = true;
+    isSending =
+        true;
+
+
+    setSendButtonState(true);
 
 
     startConversation();
@@ -1914,17 +2494,24 @@ async function sendToAI(
         createThinkingBubble();
 
 
+    currentAbortController =
+        new AbortController();
+
+
     try {
 
         const data =
             await requestAI(
                 cleanMessage,
-                files
+                files,
+                currentAbortController.signal
             );
 
 
         if (thinking) {
+
             thinking.remove();
+
         }
 
 
@@ -1938,6 +2525,34 @@ async function sendToAI(
 
     catch (error) {
 
+        /*
+           AbortError means the user clicked STOP.
+
+           Do NOT show an error message.
+        */
+
+        if (
+            error &&
+            error.name === "AbortError"
+        ) {
+
+            console.log(
+                "AI request stopped by user."
+            );
+
+
+            if (thinking) {
+
+                thinking.remove();
+
+            }
+
+
+            return;
+
+        }
+
+
         console.error(
             "HomeUp AI error:",
             error
@@ -1945,7 +2560,9 @@ async function sendToAI(
 
 
         if (thinking) {
+
             thinking.remove();
+
         }
 
 
@@ -1959,7 +2576,21 @@ async function sendToAI(
 
     finally {
 
-        isSending = false;
+        if (
+            currentAbortController
+        ) {
+
+            currentAbortController =
+                null;
+
+        }
+
+
+        isSending =
+            false;
+
+
+        setSendButtonState(false);
 
     }
 }
@@ -1971,7 +2602,8 @@ async function sendToAI(
 
 async function requestAI(
     message,
-    files
+    files,
+    signal
 ) {
 
     if (
@@ -1979,7 +2611,10 @@ async function requestAI(
         !SEND_ATTACHMENTS_TO_BACKEND
     ) {
 
-        return await fetchJSON(message);
+        return await fetchJSON(
+            message,
+            signal
+        );
 
     }
 
@@ -2012,7 +2647,8 @@ async function requestAI(
             API_URL,
             {
                 method: "POST",
-                body: formData
+                body: formData,
+                signal: signal
             }
         );
 
@@ -2055,88 +2691,65 @@ async function requestAI(
    ========================================================== */
 
 async function fetchJSON(
-    message
+    message,
+    signal
 ) {
 
-    const controller =
-        new AbortController();
+    const response =
+        await fetch(
+            API_URL,
+            {
+                method: "POST",
 
+                headers: {
+                    "Content-Type":
+                        "application/json",
 
-    const timeout =
-        setTimeout(
-            () => {
-                controller.abort();
-            },
-            60000
+                    "Accept":
+                        "application/json"
+                },
+
+                body:
+                    JSON.stringify({
+                        message: message
+                    }),
+
+                signal:
+                    signal
+            }
         );
 
 
-    try {
+    if (!response.ok) {
 
-        const response =
-            await fetch(
-                API_URL,
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json",
-
-                        "Accept":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify({
-                            message: message
-                        }),
-
-                    signal:
-                        controller.signal
-                }
+        const errorText =
+            await safeResponseText(
+                response
             );
 
 
-        if (!response.ok) {
-
-            const errorText =
-                await safeResponseText(
-                    response
-                );
+        const error =
+            new Error(
+                `Server returned ${response.status}`
+            );
 
 
-            const error =
-                new Error(
-                    `Server returned ${response.status}`
-                );
+        error.status =
+            response.status;
 
 
-            error.status =
-                response.status;
+        error.serverMessage =
+            errorText;
 
 
-            error.serverMessage =
-                errorText;
-
-
-            throw error;
-
-        }
-
-
-        return await parseResponse(
-            response
-        );
+        throw error;
 
     }
 
 
-    finally {
-
-        clearTimeout(timeout);
-
-    }
+    return await parseResponse(
+        response
+    );
 }
 
 
@@ -2289,10 +2902,7 @@ function getFriendlyError(
         error.name === "AbortError"
     ) {
 
-        return (
-            "The request took too long. " +
-            "Please try again."
-        );
+        return "";
 
     }
 
@@ -2370,8 +2980,19 @@ function initializeForm() {
             event.preventDefault();
 
 
+            /*
+               IMPORTANT:
+
+               If AI is currently generating,
+               the same Send button becomes STOP.
+            */
+
             if (isSending) {
+
+                stopAIGeneration();
+
                 return;
+
             }
 
 
@@ -2394,10 +3015,6 @@ function initializeForm() {
 
             }
 
-
-            /*
-               Stop voice WITHOUT clearing the text.
-            */
 
             if (isListening) {
 
@@ -2464,15 +3081,25 @@ async function sendMessageWithFiles(
 ) {
 
     if (isSending) {
+
         return;
+
     }
 
 
-    isSending = true;
+    isSending =
+        true;
+
+
+    setSendButtonState(true);
 
 
     const thinking =
         createThinkingBubble();
+
+
+    currentAbortController =
+        new AbortController();
 
 
     try {
@@ -2480,12 +3107,15 @@ async function sendMessageWithFiles(
         const data =
             await requestAI(
                 message,
-                files
+                files,
+                currentAbortController.signal
             );
 
 
         if (thinking) {
+
             thinking.remove();
+
         }
 
 
@@ -2549,6 +3179,28 @@ async function sendMessageWithFiles(
 
     catch (error) {
 
+        if (
+            error &&
+            error.name === "AbortError"
+        ) {
+
+            console.log(
+                "File request stopped by user."
+            );
+
+
+            if (thinking) {
+
+                thinking.remove();
+
+            }
+
+
+            return;
+
+        }
+
+
         console.error(
             "Send error:",
             error
@@ -2556,7 +3208,9 @@ async function sendMessageWithFiles(
 
 
         if (thinking) {
+
             thinking.remove();
+
         }
 
 
@@ -2598,7 +3252,15 @@ async function sendMessageWithFiles(
 
     finally {
 
-        isSending = false;
+        currentAbortController =
+            null;
+
+
+        isSending =
+            false;
+
+
+        setSendButtonState(false);
 
     }
 
@@ -2606,14 +3268,7 @@ async function sendMessageWithFiles(
 
 
 /* ==========================================================
-   ==========================================================
    VOICE RECOGNITION
-   ==========================================================
-   ========================================================== */
-
-
-/* ==========================================================
-   INITIALIZE VOICE
    ========================================================== */
 
 function initializeSpeechRecognition() {
@@ -2672,16 +3327,6 @@ function initializeSpeechRecognition() {
         "en-US";
 
 
-    /*
-       IMPORTANT:
-
-       We intentionally use non-continuous recognition.
-       Android Chrome is much more reliable this way.
-
-       When it ends while the user is still listening,
-       we start it again automatically.
-    */
-
     recognition.continuous =
         false;
 
@@ -2709,10 +3354,6 @@ function initializeSpeechRecognition() {
     recognition.onend =
         handleSpeechEnd;
 
-
-    /*
-       ONE click listener only.
-    */
 
     micButton.addEventListener(
         "click",
@@ -2745,14 +3386,11 @@ async function handleMicButton(
 
 
     if (!speechSupported) {
+
         return;
+
     }
 
-
-    /*
-       If currently listening,
-       clicking again means STOP.
-    */
 
     if (isListening) {
 
@@ -2762,10 +3400,6 @@ async function handleMicButton(
 
     }
 
-
-    /*
-       Otherwise START.
-    */
 
     await startListening();
 }
@@ -2778,12 +3412,16 @@ async function handleMicButton(
 async function startListening() {
 
     if (!recognition) {
+
         return;
+
     }
 
 
     if (isListening) {
+
         return;
+
     }
 
 
@@ -2796,13 +3434,6 @@ async function startListening() {
         false;
 
 
-    /*
-       Start a fresh recognition session.
-
-       DO NOT erase existing typed text.
-       This allows voice to continue after typed text.
-    */
-
     finalTranscript =
         inputField
             ? inputField.value.trim()
@@ -2814,11 +3445,6 @@ async function startListening() {
 
 
     try {
-
-        /*
-           Request microphone permission.
-           This is especially important on Android.
-        */
 
         await requestMicrophone();
 
@@ -2892,12 +3518,6 @@ async function requestMicrophone() {
         );
 
 
-    /*
-       This stream is ONLY for permission.
-
-       The visualizer creates its own stream.
-    */
-
     stream
         .getTracks()
         .forEach(
@@ -2939,10 +3559,6 @@ function handleSpeechStart() {
 
     startVoiceVisualizer();
 
-
-    console.log(
-        "HomeUp speech started"
-    );
 }
 
 
@@ -2955,7 +3571,9 @@ function handleSpeechResult(
 ) {
 
     if (!inputField) {
+
         return;
+
     }
 
 
@@ -2996,10 +3614,6 @@ function handleSpeechResult(
     }
 
 
-    /*
-       Add finalized words permanently.
-    */
-
     if (sessionFinal) {
 
         finalTranscript =
@@ -3015,12 +3629,6 @@ function handleSpeechResult(
     interimTranscript =
         sessionInterim;
 
-
-    /*
-       THIS is what gets displayed.
-
-       Final speech + current interim speech.
-    */
 
     inputField.value =
         (
@@ -3047,6 +3655,7 @@ function handleSpeechResult(
     }
 
     catch {}
+
 }
 
 
@@ -3064,10 +3673,6 @@ function handleSpeechError(
     );
 
 
-    /*
-       Permission denied.
-    */
-
     if (
         event.error === "not-allowed" ||
         event.error === "service-not-allowed"
@@ -3083,18 +3688,12 @@ function handleSpeechError(
 
         setMicVisualState(false);
 
-
         stopVoiceVisualizer();
-
 
         return;
 
     }
 
-
-    /*
-       Microphone unavailable.
-    */
 
     if (
         event.error === "audio-capture"
@@ -3110,36 +3709,12 @@ function handleSpeechError(
 
         setMicVisualState(false);
 
-
         stopVoiceVisualizer();
 
-
         return;
 
     }
 
-
-    /*
-       "no-speech" is not fatal.
-
-       If the user still has the mic active,
-       the recognition session will restart.
-    */
-
-    if (
-        event.error === "no-speech"
-    ) {
-
-        return;
-
-    }
-
-
-    /*
-       Network errors can happen on Android.
-
-       Keep the transcript.
-    */
 
     if (
         event.error === "network"
@@ -3150,6 +3725,7 @@ function handleSpeechError(
         );
 
     }
+
 }
 
 
@@ -3159,17 +3735,11 @@ function handleSpeechError(
 
 function handleSpeechEnd() {
 
-    console.log(
-        "Speech recognition ended"
-    );
-
-
     isListening =
         false;
 
 
     setMicVisualState(false);
-
 
     stopVoiceVisualizer();
 
@@ -3191,15 +3761,6 @@ function handleSpeechEnd() {
 
     }
 
-
-    /*
-       If the user DID NOT press the microphone
-       to stop, automatically restart.
-
-       This is what makes Android Chrome's
-       non-continuous recognition behave like
-       continuous recognition.
-    */
 
     if (!manuallyStopped) {
 
@@ -3231,12 +3792,6 @@ function handleSpeechEnd() {
     }
 
 
-    /*
-       User intentionally stopped.
-
-       Only finalized speech is used.
-    */
-
     interimTranscript =
         "";
 
@@ -3248,18 +3803,6 @@ function handleSpeechEnd() {
 
     }
 
-
-    /*
-       Do NOT automatically submit here.
-
-       The user can now look at/edit the
-       transcription before pressing Send.
-    */
-
-    console.log(
-        "Final voice text:",
-        finalTranscript
-    );
 }
 
 
@@ -3288,12 +3831,6 @@ async function startRecognitionAgain() {
 
 
     catch (error) {
-
-        /*
-           InvalidStateError can happen if
-           Chrome thinks recognition is already
-           starting. Wait and try once more.
-        */
 
         console.warn(
             "Speech restart failed:",
@@ -3359,10 +3896,6 @@ function stopListening(
 
     if (keepText && inputField) {
 
-        /*
-           Preserve whatever is currently visible.
-        */
-
         const currentText =
             inputField.value.trim();
 
@@ -3407,7 +3940,6 @@ function stopListening(
 
     setMicVisualState(false);
 
-
     stopVoiceVisualizer();
 
 
@@ -3436,10 +3968,6 @@ function stopListening(
 
     }
 
-
-    console.log(
-        "Voice manually stopped"
-    );
 }
 
 
@@ -3452,7 +3980,9 @@ function setMicVisualState(
 ) {
 
     if (!micButton) {
+
         return;
+
     }
 
 
@@ -3477,16 +4007,16 @@ function setMicVisualState(
 async function startVoiceVisualizer() {
 
     if (!voiceVisualizer) {
+
         return;
+
     }
 
 
-    /*
-       Don't create multiple streams.
-    */
-
     if (microphoneStream) {
+
         return;
+
     }
 
 
@@ -3622,8 +4152,7 @@ async function startVoiceVisualizer() {
             );
 
 
-            let sum =
-                0;
+            let sum = 0;
 
 
             for (
@@ -3806,14 +4335,10 @@ async function startVoiceVisualizer() {
         );
 
 
-        /*
-           Visualizer failure does NOT
-           stop speech recognition.
-        */
-
         stopVoiceVisualizer();
 
     }
+
 }
 
 
@@ -3899,6 +4424,7 @@ function stopVoiceVisualizer() {
             );
 
     }
+
 }
 
 
@@ -3922,6 +4448,22 @@ window.addEventListener(
         clearTimeout(
             placeholderTimer
         );
+
+
+        stopTypingAnimation();
+
+
+        if (currentAbortController) {
+
+            try {
+
+                currentAbortController.abort();
+
+            }
+
+            catch {}
+
+        }
 
 
         stopVoiceVisualizer();
