@@ -1848,7 +1848,7 @@ body {
     --volume-scale: 0;
 }
 
-body::before {
+body::after {
     content: "";
     position: fixed;
     inset: 0;
