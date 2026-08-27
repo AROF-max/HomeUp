@@ -3950,6 +3950,7 @@ let isVoiceListening = false;
 
 let voiceText = "";
 
+let voiceSessionActive = false;
 
 function initializeSpeechRecognition() {
 
@@ -4013,34 +4014,51 @@ function initializeSpeechRecognition() {
 
     recognition.onstart = () => {
 
-        isVoiceListening =
-            true;
+    isVoiceListening = true;
 
 
-        if (micButton) {
+    if (micButton) {
 
-            micButton.classList.add(
-                "listening"
-            );
-
-            micButton.setAttribute(
-                "aria-label",
-                "Stop voice input"
-            );
-
-            micButton.setAttribute(
-                "title",
-                "Stop voice input"
-            );
-
-        }
-
-
-        console.log(
-            "HomeUp: Voice listening started."
+        micButton.classList.add(
+            "listening"
         );
 
-    };
+        micButton.setAttribute(
+            "aria-label",
+            "Stop voice input"
+        );
+
+        micButton.setAttribute(
+            "title",
+            "Stop voice input"
+        );
+
+        micButton.innerHTML = `
+            <svg
+                class="stop-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+            >
+                <rect
+                    x="6"
+                    y="6"
+                    width="12"
+                    height="12"
+                    rx="2"
+                />
+            </svg>
+        `;
+
+    }
+
+
+    console.log(
+        "HomeUp: Voice listening started."
+    );
+
+};
 
 
     // ======================================================
@@ -4131,36 +4149,90 @@ if (voiceText.length > 0) {
 
     recognition.onend = () => {
 
-        isVoiceListening =
-            false;
+    isVoiceListening = false;
 
 
-        if (micButton) {
+    /*
+       If the user has NOT pressed Stop,
+       keep the voice session alive.
 
-            micButton.classList.remove(
-                "listening"
-            );
+       Speech Recognition itself may end after
+       a pause, so we start it again.
+    */
 
-
-            micButton.setAttribute(
-                "aria-label",
-                "Voice input"
-            );
-
-
-            micButton.setAttribute(
-                "title",
-                "Voice input"
-            );
-
-        }
-
+    if (voiceSessionActive) {
 
         console.log(
-            "HomeUp: Voice listening stopped."
+            "HomeUp: Recognition ended naturally. Restarting..."
         );
 
-    };
+
+        setTimeout(() => {
+
+            if (!voiceSessionActive) {
+                return;
+            }
+
+
+            try {
+
+                recognition.start();
+
+            }
+
+            catch (error) {
+
+                console.warn(
+                    "HomeUp: Voice restart failed.",
+                    error
+                );
+
+            }
+
+        }, 150);
+
+        
+        return;
+
+    }
+
+
+    /*
+       User deliberately pressed Stop.
+    */
+
+    if (micButton) {
+
+        micButton.classList.remove(
+            "listening"
+        );
+
+        micButton.setAttribute(
+            "aria-label",
+            "Voice input"
+        );
+
+        micButton.setAttribute(
+            "title",
+            "Voice input"
+        );
+
+        /*
+           Restore the microphone icon.
+
+           IMPORTANT:
+           Keep your existing microphone SVG here
+           if your button has a custom icon.
+        */
+
+    }
+
+
+    console.log(
+        "HomeUp: Voice listening stopped."
+    );
+
+};
 
 
     // ======================================================
@@ -4239,11 +4311,10 @@ function handleVoiceButton() {
 
 
     /*
-       If we're listening, the SAME button
-       becomes the Stop button.
+       SECOND TAP = STOP
     */
 
-    if (isVoiceListening) {
+    if (voiceSessionActive) {
 
         stopVoiceInput();
 
@@ -4252,10 +4323,13 @@ function handleVoiceButton() {
     }
 
 
+    /*
+       FIRST TAP = START
+    */
+
     startVoiceInput();
 
 }
-
 
 // ==========================================================
 // START VOICE
@@ -4265,7 +4339,7 @@ function startVoiceInput() {
 
     if (
         !recognition ||
-        isVoiceListening
+        voiceSessionActive
     ) {
 
         return;
@@ -4273,12 +4347,9 @@ function startVoiceInput() {
     }
 
 
-    /*
-       Start a fresh voice message.
-    */
+    voiceText = "";
 
-    voiceText =
-        "";
+    voiceSessionActive = true;
 
 
     try {
@@ -4289,6 +4360,8 @@ function startVoiceInput() {
 
     catch (error) {
 
+        voiceSessionActive = false;
+
         console.warn(
             "HomeUp: Could not start speech recognition.",
             error
@@ -4298,7 +4371,6 @@ function startVoiceInput() {
 
 }
 
-
 // ==========================================================
 // STOP VOICE
 // ==========================================================
@@ -4306,15 +4378,22 @@ function startVoiceInput() {
 function stopVoiceInput() {
 
     if (!recognition) {
-
         return;
-
     }
 
 
     console.log(
-        "HomeUp: Stopping voice input."
+        "HomeUp: User stopped voice input."
     );
+
+
+    /*
+       This flag is the important part.
+
+       onend will see false and will NOT restart.
+    */
+
+    voiceSessionActive = false;
 
 
     try {
