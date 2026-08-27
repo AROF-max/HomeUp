@@ -4254,26 +4254,19 @@ function startNewVoiceInput() {
    PROCESS VOICE RESULTS
    ========================================================== */
 
-function handleNewVoiceResult(
-    event
-) {
+function handleNewVoiceResult(event) {
 
     if (!inputField) {
-
         return;
-
     }
 
 
-    let sessionFinal =
-        "";
-
-    let sessionInterim =
-        "";
+    let finalParts = [];
+    let interimParts = [];
 
 
     for (
-        let i = event.resultIndex;
+        let i = 0;
         i < event.results.length;
         i++
     ) {
@@ -4281,13 +4274,11 @@ function handleNewVoiceResult(
         const result =
             event.results[i];
 
-
-        if (!result ||
+        if (
+            !result ||
             !result[0]
         ) {
-
             continue;
-
         }
 
 
@@ -4298,72 +4289,47 @@ function handleNewVoiceResult(
 
 
         if (!text) {
-
             continue;
-
         }
 
 
         if (result.isFinal) {
 
-            sessionFinal +=
-                text + " ";
+            finalParts.push(text);
 
         }
 
         else {
 
-            sessionInterim +=
-                text + " ";
+            interimParts.push(text);
 
         }
 
     }
 
 
-    sessionFinal =
-        sessionFinal.trim();
-
-
-    sessionInterim =
-        sessionInterim.trim();
-
-
     /*
-       Add only NEW final speech to
-       the existing voice transcript.
+       Chrome gives us the complete collection
+       of results.
+
+       Rebuild the transcript from that collection
+       instead of appending the same results again.
     */
 
-    if (sessionFinal) {
-
-        if (
-            voiceFinalText &&
-            !voiceFinalText.endsWith(" ")
-        ) {
-
-            voiceFinalText +=
-                " ";
-
-        }
+    const finalText =
+        finalParts.join(" ").trim();
 
 
-        voiceFinalText +=
-            sessionFinal;
+    const interimText =
+        interimParts.join(" ").trim();
 
-    }
-
-
-    /*
-       Show final + current interim text.
-    */
 
     const displayText =
         (
-            voiceFinalText +
+            finalText +
             (
-                sessionInterim
-                    ? " " +
-                      sessionInterim
+                interimText
+                    ? " " + interimText
                     : ""
             )
         ).trim();
@@ -4388,7 +4354,6 @@ function handleNewVoiceResult(
     catch {}
 
 }
-
 
 /* ==========================================================
    STOP VOICE INPUT
