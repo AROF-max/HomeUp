@@ -3996,7 +3996,6 @@ let isVoiceListening = false;
 
 let voiceText = "";
 
-
 function initializeSpeechRecognition() {
 
     if (
@@ -4058,6 +4057,8 @@ function initializeSpeechRecognition() {
     // ======================================================
 
     recognition.onstart = () => {
+
+        recognition.onstart = () => {
 
         isVoiceListening =
             true;
