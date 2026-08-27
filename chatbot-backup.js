@@ -352,6 +352,34 @@ function initializeHomeUp() {
 
 initializeForm();
 
+  console.log(
+    "SEND TEST:",
+    form,
+    form?.querySelector(".send-btn")
+);
+
+form?.addEventListener("submit", () => {
+    console.log("🔥 SEND CLICK REACHED FORM");
+});
+  
+  const sendButton =
+    form?.querySelector(".send-btn");
+
+if (sendButton) {
+
+    sendButton.addEventListener(
+        "click",
+        () => {
+
+            console.log(
+                "SEND BUTTON CLICKED"
+            );
+
+        }
+    );
+
+}
+
     /*
        Make sure the button starts as SEND.
     */
@@ -1416,6 +1444,7 @@ function setSendButtonState(
         return;
     }
 
+    sendButton.disabled = false;
 
     if (stopping) {
 
@@ -3173,6 +3202,11 @@ function initializeForm() {
 
             event.preventDefault();
 
+            console.log(
+    "SEND FORM:",
+    "isSending =", isSending,
+    "message =", inputField?.value
+);
 
             /*
                IMPORTANT:
@@ -3209,13 +3243,9 @@ function initializeForm() {
 
             }
 
-
-            if (isListening) {
-
-                stopListening(false);
-
-            }
-
+            console.log(
+    "SEND FLOW: passed message check"
+);
 
             startConversation();
 
@@ -3253,6 +3283,9 @@ function initializeForm() {
 
             }
 
+            console.log(
+    "SEND FLOW: calling sendMessageWithFiles"
+);
 
             await sendMessageWithFiles(
                 message,
@@ -4010,7 +4043,7 @@ function initializeSpeechRecognition() {
     */
 
     recognition.continuous =
-        false;
+        true;
 
     recognition.interimResults =
         false;
