@@ -3950,7 +3950,10 @@ let voiceListening = false;
 let voiceStopping = false;
 
 let voiceFinalText = "";
+
 let voiceRestartTimer = null;
+
+let voiceResultSlots = [];
 
 
 /* ==========================================================
@@ -4231,6 +4234,7 @@ function startNewVoiceInput() {
 
     voiceFinalText = "";
 
+    voiceResultSlots = [];
 
     try {
 
@@ -4261,18 +4265,26 @@ function handleNewVoiceResult(event) {
     }
 
 
-    let finalParts = [];
-    let interimParts = [];
+    /*
+       Chrome gives every recognition result
+       a resultIndex.
 
+       The same result can be updated several
+       times while the person is speaking.
+
+       We therefore REPLACE the result at its
+       index instead of appending it again.
+    */
 
     for (
-        let i = 0;
+        let i = event.resultIndex;
         i < event.results.length;
         i++
     ) {
 
         const result =
             event.results[i];
+
 
         if (
             !result ||
@@ -4282,61 +4294,66 @@ function handleNewVoiceResult(event) {
         }
 
 
-        const text =
-            result[0]
-                .transcript
-                .trim();
+        voiceResultSlots[i] = {
 
+            text:
+                result[0]
+                    .transcript
+                    .trim(),
 
-        if (!text) {
-            continue;
-        }
+            final:
+                result.isFinal
 
-
-        if (result.isFinal) {
-
-            finalParts.push(text);
-
-        }
-
-        else {
-
-            interimParts.push(text);
-
-        }
+        };
 
     }
 
 
     /*
-       Chrome gives us the complete collection
-       of results.
-
-       Rebuild the transcript from that collection
-       instead of appending the same results again.
+       Build the complete current transcript
+       from the result slots.
     */
 
-    const finalText =
-        finalParts.join(" ").trim();
+    const parts = [];
 
 
-    const interimText =
-        interimParts.join(" ").trim();
+    for (
+        let i = 0;
+        i < voiceResultSlots.length;
+        i++
+    ) {
+
+        const slot =
+            voiceResultSlots[i];
 
 
-    const displayText =
-        (
-            finalText +
-            (
-                interimText
-                    ? " " + interimText
-                    : ""
+        if (
+            !slot ||
+            !slot.text
+        ) {
+            continue;
+        }
+
+
+        parts.push(
+            slot.text
+        );
+
+    }
+
+
+    const transcript =
+        parts
+            .join(" ")
+            .replace(
+                /\s+/g,
+                " "
             )
-        ).trim();
+            .trim();
 
 
     inputField.value =
-        displayText;
+        transcript;
 
 
     inputField.focus();
