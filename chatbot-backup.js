@@ -4084,6 +4084,15 @@ function initializeSpeechRecognition() {
         voiceText =
             transcript;
 
+        // Capitalize the first letter only.
+// Do not modify the rest of the transcription.
+if (voiceText.length > 0) {
+
+    voiceText =
+        voiceText.charAt(0).toUpperCase() +
+        voiceText.slice(1);
+
+}
 
         if (inputField) {
 
