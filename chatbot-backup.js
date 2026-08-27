@@ -4113,39 +4113,28 @@ function initializeSpeechRecognition() {
 
     micButton.onclick = () => {
 
-        /*
-           If currently listening,
-           this button is now STOP.
-        */
+    if (isListening) {
 
-        if (isListening) {
+        stopListening(false);
 
-            stopListening(false);
+        return;
 
-            return;
+    }
 
-        }
+    try {
 
+        recognition.start();
 
-        /*
-           Start listening.
-        */
+    } catch (error) {
 
-        try {
+        console.error(
+            "HomeUp Speech Start Error:",
+            error
+        );
 
-            recognition.start();
+    }
 
-        } catch (error) {
-
-            console.error(
-                "HomeUp Speech Start Error:",
-                error
-            );
-
-        }
-
-    };
-
+};
 
     /*
        ======================================================
