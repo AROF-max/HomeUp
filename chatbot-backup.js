@@ -4032,7 +4032,7 @@ function initializeSpeechRecognition() {
 
 
     recognition.continuous =
-        false;
+        true;
 
 
     recognition.interimResults =
@@ -4439,54 +4439,109 @@ function handleSpeechError(
 
 function handleSpeechEnd() {
 
-    isListening =
-        false;
+    /*
+       If the user pressed STOP,
+       stay stopped.
 
-    setMicVisualState(false);
+       The transcript remains in
+       the input for editing/sending.
+    */
 
-    stopVoiceVisualizer();
+    if (manuallyStopped) {
 
+        isListening =
+            false;
 
-    if (voiceVisualizer) {
-
-        voiceVisualizer.classList.remove(
-            "active"
+        setMicVisualState(
+            false
         );
 
-    }
+        stopVoiceVisualizer();
 
 
-    if (greetingText) {
+        if (voiceVisualizer) {
 
-        greetingText.classList.remove(
-            "voice-hidden"
-        );
+            voiceVisualizer.classList.remove(
+                "active"
+            );
 
+        }
+
+
+        if (greetingText) {
+
+            greetingText.classList.remove(
+                "voice-hidden"
+            );
+
+        }
+
+
+        interimTranscript =
+            "";
+
+        if (inputField) {
+
+            inputField.value =
+                finalTranscript.trim();
+
+        }
+
+        return;
     }
 
 
     /*
-       IMPORTANT:
+       The browser ended the recognition
+       session by itself.
 
-       Do NOT restart speech recognition here.
+       DO NOT stop the HomeUp voice mode.
 
-       When speech ends, the text stays
-       inside the input so the user can
-       edit it or press Send.
+       Start recognition again so the user
+       can continue speaking.
     */
 
-    interimTranscript =
-        "";
+    isListening =
+        false;
 
-    if (inputField) {
 
-        inputField.value =
-            finalTranscript.trim();
+    clearTimeout(
+        speechRestartTimer
+    );
 
-    }
+
+    speechRestartTimer =
+        setTimeout(
+            () => {
+
+                if (
+                    !manuallyStopped &&
+                    !isListening &&
+                    recognition
+                ) {
+
+                    try {
+
+                        recognition.start();
+
+                    }
+
+                    catch (error) {
+
+                        console.warn(
+                            "Speech recognition restart failed:",
+                            error
+                        );
+
+                    }
+
+                }
+
+            },
+            100
+        );
 
 }
-
 
 /* ==========================================================
    RESTART RECOGNITION
