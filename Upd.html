@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomeUp - Home</title>
+    <link rel="stylesheet" href="Upd1.css">
+</head>
+<body>
+    <nav id="large-nav">
+    <ul>
+      <li><a href="Upd.html" class="nav-btn">Home</a></li>
+      <li><a href="Contact.html" class="nav-btn">Contact Us</a></li>
+    </ul>
+  </nav>
+  <div id="progress"></div>
+  <div class="hero-section">
+  <video id="sideVid" autoplay muted loop playsinline src="Side-Video.mp4"></video>
+  <div class="hero-content">
+  <div class="head-txt">
+    <h1 class="word1">LIVING</h1>
+    <h1 class="word2">REDEFINED</h1>
+  </div>
+  <br>
+  <p class="txt"><span>Redefine your life with HomeUp. Whether you're a bachelor or a parent, HomeUp can help you.</span><span>Forget about writing down reminders about bills or exams on your calendar, just tell HomeUp</span>
+  <span>about your necessary tasks and it will remind you about them a day or two in advance.</span>
+  <span>Autofill forms, talk to an AI chatbot, and communicate with your family members, 
+  HomeUp </span><span>has many ways to make a person's life easier.</span></p>
+  </div>
+  </div>
+    <!-- Header bar that stretches completely across the top -->
+    <header class="header">
+        <div class="menu-container">
+            <button id="menu-trigger" type="button" onclick="toggleMenu()" aria-haspopup="true" aria-expanded="false">
+                <img src="burger-bar.png" alt="Open Menu">
+            </button>
+            <nav id="dropdown-menu" class="hidden">
+    <ul>
+        <li>
+            <a href="Upd.html" class="dropdown-item" role="menuitem">
+                <!-- Home Icon -->
+                <svg class="item-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+                <span>Home</span>
+            </a>
+        </li>
+        <li>
+            <a href="HomeUp - Contact.html" class="dropdown-item" role="menuitem">
+                <!-- Contact (Mail) Icon -->
+                <svg class="item-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="20" height="16" x="2" y="4" rx="2"/>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                </svg>
+                <span>Contact Us</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+         
+        </div>
+
+        <!-- Button groupings -->
+        <div class="auth-buttons">
+            <button class="Log-In" type="button" onclick="window.location.href='LogIn.html';">Log In</button>
+            <button class="Sign-Up" type="button" onclick="window.location.href='SignUp.html';">Sign Up</button>
+        </div>
+    </header>
+    <!-- This matches your gradient background requirement safely without blocking clicks -->
+    <div class="line-breaker"></div>
+    <div class="carousel">
+      <div class="group">
+        <div class="card-1"></div>
+        <div class="card-2"></div>
+        <div class="card-3"></div>
+        <div class="card-4"></div>
+      </div>
+      </div>
+    <script src="Upd.js"></script>
+</body>
+</html>

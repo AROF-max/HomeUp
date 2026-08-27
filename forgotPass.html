@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recover your password</title>
+  <link rel="stylesheet" href="forgotPass.css">
+</head>
+
+<body>
+  <video id="bgVid" autoplay muted loop playsinline src="Background.mp4"></video>
+  <div class="login-page">
+
+    <div class="login-card">
+      <div id="logos">
+        <img class="logo" src="HomeUp Logo.png" alt="HomeUp Logo">
+        <img class="log2" src="HomeUp Name.png" alr="HomeUp Name">
+      </div>
+      <button class="back-btn" onclick="history.back()">ᐊ</button>
+      <br>
+        <h2>Recover Your Password</h2>
+        <br>
+        <pre class="desc">Enter an email that is used for your HomeUp account. We will then send 
+                                              you your credentials.</pre>
+        
+        
+<br>        
+<br>
+      <form class="login-form">
+
+        <div class="input-group">
+          <label>Email:</label>
+          <input type="text" id="username" placeholder="Enter your email" required>
+        </div>
+<br>
+<br>
+        <button class="login-button" type="button" onclick="login()">
+          Submit
+        </button>
+
+      </form>
+
+      <div class="footer">
+        <p><b>HomeUp</b></p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <script src="HomeUp.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,5713 @@
+/* ==========================================================
+   RESET
+========================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+/* ==========================================================
+   ROOT VARIABLES
+========================================================== */
+
+:root {
+    --blue: #4f8ef7;
+    --dark-blue: #3968b7;
+
+    --green: #7ed957;
+    --dark-green: #3ea53d;
+
+    --bg: #f3f4f6;
+    --text: #333;
+
+    --light-border: #e5e7eb;
+    --lighter-border: #eef0f2;
+
+    --shadow:
+        0 4px 12px rgba(0, 0, 0, 0.15),
+        inset 0 2px 4px rgba(255, 255, 255, 0.4);
+}
+
+
+/* ==========================================================
+   PAGE
+========================================================== */
+
+html,
+body {
+    width: 100%;
+    height: 100vh;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    background: var(--bg);
+
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: row;
+
+    color: var(--text);
+}
+
+
+/* ==========================================================
+   ANIMATIONS
+========================================================== */
+
+@property --angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+}
+
+
+@keyframes spin {
+
+    from {
+        --angle: 0deg;
+    }
+
+    to {
+        --angle: 360deg;
+    }
+
+}
+
+
+@keyframes moveDown {
+
+    from {
+        opacity: 0;
+        transform: translateY(-40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+@keyframes colorChange {
+
+    0%,
+    100% {
+        color: var(--green);
+    }
+
+    50% {
+        color: var(--blue);
+    }
+
+}
+
+
+/* ==========================================================
+   SIDEBAR
+========================================================== */
+
+.sidebar-rec {
+    width: 120px;
+    height: 100vh;
+
+    flex-shrink: 0;
+
+    z-index: 1;
+
+    box-shadow:
+        0 2px 10px rgba(0, 0, 0, 0.1);
+
+    animation:
+        moveDown
+        1s
+        ease-out
+        forwards;
+}
+
+
+.side {
+    width: 100%;
+    height: 100%;
+
+    background: #ffffff;
+
+    border-right:
+        1px solid #ececec;
+
+    padding:
+        20px 14px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+
+#navi {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    font-weight: bold;
+}
+
+
+.nav-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.nav-bottom {
+    margin-top: auto;
+
+    padding-top: 20px;
+}
+
+
+/* ==========================================================
+   PROFILE
+========================================================== */
+
+.profile {
+    width: 54px;
+    height: 54px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    border:
+        2px solid #e5e7eb;
+
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease;
+}
+
+
+.profile:hover {
+    border-color: var(--blue);
+
+    transform:
+        scale(1.05);
+}
+
+
+/* ==========================================================
+   SIDEBAR LINKS
+========================================================== */
+
+#navi a {
+    width: 70px;
+    height: 70px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 18px;
+
+    text-decoration: none;
+
+    color: #374151;
+
+    background: transparent;
+
+    opacity: 0.7;
+
+    transition:
+        opacity 0.25s ease,
+        background 0.25s ease,
+        color 0.25s ease,
+        border 0.25s ease;
+}
+
+
+#navi a.active,
+#navi a:hover {
+    opacity: 1;
+
+    color: var(--blue);
+
+    border:
+        3px solid transparent;
+
+    background:
+        linear-gradient(#ffffff, #ffffff)
+        padding-box,
+
+        conic-gradient(
+            from var(--angle),
+            transparent 40%,
+            var(--green),
+            var(--blue)
+        )
+        border-box;
+
+    animation:
+        spin
+        3s
+        linear
+        infinite;
+}
+
+
+#navi svg {
+    width: 28px;
+    height: 28px;
+
+    margin-bottom: 8px;
+}
+
+
+#navi span {
+    font-size: 14px;
+
+    text-align: center;
+
+    font-weight: 500;
+}
+
+
+/* ==========================================================
+   MOBILE MENU CONTAINER
+========================================================== */
+
+.menu-container {
+    display: none;
+
+    position: absolute;
+
+    top: 1em;
+    left: 20px;
+
+    z-index: 1000;
+}
+
+
+/* ==========================================================
+   MOBILE MENU TRIGGER
+========================================================== */
+
+#menu-trigger {
+    padding:
+        6.5px 7.5px;
+
+    background: transparent;
+
+    border: none;
+
+    border-radius: 50%;
+
+    box-shadow: var(--shadow);
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    cursor: pointer;
+
+    color: #374151;
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+#menu-trigger:hover {
+    color: var(--blue);
+
+    transform:
+        scale(1.05);
+}
+
+
+#menu-trigger svg {
+    width: 30px;
+    height: 30px;
+
+    display: block;
+}
+
+
+/* ==========================================================
+   MOBILE DROPDOWN
+========================================================== */
+
+#dropdown-menu {
+    position: absolute;
+
+    top: 45px;
+    left: 0;
+
+    min-width: 200px;
+
+    background:
+        rgba(255, 255, 255, 0.75);
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    border:
+        1px solid rgba(255, 255, 255, 0.4);
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.15);
+
+    overflow: hidden;
+
+    border-radius: 14px;
+
+    transform:
+        translateY(-10px)
+        scale(0.97);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transition:
+        transform 0.25s ease,
+        opacity 0.25s ease,
+        visibility 0.25s ease;
+}
+
+
+#dropdown-menu:not(.hidden) {
+    transform:
+        translateY(0)
+        scale(1);
+
+    opacity: 1;
+
+    visibility: visible;
+
+    pointer-events: auto;
+
+    z-index: 999;
+}
+
+
+#dropdown-menu ul {
+    list-style: none;
+
+    margin: 0;
+    padding: 6px;
+}
+
+
+/* ==========================================================
+   MOBILE DROPDOWN ITEMS
+========================================================== */
+
+.dropdown-item {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding:
+        12px 16px;
+
+    border-radius: 12px;
+
+    text-decoration: none;
+
+    color: #374151;
+
+    background: transparent;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.dropdown-item svg {
+    width: 24px;
+    height: 24px;
+
+    flex-shrink: 0;
+
+    color: currentColor;
+}
+
+
+.dropdown-item:hover {
+    background:
+        rgba(79, 142, 247, 0.08);
+
+    color: var(--blue);
+
+    transform:
+        translateX(2px);
+}
+
+
+/* ==========================================================
+   MOBILE ACTIVE TAB
+========================================================== */
+
+/*
+   IMPORTANT:
+   JavaScript should add .active to the current page.
+*/
+
+.dropdown-item.active {
+    color: var(--blue);
+
+    background:
+        rgba(79, 142, 247, 0.12);
+
+    font-weight: 700;
+}
+
+
+.dropdown-item.active svg {
+    color: var(--blue);
+}
+
+
+.dropdown-item.active:hover {
+    background:
+        rgba(79, 142, 247, 0.16);
+
+    color: var(--dark-blue);
+}
+
+
+
+
+
+
+
+/* ==========================================================
+   CALENDAR VIEW MENU
+========================================================== */
+
+.calendar-container {
+    display: block;
+
+    position: absolute;
+
+    top: 1em;
+    left: 9em;
+
+    z-index: 100;
+}
+
+
+#calendar-trigger {
+    padding:
+        6.5px 7.5px;
+
+    background: transparent;
+
+    border: none;
+
+    border-radius: 50%;
+
+    box-shadow: var(--shadow);
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    cursor: pointer;
+
+    color: #374151;
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+#calendar-trigger:hover {
+    color: var(--green);
+
+    transform:
+        scale(1.05);
+}
+
+
+#calendar-trigger svg {
+    width: 30px;
+    height: 30px;
+
+    display: block;
+}
+
+
+/* ==========================================================
+   CALENDAR VIEW DROPDOWN
+========================================================== */
+
+#calendar-view-menu {
+    position: absolute;
+
+    top: 45px;
+    left: 0;
+
+    min-width: 170px;
+
+    background:
+        rgba(255, 255, 255, 0.85);
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    border:
+        1px solid rgba(255, 255, 255, 0.4);
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.15);
+
+    overflow: hidden;
+
+    border-radius: 12px;
+
+    transform:
+        translateY(-10px)
+        scale(0.97);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transition:
+        transform 0.25s ease,
+        opacity 0.25s ease,
+        visibility 0.25s ease;
+}
+
+
+#calendar-view-menu:not(.hidden) {
+    transform:
+        translateY(0)
+        scale(1);
+
+    opacity: 1;
+
+    visibility: visible;
+
+    pointer-events: auto;
+}
+
+
+#calendar-view-menu ul {
+    list-style: none;
+
+    margin: 0;
+
+    padding: 6px;
+}
+
+
+.calendar-view-item {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding:
+        12px 14px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: transparent;
+
+    color: #374151;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.calendar-view-item svg {
+    width: 24px;
+    height: 24px;
+
+    flex-shrink: 0;
+
+    color: currentColor;
+}
+
+
+.calendar-view-item:hover {
+    background:
+        rgba(79, 142, 247, 0.08);
+
+    color: var(--blue);
+
+    transform:
+        translateX(2px);
+}
+
+
+.calendar-view-item.active {
+    color: var(--blue);
+
+    background:
+        rgba(79, 142, 247, 0.10);
+}
+
+
+/* ==========================================================
+   CALENDAR PAGE
+========================================================== */
+
+.calendar-page {
+    flex: 1;
+
+    min-width: 0;
+
+    height: 100vh;
+
+    padding: 35px;
+
+    overflow-y: auto;
+}
+
+
+/* ==========================================================
+   CALENDAR HEADER
+========================================================== */
+
+.calendar-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 30px;
+}
+
+
+#add-event-btn {
+    width: 40px;
+    height: 40px;
+
+    min-width: 40px;
+    min-height: 40px;
+
+    padding: 0;
+
+    border: none;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--blue);
+    color: white;
+
+    cursor: pointer;
+
+    box-sizing: border-box;
+
+    transition:
+        transform 0.15s ease,
+        opacity 0.2s ease;
+}
+
+
+#add-event-btn svg {
+    width: 20px;
+    height: 20px;
+
+    flex-shrink: 0;
+}
+
+
+#add-event-btn:hover {
+    opacity: 0.9;
+}
+
+
+#add-event-btn:active {
+    transform: scale(0.92);
+}
+
+
+/* ==========================================================
+   CALENDAR TOOLBAR
+========================================================== */
+
+.calendar-top {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 15px;
+}
+
+
+.calendar-top h2 {
+    min-width: 180px;
+
+    margin: 0;
+
+    text-align: center;
+
+    font-size: 22px;
+
+    color: #222;
+}
+
+
+/* ==========================================================
+   MONTH BUTTONS
+========================================================== */
+
+.month-btn {
+    width: 40px;
+    height: 40px;
+
+    padding: 0;
+    margin: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex:
+        0 0 40px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: transparent;
+
+    box-shadow: var(--shadow);
+
+    color: #374151;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.month-btn svg {
+    width: 22px;
+    height: 22px;
+
+    display: block;
+
+    flex-shrink: 0;
+}
+
+
+.month-btn:hover {
+    background: #f3f4f6;
+
+    color: var(--blue);
+
+    transform:
+        scale(1.05);
+}
+
+
+/* ==========================================================
+   TODAY BUTTON
+========================================================== */
+
+.calendar-header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+
+    width: 100%;
+}
+
+
+#today-btn {
+    width: 40px;
+    height: 40px;
+
+    min-width: 40px;
+    min-height: 40px;
+
+    padding: 0;
+
+    border-radius: 50%;
+
+    border: 2px solid var(--blue);
+
+    background: transparent;
+
+    color: var(--blue);
+
+    font-size: 15px;
+    font-weight: 700;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.15s ease;
+}
+
+
+#today-btn:hover {
+    background: var(--blue);
+    color: white;
+}
+
+
+#today-btn:active {
+    transform: scale(0.92);
+}
+
+
+/* ==========================================================
+   CALENDAR
+========================================================== */
+
+.calendar {
+    width: 100%;
+
+    background: white;
+
+    border:
+        1px solid var(--light-border);
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.06);
+}
+
+
+/* ==========================================================
+   WEEKDAYS
+========================================================== */
+
+.calendar-weekdays {
+    display: grid;
+
+    grid-template-columns:
+        repeat(7, 1fr);
+
+    background: #f9fafb;
+
+    border-bottom:
+        1px solid var(--light-border);
+}
+
+
+.calendar-weekdays div {
+    padding: 14px;
+
+    text-align: center;
+
+    color: #6b7280;
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+
+/* Hide weekday header for Year / Day */
+
+body.year-view .calendar-weekdays,
+body.day-view .calendar-weekdays {
+    display: none;
+}
+
+
+/* ==========================================================
+   CALENDAR DAYS
+========================================================== */
+
+.calendar-days {
+    display: grid;
+
+    grid-template-columns:
+        repeat(7, minmax(0, 1fr));
+
+    width: 100%;
+
+    min-width: 0;
+}
+
+
+.calendar-day {
+    min-height: 100px;
+
+    min-width: 0;
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 10px;
+
+    border-right:
+        1px solid var(--lighter-border);
+
+    border-bottom:
+        1px solid var(--lighter-border);
+
+    position: relative;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease;
+}
+
+.calendar-day-events {
+    min-width: 0;
+
+    width: 100%;
+
+    overflow: visible;
+}
+
+.calendar-day:hover {
+    background: #f9fafb;
+}
+
+
+.calendar-day:nth-child(7n) {
+    border-right: none;
+}
+
+
+/* ==========================================================
+   OTHER MONTH
+========================================================== */
+
+.calendar-day.other-month {
+    color: #c4c7cc;
+
+    background: #fafafa;
+}
+
+
+/* ==========================================================
+   VIEW TRANSITION
+========================================================== */
+
+.calendar-days.view-changing {
+    animation:
+        calendarViewChange
+        0.38s
+        cubic-bezier(
+            0.22,
+            1,
+            0.36,
+            1
+        );
+}
+
+
+@keyframes calendarViewChange {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            translateY(14px)
+            scale(0.99);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+
+}
+
+
+@keyframes calendarMonthChange {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            translateY(8px);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+
+}
+
+
+/* ==========================================================
+   DATE NUMBER
+========================================================== */
+
+.day-number {
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+
+/* ==========================================================
+   TODAY
+========================================================== */
+
+.calendar-day.today .day-number {
+    border: 2px solid var(--blue);
+
+    color: var(--blue);
+
+    box-shadow:
+        0 2px 6px
+        rgba(59, 130, 246, 0.25);
+}
+
+
+/* ==========================================================
+   EVENTS
+========================================================== */
+
+.calendar-event {
+    margin-top: 7px;
+
+    padding:
+        5px 7px;
+
+    border-radius: 7px;
+
+    background: var(--event-color);
+    color: var(--event-text-color);
+
+    font-size: 12px;
+    font-weight: 600;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    cursor: pointer;
+
+    transition:
+        filter 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.calendar-event:hover {
+    filter: brightness(0.92);
+    transform:
+        scale(1.05);
+}
+
+/* ==========================================================
+   WEEK VIEW
+========================================================== */
+
+.week-view-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0;
+    width: 100%;
+    overflow: visible;
+    border-radius: 16px;
+}
+
+
+/* ==========================================================
+   WEEK DAY COLUMN
+========================================================== */
+
+.week-day-column {
+    position: relative;
+
+    min-width: 0;
+    min-height: 420px;
+
+    padding: 0 8px 16px;
+
+    background: var(--calendar-bg, #ffffff);
+
+    border-right:
+        1px solid
+        var(--border-color, #e5e7eb);
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease;
+}
+
+
+.week-day-column:last-child {
+    border-right: none;
+}
+
+
+.week-day-column:hover {
+    background:
+        color-mix(
+            in srgb,
+            var(--blue, #3b82f6) 3%,
+            transparent
+        );
+}
+
+
+/* ==========================================================
+   WEEK DAY HEADER
+========================================================== */
+
+.week-day-header {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    min-height: 72px;
+
+    margin-bottom: 8px;
+
+    border-bottom:
+        1px solid
+        var(--border-color, #e5e7eb);
+}
+
+
+.week-day-header > div:first-child {
+    font-size: 12px;
+
+    font-weight: 600;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.06em;
+
+    opacity: 0.6;
+}
+
+
+/* ==========================================================
+   DAY NUMBER
+========================================================== */
+
+.week-day-number {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 34px;
+    height: 34px;
+
+    border-radius: 50%;
+
+    font-size: 17px;
+
+    font-weight: 700;
+
+    line-height: 1;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+
+/* ==========================================================
+   TODAY
+========================================================== */
+
+.week-day-number.today {
+    color: var(--blue);
+
+    border:2px solid var(--blue);
+
+    box-shadow:
+        0 2px 6px
+        rgba(59, 130, 246, 0.25);
+}
+
+
+/* ==========================================================
+   EVENTS
+========================================================== */
+
+.week-day-column .calendar-event {
+    width: 100%;
+
+    margin:
+        4px 0;
+
+    padding:
+        7px 8px;
+
+    border-radius: 8px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    font-size: 12px;
+
+    line-height: 1.3;
+
+    box-sizing: border-box;
+}
+
+
+/* ==========================================================
+   EMPTY DAYS
+========================================================== */
+
+.week-day-column:empty {
+    background:
+        var(--calendar-bg, #ffffff);
+}
+
+
+/* ==========================================================
+   TABLET / SMALLER SCREENS
+========================================================== */
+
+@media (max-width: 900px) {
+
+    .week-day-column {
+        padding:
+            0 5px 12px;
+    }
+
+
+    .week-day-header {
+        min-height: 64px;
+    }
+
+
+    .week-day-header > div:first-child {
+        font-size: 10px;
+    }
+
+
+    .week-day-number {
+        width: 30px;
+        height: 30px;
+
+        font-size: 15px;
+    }
+
+
+    .week-day-column .calendar-event {
+        padding:
+            6px 5px;
+
+        font-size: 11px;
+    }
+
+}
+
+
+/* ==========================================================
+   WEEK VIEW — SMALL SCREENS
+========================================================== */
+
+@media (max-width: 600px) {
+
+    .week-view-grid {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .week-view-grid {
+        grid-template-columns:
+            repeat(7, minmax(0, 1fr)) !important;
+    }
+
+    .week-day-column {
+        min-width: 0;
+        width: 100%;
+        overflow: hidden;
+        padding-left: 2px;
+        padding-right: 2px;
+    }
+
+    .week-day-header .week-day-number {
+        font-size: 15px;
+    }
+
+    .week-day-header {
+        width: 100%;
+        min-width: 0;
+        text-align: center;
+        overflow: hidden;
+        padding: 6px 2px;
+        font-size: 11px;
+    }
+
+}
+
+/* ==========================================================
+   DAY VIEW
+========================================================== */
+
+.day-view-grid {
+    display: block !important;
+
+    background: white;
+}
+
+
+.day-hour-row {
+    display: grid;
+
+    grid-template-columns:
+        75px 1fr;
+
+    min-height: 70px;
+
+    border-bottom:
+        1px solid var(--lighter-border);
+}
+
+
+.day-hour-label {
+    padding:
+        10px 12px;
+
+    border-right:
+        1px solid var(--light-border);
+
+    color: #6b7280;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    text-align: right;
+
+    background: #fafafa;
+}
+
+
+.day-hour-content {
+    position: relative;
+
+    min-height: 70px;
+
+    padding:
+        7px 10px;
+
+    transition:
+        background 0.2s ease;
+}
+
+
+.day-hour-content:hover {
+    background: #fafbfc;
+}
+
+
+.day-hour-content .calendar-event {
+    display: block;
+
+    width: 100%;
+
+    margin-top: 0;
+
+    padding:
+        8px 10px;
+
+    border-radius: 8px;
+
+    font-size: 13px;
+
+    background:
+        rgba(79, 142, 247, 0.12);
+
+    color: var(--dark-blue);
+
+    white-space: normal;
+
+    overflow: visible;
+
+    text-overflow: unset;
+}
+
+
+.day-hour-row:first-child {
+    border-top:
+        1px solid var(--lighter-border);
+}
+
+
+/* ==========================================================
+   ADD EVENT MODAL
+========================================================== */
+
+.event-modal {
+    position: fixed;
+
+    inset: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(255, 255, 255, 0.08);
+
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+
+    z-index: 2000;
+
+    opacity: 1;
+
+    visibility: visible;
+
+    pointer-events: auto;
+
+    transition:
+        opacity 0.25s ease,
+        visibility 0.25s ease;
+}
+
+
+.event-modal.hidden {
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+}
+
+
+/* ==========================================================
+   ADD EVENT MODAL CONTENT
+========================================================== */
+
+.event-modal-content {
+    width:
+        min(500px, 100%);
+
+    background: white;
+
+    border-radius: 20px;
+
+    padding: 25px;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.2);
+
+    transform:
+        translateY(0)
+        scale(1);
+
+    opacity: 1;
+
+    transition:
+        transform 0.25s ease,
+        opacity 0.25s ease;
+}
+
+
+.event-modal.hidden
+.event-modal-content {
+    transform:
+        translateY(15px)
+        scale(0.97);
+
+    opacity: 0;
+}
+
+
+/* ==========================================================
+   ADD EVENT HEADER
+========================================================== */
+
+.event-modal-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 25px;
+}
+
+
+.event-modal-header h2 {
+    margin: 0;
+
+    color: #222;
+
+    font-size: 24px;
+}
+
+
+/* ==========================================================
+   CLOSE BUTTON
+========================================================== */
+
+#close-event-modal {
+    width: 35px;
+    height: 35px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    box-shadow: var(--shadow);
+
+    background: #f3f4f6;
+
+    color: #374151;
+
+    font-size: 25px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+#close-event-modal:hover {
+    background: #e5e7eb;
+
+    color: var(--blue);
+
+    transform:
+        scale(1.05);
+}
+
+
+/* ==========================================================
+   FORM
+========================================================== */
+
+.form-group {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+    margin-bottom: 18px;
+}
+
+
+.form-group label {
+    font-size: 14px;
+
+    font-weight: 600;
+
+    color: #374151;
+}
+
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+
+    border:
+        1px solid #dfe3e8;
+
+    border-radius: 22px;
+
+    padding:
+        11px 13px;
+
+    background: #fafafa;
+
+    color: #222;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.form-group input:focus,
+.form-group textarea:focus {
+    background: white;
+
+    border-color: var(--blue);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(79, 142, 247, 0.12);
+}
+
+
+.form-group textarea {
+    min-height: 90px;
+
+    resize: vertical;
+}
+
+
+/* ==========================================================
+   TIME ROW
+========================================================== */
+
+.time-row {
+    display: grid;
+    grid-template-columns:
+        1fr 1fr;
+    gap: 14px;
+    overflow: hidden;
+    max-height: 150px;
+    opacity: 1;
+    margin-bottom: 14px;
+    transition:
+        max-height 0.25s ease,
+        opacity 0.2s ease,
+        margin 0.25s ease;
+}
+
+.time-row.all-day-hidden {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    pointer-events: none;
+}
+
+/* ==========================================================
+   FORM BUTTONS
+========================================================== */
+
+.event-form-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 25px;
+}
+
+
+.event-form-actions button {
+    border: none;
+
+    border-radius: 22px;
+
+    box-shadow: var(--shadow);
+    margin-bottom: 1em;
+    padding:
+        11px 18px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+}
+
+
+#cancel-event {
+    background: #f3f4f6;
+
+    color: #374151;
+}
+
+
+#cancel-event:hover {
+    background: #e5e7eb;
+
+    transform:
+        translateY(-1px);
+}
+
+
+.event-form-actions button[type="submit"] {
+    background: var(--blue);
+
+    color: white;
+}
+
+
+.event-form-actions button[type="submit"]:hover {
+    background: var(--dark-blue);
+
+    transform:
+        translateY(-1px);
+}
+
+
+/* ==========================================================
+   EVENT ACTIONS MODAL
+========================================================== */
+
+/*
+   IMPORTANT:
+
+   Your HTML uses:
+
+   #event-actions-modal
+
+   NOT:
+
+   #event-actions-menu
+
+   Therefore all animation styling below targets
+   #event-actions-modal.
+*/
+
+.event-actions-modal {
+    position: fixed;
+
+    inset: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(255, 255, 255, 0.08);
+
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+
+    z-index: 3000;
+
+    opacity: 1;
+
+    visibility: visible;
+
+    pointer-events: auto;
+
+    transition:
+        opacity 0.25s ease,
+        visibility 0.25s ease;
+}
+
+
+/* ==========================================================
+   EVENT ACTIONS MODAL HIDDEN STATE
+========================================================== */
+
+.event-actions-modal.hidden {
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+}
+
+
+/* ==========================================================
+   EVENT ACTIONS CONTENT
+========================================================== */
+
+.event-actions-content {
+    width:
+        min(360px, 100%);
+
+    background: white;
+
+    border-radius: 20px;
+
+    padding: 22px;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.2);
+
+    transform:
+        translateY(0)
+        scale(1);
+
+    opacity: 1;
+
+    transition:
+        transform 0.25s
+        cubic-bezier(
+            0.22,
+            1,
+            0.36,
+            1
+        ),
+
+        opacity 0.2s ease;
+}
+
+
+/* ==========================================================
+   EVENT ACTIONS CLOSED ANIMATION
+========================================================== */
+
+.event-actions-modal.hidden
+.event-actions-content {
+    transform:
+        translateY(15px)
+        scale(0.96);
+
+    opacity: 0;
+}
+
+
+/* ==========================================================
+   EVENT ACTION HEADER
+========================================================== */
+
+.event-actions-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 20px;
+}
+
+
+.event-actions-header h2 {
+    margin: 0;
+
+    color: #222;
+
+    font-size: 20px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   CLOSE EVENT ACTIONS
+========================================================== */
+
+#close-event-actions {
+    width: 35px;
+    height: 35px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #f3f4f6;
+
+    box-shadow: var(--shadow);
+
+    color: #374151;
+
+    font-size: 25px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+#close-event-actions:hover {
+    background: #e5e7eb;
+
+    color: var(--blue);
+
+    transform:
+        scale(1.05);
+}
+
+
+/* ==========================================================
+   EDIT / DELETE BUTTON CONTAINER
+========================================================== */
+
+.event-actions-buttons {
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+
+/* ==========================================================
+   EDIT / DELETE BUTTONS
+========================================================== */
+
+/*
+   These selectors match your ACTUAL HTML:
+
+   .event-actions-buttons
+       #edit-event-btn
+       #delete-event-btn
+*/
+
+.event-actions-buttons button {
+    width: 100%;
+
+    min-height: 48px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-start;
+
+    gap: 10px;
+
+    padding:
+        12px 15px;
+
+    border: none;
+
+    border-radius: 14px;
+
+    background: #f8fafc;
+
+    color: #374151;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.06);
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* ==========================================================
+   SVG INSIDE EDIT / DELETE
+========================================================== */
+
+.event-actions-buttons button svg {
+    width: 20px;
+    height: 20px;
+
+    min-width: 20px;
+
+    flex:
+        0 0 20px;
+
+    display: block;
+
+    color: currentColor;
+
+    stroke: currentColor;
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+/* ==========================================================
+   TEXT INSIDE EDIT / DELETE
+========================================================== */
+
+.event-actions-buttons button span {
+    display: block;
+
+    line-height: 1;
+
+    color: inherit;
+}
+
+
+/* ==========================================================
+   EDIT BUTTON
+========================================================== */
+
+#edit-event-btn {
+    color: var(--blue);
+
+    background:
+        rgba(79, 142, 247, 0.08);
+}
+
+
+#edit-event-btn:hover {
+    color: var(--dark-blue);
+
+    background:
+        rgba(79, 142, 247, 0.15);
+
+    transform:
+        translateX(3px);
+
+    box-shadow:
+        0 4px 12px
+        rgba(79, 142, 247, 0.12);
+}
+
+
+#edit-event-btn:hover svg {
+    transform:
+        scale(1.05);
+}
+
+
+/* ==========================================================
+   DELETE BUTTON
+========================================================== */
+
+#delete-event-btn {
+    color: #ef4444;
+
+    background:
+        rgba(239, 68, 68, 0.07);
+}
+
+
+#delete-event-btn:hover {
+    color: #dc2626;
+
+    background:
+        rgba(239, 68, 68, 0.13);
+
+    transform:
+        translateX(3px);
+
+    box-shadow:
+        0 4px 12px
+        rgba(239, 68, 68, 0.12);
+}
+
+
+#delete-event-btn:hover svg {
+    transform:
+        scale(1.05);
+}
+
+
+/* ==========================================================
+   YEAR VIEW
+========================================================== */
+
+.calendar-days:has(.year-month) {
+    gap: 12px;
+
+    padding: 15px;
+
+    background: #f9fafb;
+}
+
+
+.year-month {
+    min-height: 130px;
+
+    padding: 18px;
+
+    background: white;
+
+    border:
+        1px solid var(--light-border);
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 3px 10px
+        rgba(0, 0, 0, 0.05);
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.year-month:hover {
+    transform:
+        translateY(-3px);
+
+    border-color:
+        var(--blue);
+
+    box-shadow:
+        0 8px 20px
+        rgba(0, 0, 0, 0.08);
+}
+
+
+.year-month h3 {
+    color: #374151;
+
+    font-size: 17px;
+
+    margin-bottom: 10px;
+}
+
+
+/* ==========================================================
+   DAY VIEW SPECIAL LAYOUT
+========================================================== */
+
+.calendar-days:has(.calendar-day[style*="400px"]) {
+    display: block;
+}
+
+
+.calendar-days:has(.calendar-day[style*="400px"])
+.calendar-day {
+    border: none;
+
+    min-height: 400px;
+
+    padding: 25px;
+}
+
+
+/* ==========================================================
+   LARGE TABLET
+========================================================== */
+
+@media (max-width: 1205px) {
+
+    .sidebar-rec {
+        display: none;
+    }
+
+    .menu-container {
+        display: block;
+    }
+
+}
+
+
+/* ==========================================================
+   MEDIUM SCREENS
+========================================================== */
+
+@media (max-width: 1200px) {
+
+    .calendar-page {
+        padding: 25px;
+    }
+
+}
+
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width: 700px) {
+
+    /* ------------------------------------------------------
+       MOBILE PAGE
+    ------------------------------------------------------ */
+
+    .calendar-page {
+        padding:
+            75px 12px 20px;
+    }
+
+
+    /* ------------------------------------------------------
+       MOBILE MENU
+    ------------------------------------------------------ */
+
+    .menu-container {
+        top: 15px;
+
+        left: 15px;
+    }
+
+
+    .calendar-container {
+        top: 15px;
+
+        left: 70px;
+    }
+
+
+    /* ------------------------------------------------------
+       HEADER
+    ------------------------------------------------------ */
+
+    .calendar-header {
+        align-items: flex-start;
+
+        margin-bottom: 20px;
+    }
+
+
+    #add-event-btn {
+        padding:
+            10px 14px;
+
+        font-size: 13px;
+    }
+
+
+    /* ------------------------------------------------------
+       TOOLBAR
+    ------------------------------------------------------ */
+
+    .calendar-toolbar {
+        width: 100%;
+
+        display: flex;
+
+        flex-wrap: wrap;
+
+        justify-content: center;
+    }
+
+
+    .calendar-top {
+        justify-content: center;
+
+        flex-wrap: wrap;
+    }
+
+
+    .calendar-top h2 {
+        min-width: 150px;
+
+        font-size: 19px;
+    }
+
+
+    /* ------------------------------------------------------
+       WEEKDAYS
+    ------------------------------------------------------ */
+
+    .calendar-weekdays div {
+        padding:
+            10px 3px;
+
+        font-size: 11px;
+    }
+
+
+    /* ------------------------------------------------------
+       CALENDAR DAYS
+    ------------------------------------------------------ */
+
+    .calendar-day {
+        min-height: 65px;
+
+        padding: 5px;
+    }
+
+
+    .day-number {
+        width: 25px;
+        height: 25px;
+
+        font-size: 12px;
+    }
+
+
+    .calendar-event {
+        font-size: 10px;
+
+        padding:
+            3px 4px;
+    }
+
+
+    /* ------------------------------------------------------
+       DAY VIEW
+    ------------------------------------------------------ */
+
+    .day-hour-row {
+        grid-template-columns:
+            58px 1fr;
+
+        min-height: 65px;
+    }
+
+
+    .day-hour-label {
+        padding:
+            10px 7px;
+
+        font-size: 11px;
+    }
+
+
+    .day-hour-content {
+        padding: 6px;
+    }
+
+
+    .day-hour-content .calendar-event {
+        font-size: 11px;
+
+        padding:
+            6px 7px;
+    }
+
+
+    /* ------------------------------------------------------
+       ADD EVENT MODAL
+    ------------------------------------------------------ */
+
+    .event-modal {
+        padding: 12px;
+    }
+
+
+    .event-modal-content {
+        padding: 20px;
+
+        border-radius: 17px;
+    }
+
+
+    .event-modal-header h2 {
+        font-size: 21px;
+    }
+
+
+    .time-row {
+        grid-template-columns: 1fr;
+
+        gap: 0;
+    }
+
+
+    /* ------------------------------------------------------
+       EVENT ACTION MODAL
+    ------------------------------------------------------ */
+
+    .event-actions-modal {
+        padding: 12px;
+
+        align-items: center;
+    }
+
+
+    .event-actions-content {
+        width: 100%;
+
+        max-width: 360px;
+
+        padding: 20px;
+
+        border-radius: 17px;
+    }
+
+
+    .event-actions-header h2 {
+        font-size: 19px;
+    }
+
+
+    .event-actions-buttons button {
+        min-height: 50px;
+
+        padding:
+            13px 15px;
+
+        font-size: 14px;
+    }
+
+
+    .event-actions-buttons button svg {
+        width: 20px;
+        height: 20px;
+
+        min-width: 20px;
+    }
+
+}
+
+/* ==========================================================
+   EVENT ACTIONS MODAL
+========================================================== */
+
+.event-actions-modal {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(255, 255, 255, 0.08);
+
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+
+    z-index: 3000;
+
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+
+    transition:
+        opacity 0.22s ease,
+        visibility 0.22s ease;
+}
+
+
+/* Hidden state */
+
+.event-actions-modal.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+
+/* ==========================================================
+   EVENT ACTIONS BOX
+========================================================== */
+
+.event-actions-content {
+    width: min(360px, 100%);
+
+    padding: 22px;
+
+    background: rgba(255, 255, 255, 0.96);
+
+    border: 1px solid rgba(255, 255, 255, 0.7);
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.20);
+
+    transform: translateY(0) scale(1);
+
+    transition:
+        transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.22s ease;
+}
+
+
+/* Box animation when closing */
+
+.event-actions-modal.hidden .event-actions-content {
+    opacity: 0;
+
+    transform:
+        translateY(15px)
+        scale(0.96);
+}
+
+
+/* ==========================================================
+   HEADER
+========================================================== */
+
+.event-actions-header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 20px;
+}
+
+
+.event-actions-header h2 {
+    margin: 0;
+
+    color: #222;
+
+    font-size: 20px;
+    font-weight: 700;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   CLOSE BUTTON
+========================================================== */
+
+#close-event-actions {
+    width: 35px;
+    height: 35px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #f3f4f6;
+
+    box-shadow: var(--shadow);
+
+    color: #374151;
+
+    font-size: 25px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+#close-event-actions:hover {
+    background: #e5e7eb;
+
+    color: var(--blue);
+
+    transform: scale(1.05);
+}
+
+/* ==========================================================
+   EVENT ACTION MENU
+   CREATED DYNAMICALLY BY calendar.js
+========================================================== */
+
+#event-actions-menu {
+    position: fixed;
+
+    min-width: 150px;
+
+    padding: 6px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 4px;
+
+    background:
+        rgba(255, 255, 255, 0.96);
+
+    backdrop-filter:
+        blur(14px);
+
+    -webkit-backdrop-filter:
+        blur(14px);
+
+    border:
+        1px solid rgba(255, 255, 255, 0.7);
+
+    border-radius: 14px;
+
+    box-shadow: var(--shadow);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transform:
+        translateY(6px)
+        scale(0.96);
+
+    transform-origin:
+        top left;
+
+    transition:
+        opacity 0.18s ease,
+        transform 0.18s ease,
+        visibility 0.18s ease;
+
+    pointer-events: none;
+}
+
+
+/* ==========================================================
+   SHOW MENU
+========================================================== */
+
+#event-actions-menu.show {
+    opacity: 1;
+
+    visibility: visible;
+
+    transform:
+        translateY(0)
+        scale(1);
+
+    pointer-events: auto;
+}
+
+
+/* ==========================================================
+   MENU BUTTONS
+========================================================== */
+
+#event-actions-menu button {
+    width: 100%;
+
+    min-height: 44px;
+
+    padding:
+        10px 14px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-start;
+
+    border: none;
+
+    border-radius: 22px;
+
+    background: transparent;
+
+    color: #374151;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        background 0.18s ease,
+        color 0.18s ease,
+        transform 0.18s ease;
+}
+
+#event-actions-menu button svg {
+    width: 20px;
+    height: 20px;
+    padding-right: 5px;
+    flex: 0 0 20px;
+
+    color: currentColor;
+}
+
+/* ==========================================================
+   EDIT
+========================================================== */
+
+#event-actions-menu
+button[data-action="edit"] {
+    color: var(--blue);
+}
+
+
+#event-actions-menu
+button[data-action="edit"]:hover {
+    background:
+        rgba(79, 142, 247, 0.15);
+
+    color: var(--dark-blue);
+
+    transform:
+        translateX(2px);
+}
+
+
+/* ==========================================================
+   DELETE
+========================================================== */
+
+#event-actions-menu
+button[data-action="delete"] {
+    color: #ef4444;
+}
+
+
+#event-actions-menu
+button[data-action="delete"]:hover {
+    background:
+        rgba(239, 68, 68, 0.14);
+
+    color: #dc2626;
+
+    transform:
+        translateX(2px);
+}
+
+
+/* ==========================================================
+   ACTIVE / TOUCH FEEDBACK
+========================================================== */
+
+#event-actions-menu
+button:active {
+    transform:
+        scale(0.97);
+}
+
+
+/* ==========================================================
+   MOBILE / TABLET
+========================================================== */
+
+@media (max-width: 700px) {
+
+    #event-actions-menu {
+        min-width: 165px;
+
+        padding: 7px;
+
+        border-radius: 15px;
+    }
+
+
+    #event-actions-menu button {
+        min-height: 48px;
+
+        padding:
+            12px 15px;
+
+        font-size: 15px;
+    }
+
+}
+
+/* ==========================================================
+   IMPROVED DAY VIEW
+========================================================== */
+
+.day-view-grid {
+    display: block !important;
+    position: relative;
+    overflow-x: hidden;
+}
+
+
+/* ==========================================================
+   MAIN TIMELINE
+========================================================== */
+
+.day-timeline {
+    position: relative;
+    width: 100%;
+    min-height: 1440px;
+    background: var(--calendar-background, #ffffff);
+}
+
+
+/* ==========================================================
+   HOUR GRID
+========================================================== */
+
+.day-timeline-grid {
+    position: relative;
+    width: 100%;
+}
+
+
+.day-hour-row {
+    position: relative;
+    height: 60px;
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    box-sizing: border-box;
+}
+
+
+/* ==========================================================
+   TIME LABEL
+========================================================== */
+
+.day-hour-label {
+    height: 60px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+
+    padding:
+        5px
+        14px
+        0
+        6px;
+
+    box-sizing: border-box;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    color:
+        var(--calendar-time-color, #70757a);
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   HOUR CONTENT
+========================================================== */
+
+.day-hour-content {
+    height: 60px;
+    box-sizing: border-box;
+
+    border-top:
+        1px solid
+        var(--calendar-grid-color, #e5e7eb);
+
+    position: relative;
+}
+
+
+/*
+   Half-hour guide line
+*/
+
+.day-hour-content::after {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+
+    top: 30px;
+
+    border-top:
+        1px dashed
+        rgba(120, 120, 120, 0.18);
+
+    pointer-events: none;
+}
+
+
+/* ==========================================================
+   EVENTS LAYER
+========================================================== */
+
+.day-events-layer {
+    position: absolute;
+
+    top: 0;
+    left: 72px;
+    right: 0;
+
+    height: 1440px;
+
+    pointer-events: none;
+}
+
+
+/* ==========================================================
+   DAY EVENT
+========================================================== */
+
+.day-view-event {
+    position: absolute;
+
+    box-sizing: border-box;
+
+    min-height: 30px;
+
+    margin: 0;
+
+    padding:
+        8px
+        10px;
+
+    overflow: hidden;
+
+    border-radius: 9px;
+
+    background: var(--event-color);
+    color: var(--event-text-color);
+
+    font-size: 13px;
+    font-weight: 600;
+
+    line-height: 1.3;
+
+    box-shadow:
+        0 2px 5px rgba(0, 0, 0, 0.12);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.25);
+
+    cursor: pointer;
+
+    pointer-events: auto;
+
+    z-index: 10;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.day-event-icon svg {
+    color: inherit;
+    fill: currentColor;
+    stroke: currentColor;
+}
+
+.day-view-event:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 4px 10px
+        rgba(0, 0, 0, 0.18);
+
+    z-index: 20;
+}
+
+/* ==========================================================
+   EVENT MODAL
+========================================================== */
+
+#event-modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    overflow: hidden;
+}
+
+
+/* ==========================================================
+   EVENT MODAL CONTENT
+========================================================== */
+
+#event-modal .event-modal-content {
+    width: min(
+        100%,
+        620px
+    );
+
+    max-height: calc(100vh - 40px);
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+}
+
+
+/* ==========================================================
+   EVENT FORM SCROLL AREA
+========================================================== */
+
+#event-modal #event-form {
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    min-height: 0;
+
+    padding-right: 4px;
+}
+
+/* ==========================================================
+   CURRENT TIME
+========================================================== */
+
+.day-current-time {
+    position: absolute;
+
+    left: 72px;
+    right: 0;
+
+    height: 2px;
+
+    background:
+        #d94b4b;
+
+    z-index: 50;
+
+    pointer-events: none;
+}
+
+
+.day-current-time-dot {
+    position: absolute;
+
+    left: -6px;
+    top: -4px;
+
+    width: 10px;
+    height: 10px;
+
+    border-radius: 50%;
+
+    background:
+        #d94b4b;
+}
+
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width: 700px) {
+
+    .day-hour-row {
+        grid-template-columns:
+            62px 1fr;
+    }
+
+
+    .day-hour-label {
+        padding-right: 10px;
+
+        font-size: 12px;
+    }
+
+
+    .day-events-layer {
+        left: 62px;
+    }
+
+
+    .day-current-time {
+        left: 62px;
+    }
+
+
+    .day-view-event {
+        padding:
+            7px
+            8px;
+
+        font-size: 12px;
+
+        border-radius: 8px;
+    }
+
+}
+
+/* ==========================================================
+   DAY VIEW — SYNC WITH JAVASCRIPT 80px/HOUR SCALE
+========================================================== */
+
+/*
+   JavaScript:
+   60 minutes = 80px
+
+   Therefore:
+   1 hour = 80px
+   30 minutes = 40px
+   24 hours = 1920px
+*/
+
+
+.day-timeline {
+    min-height: 1920px;
+}
+
+
+/* ==========================================================
+   HOUR ROW
+========================================================== */
+
+.day-hour-row {
+    height: 80px;
+    min-height: 80px;
+
+    box-sizing: border-box;
+}
+
+
+/* ==========================================================
+   TIME LABEL
+========================================================== */
+
+.day-hour-label {
+    height: 80px;
+
+    box-sizing: border-box;
+}
+
+
+/* ==========================================================
+   HOUR CONTENT
+========================================================== */
+
+.day-hour-content {
+    height: 80px;
+    min-height: 80px;
+
+    box-sizing: border-box;
+}
+
+
+/* ==========================================================
+   HALF-HOUR LINE
+========================================================== */
+
+.day-hour-content::after {
+    top: 40px;
+}
+
+
+/* ==========================================================
+   EVENTS LAYER
+========================================================== */
+
+.day-events-layer {
+    height: 1920px;
+}
+
+
+/* ==========================================================
+   EVENT CONTENT
+========================================================== */
+
+.calendar-event-content {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    min-width: 0;
+}
+
+
+.calendar-event-icon {
+
+    width: 16px;
+    height: 16px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+}
+
+
+.calendar-event-icon svg {
+
+    width: 14px;
+    height: 14px;
+
+    display: block;
+}
+
+
+.calendar-event-time {
+
+    flex-shrink: 0;
+
+    font-weight: 700;
+}
+
+
+.calendar-event-title {
+
+    min-width: 0;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+}
+
+/* ==========================================================
+   REPEAT ROW
+========================================================== */
+
+.repeat-form-group {
+    margin: 0 0 14px;
+}
+
+.repeat-row {
+    width: 100%;
+    min-height: 48px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 0 14px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 22px;
+
+    background: #ffffff;
+    color: #0f172a;
+
+    font-family: inherit;
+    font-size: 14px;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.15s ease,
+        background 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.repeat-row:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+}
+
+.repeat-row:focus {
+    outline: none;
+
+    border-color: var(--blue);
+
+    box-shadow:
+        0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.repeat-row:active {
+    background: #f1f5f9;
+}
+
+.repeat-row-label {
+    flex-shrink: 0;
+
+    font-weight: 600;
+
+    color: #0f172a;
+}
+
+.repeat-row-value {
+    flex: 1;
+
+    min-width: 0;
+
+    overflow: hidden;
+
+    color: #64748b;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.repeat-row-chevron {
+    width: 20px;
+    height: 20px;
+
+    flex-shrink: 0;
+
+    color: #475569;
+
+    transition:
+        transform 0.2s ease;
+}
+
+.repeat-row.open .repeat-row-chevron {
+    transform: rotate(90deg);
+}
+
+/* ==========================================================
+   HOMEUP REPEAT PANEL — CLEAN FINAL VERSION
+========================================================== */
+
+#repeat-panel {
+    position: fixed;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+
+    z-index: 3002;
+    overflow: auto;
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transform: scale(0.97);
+
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease,
+        visibility 0.25s ease;
+}
+
+/* Open state used by the current repeat JavaScript. */
+#repeat-panel.active,
+#repeat-panel.opening {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: scale(1);
+}
+
+/* Closing animation. JS adds .hidden after the animation finishes. */
+#repeat-panel.closing {
+    opacity: 0;
+    visibility: visible;
+    pointer-events: none;
+    transform: scale(0.97);
+}
+
+/* Final hidden state. */
+#repeat-panel.hidden {
+    display: none;
+}
+
+
+/* ==========================================================
+   REPEAT FORM
+========================================================== */
+
+#repeat-panel .repeat-panel-content {
+    position: relative;
+
+    width: 520px;
+    max-width: 100%;
+    max-height: calc(100dvh - 40px);
+
+    margin: auto;
+    padding: 24px;
+    box-sizing: border-box;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    background: #ffffff;
+    color: #1f2937;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.20);
+
+    transform: translateY(0) scale(1);
+    transition:
+        transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.2s ease;
+}
+
+#repeat-panel.opening .repeat-panel-content {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+#repeat-panel.closing .repeat-panel-content {
+    transform: translateY(10px) scale(0.97);
+    opacity: 0;
+}
+
+
+/* ==========================================================
+   HEADER
+========================================================== */
+
+#repeat-panel .repeat-panel-header {
+    width: 100%;
+    margin: 0 0 18px;
+    padding: 0;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+#repeat-panel .repeat-back-btn {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #f1f5f9;
+    color: #334155;
+    cursor: pointer;
+
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+
+#repeat-panel .repeat-back-btn:hover {
+    background: #e2e8f0;
+}
+
+#repeat-panel .repeat-back-btn:active {
+    transform: scale(0.95);
+}
+
+#repeat-panel .repeat-back-btn svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+
+/* ==========================================================
+   REPEAT OPTIONS
+========================================================== */
+
+#repeat-panel .repeat-options {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#repeat-panel .repeat-option {
+    width: 100%;
+    min-height: 52px;
+
+    margin: 0;
+    padding: 10px 12px;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    border: none;
+    border-radius: 14px;
+    background: transparent;
+    color: #1f2937;
+
+    font-family: inherit;
+    font-size: 15px;
+    text-align: left;
+
+    cursor: pointer;
+
+    transition: background 0.15s ease;
+}
+
+#repeat-panel .repeat-option:hover {
+    background: #f8fafc;
+}
+
+#repeat-panel .repeat-option.selected {
+    background: #f1f5f9;
+}
+
+
+/* ==========================================================
+   RADIO
+========================================================== */
+
+#repeat-panel .repeat-radio {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+    flex: 0 0 20px;
+
+    position: relative;
+    box-sizing: border-box;
+
+    border: 2px solid #94a3b8;
+    border-radius: 50%;
+}
+
+#repeat-panel .repeat-option.selected .repeat-radio,
+#repeat-panel .duration-option.selected .repeat-radio {
+    border-color: #2563eb;
+}
+
+#repeat-panel .repeat-option.selected .repeat-radio::after,
+#repeat-panel .duration-option.selected .repeat-radio::after {
+    content: "";
+    position: absolute;
+
+    width: 10px;
+    height: 10px;
+    left: 3px;
+    top: 3px;
+
+    border-radius: 50%;
+    background: #2563eb;
+}
+
+#repeat-panel .repeat-option-text {
+    min-width: 0;
+    flex: 1 1 auto;
+    color: #1f2937;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+#repeat-panel .repeat-number {
+    width: 54px;
+    height: 36px;
+    min-width: 54px;
+    flex: 0 0 54px;
+
+    margin: 0;
+    padding: 0 5px;
+    box-sizing: border-box;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #1f2937;
+
+    font-family: inherit;
+    font-size: 15px;
+    text-align: center;
+    outline: none;
+}
+
+#repeat-panel .repeat-number:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+}
+
+
+/* ==========================================================
+   WEEKDAYS
+========================================================== */
+
+#repeat-panel .repeat-extra {
+    width: 100%;
+    margin: 0;
+    padding: 4px 12px 12px 42px;
+    box-sizing: border-box;
+
+    overflow: hidden;
+    opacity: 1;
+    max-height: 200px;
+    transform: translateY(0);
+
+    transition:
+        opacity 0.25s ease,
+        max-height 0.30s ease,
+        transform 0.25s ease,
+        padding 0.25s ease,
+        margin 0.25s ease;
+}
+
+#repeat-panel .repeat-extra.hidden {
+    display: block !important;
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-8px);
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    pointer-events: none;
+}
+
+#repeat-panel .repeat-weekday-label {
+    margin-bottom: 9px;
+    color: #64748b;
+    font-size: 13px;
+}
+
+#repeat-panel .repeat-weekdays {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    gap: 7px;
+    flex-wrap: wrap;
+    box-sizing: border-box;
+}
+
+#repeat-panel .repeat-weekdays button {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    padding: 0;
+
+    border: none;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: #475569;
+
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        color 0.15s ease,
+        transform 0.15s ease;
+}
+
+#repeat-panel .repeat-weekdays button:hover {
+    background: #e2e8f0;
+}
+
+#repeat-panel .repeat-weekdays button:active {
+    transform: scale(0.94);
+}
+
+#repeat-panel .repeat-weekdays button.selected {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+/* ==========================================================
+   WEEKDAY ENTRANCE ANIMATION
+========================================================== */
+
+#repeat-panel
+.repeat-extra:not(.repeat-section-hidden)
+.repeat-weekdays button {
+    animation:
+        repeatWeekdayIn
+        0.28s
+        cubic-bezier(
+            0.22,
+            1,
+            0.36,
+            1
+        )
+        both;
+}
+
+@keyframes repeatWeekdayIn {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(-8px)
+            scale(0.75);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+/* Small stagger between each day */
+
+#repeat-panel
+.repeat-extra:not(.repeat-section-hidden)
+.repeat-weekdays button:nth-child(1) {
+    animation-delay: 0ms;
+}
+
+#repeat-panel
+.repeat-extra:not(.repeat-section-hidden)
+.repeat-weekdays button:nth-child(2) {
+    animation-delay: 25ms;
+}
+
+#repeat-panel
+.repeat-extra:not(.repeat-section-hidden)
+.repeat-weekdays button:nth-child(3) {
+    animation-delay: 50ms;
+}
+
+#repeat-panel
+.repeat-extra:not(.repeat-section-hidden)
+.repeat-weekdays button:nth-child(4) {
+    animation-delay: 75ms;
+}
+
+#repeat-panel
+.repeat-extra:not(.repeat-section-hidden)
+.repeat-weekdays button:nth-child(5) {
+    animation-delay: 100ms;
+}
+
+#repeat-panel
+.repeat-extra:not(.repeat-section-hidden)
+.repeat-weekdays button:nth-child(6) {
+    animation-delay: 125ms;
+}
+
+#repeat-panel
+.repeat-extra:not(.repeat-section-hidden)
+.repeat-weekdays button:nth-child(7) {
+    animation-delay: 150ms;
+}
+
+/* ==========================================================
+   DURATION
+========================================================== */
+
+#repeat-panel #repeat-duration {
+    width: 100%;
+    margin-top: 18px;
+    padding-top: 18px;
+    box-sizing: border-box;
+
+    border-top: 1px solid #e2e8f0;
+
+    overflow: hidden;
+    opacity: 1;
+    max-height: 500px;
+    transform: translateY(0);
+
+    transition:
+        opacity 0.25s ease,
+        max-height 0.30s ease,
+        transform 0.25s ease,
+        padding 0.25s ease,
+        margin 0.25s ease;
+}
+
+#repeat-panel #repeat-duration.hidden {
+    display: block !important;
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-8px);
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+    pointer-events: none;
+    border-top-color: transparent;
+}
+
+#repeat-panel #repeat-duration h3 {
+    margin: 0 0 10px 4px;
+    padding: 0;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+#repeat-panel .duration-option {
+    width: 100%;
+    min-height: 48px;
+
+    margin: 0;
+    padding: 8px 4px;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    border: none;
+    border-radius: 12px;
+    background: transparent;
+    color: #1f2937;
+
+    font-family: inherit;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+
+#repeat-panel .duration-option:hover {
+    background: #f8fafc;
+}
+
+#repeat-panel .duration-option:active {
+    transform: scale(0.985);
+}
+
+#repeat-panel .duration-option.selected {
+    background: #f1f5f9;
+}
+
+#repeat-panel .duration-input {
+    width: 100%;
+    height: 42px;
+
+    margin: 2px 0 8px;
+    padding: 0 12px;
+    box-sizing: border-box;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #1f2937;
+
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+        opacity 0.20s ease,
+        transform 0.20s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+#repeat-panel .duration-input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+}
+
+#repeat-panel .duration-input.hidden {
+    display: block !important;
+    opacity: 0;
+    transform: translateY(-6px);
+    height: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-width: 0;
+    pointer-events: none;
+}
+
+
+/* ==========================================================
+   MOBILE / TABLET
+========================================================== */
+
+@media (max-width: 600px) {
+    #repeat-panel {
+        padding: 12px;
+    }
+
+    #repeat-panel .repeat-panel-content {
+        width: 100%;
+        max-width: 520px;
+        max-height: calc(100dvh - 24px);
+        padding:
+            18px
+            16px
+            calc(24px + env(safe-area-inset-bottom));
+        border-radius: 24px;
+    }
+}
+
+@media (max-width: 400px) {
+    #repeat-panel {
+        padding: 8px;
+    }
+
+    #repeat-panel .repeat-panel-content {
+        max-height: calc(100dvh - 16px);
+        padding:
+            16px
+            14px
+            calc(24px + env(safe-area-inset-bottom));
+    }
+
+    #repeat-panel .repeat-weekdays {
+        gap: 4px;
+    }
+
+    #repeat-panel .repeat-weekdays button {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+    }
+}
+
+/* ==========================================================
+   YEAR VIEW — CLEAN MINI CALENDARS
+========================================================== */
+
+.year-view-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 16px;
+
+    width: 100%;
+    max-width: 100%;
+
+    box-sizing: border-box;
+
+    align-items: start;
+}
+
+/* ==========================================================
+   MONTH CARD
+========================================================== */
+
+.year-month {
+    background:
+        var(--card-bg, #ffffff);
+
+    border:
+        1px solid
+        var(--border-color, #e5e7eb);
+
+    border-radius: 14px;
+
+    padding: 14px 12px 16px;
+
+    width: 100%;
+    min-width: 0;
+
+    box-sizing: border-box;
+
+    min-height: 190px;
+
+    display: flex;
+    flex-direction: column;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        border-color 0.18s ease;
+}
+
+.year-month:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 6px 18px rgba(0, 0, 0, 0.07);
+}
+
+
+/* ==========================================================
+   MONTH NAME
+========================================================== */
+
+.year-month h3 {
+    margin: 0 0 12px;
+
+    text-align: left;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    color:
+        var(--text-color, #111827);
+}
+
+
+/* ==========================================================
+   MINI CALENDAR
+========================================================== */
+
+.year-mini-calendar {
+    display: grid;
+
+    grid-template-columns:
+        repeat(7, minmax(0, 1fr));
+
+    gap: 3px 1px;
+
+    width: 100%;
+    min-width: 0;
+
+    box-sizing: border-box;
+}
+
+.year-month .year-mini-calendar {
+    flex: 1;
+}
+
+/* ==========================================================
+   WEEKDAY LETTERS
+========================================================== */
+
+.year-mini-weekday {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    height: 20px;
+
+    font-size: 9px;
+
+    font-weight: 600;
+
+    color:
+        var(--muted-text, #94a3b8);
+}
+
+
+/* ==========================================================
+   DAY CELL
+========================================================== */
+
+.year-mini-day {
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    aspect-ratio: 1 / 1;
+
+    max-width: 24px;
+    max-height: 24px;
+
+    margin: 0 auto;
+
+    border-radius: 50%;
+
+    font-size: 10px;
+    font-weight: 500;
+
+    color:
+        var(--text-color, #334155);
+
+    cursor: pointer;
+
+    box-sizing: border-box;
+
+    transition:
+        background 0.15s ease,
+        transform 0.15s ease;
+}
+
+.year-mini-day:hover {
+    background:
+        rgba(59, 130, 246, 0.10);
+
+    transform: scale(1.08);
+}
+
+
+/* ==========================================================
+   EMPTY CELLS
+========================================================== */
+
+.year-mini-day.empty {
+    cursor: default;
+}
+
+
+.year-mini-day.empty:hover {
+    background: transparent;
+    transform: none;
+}
+
+
+/* ==========================================================
+   TODAY — TRUE CIRCLE
+========================================================== */
+
+.year-mini-day.today {
+    width: 100%;
+    max-width: 24px;
+
+    aspect-ratio: 1 / 1;
+
+    min-width: 0;
+    min-height: 0;
+
+    padding: 0;
+    margin: 0 auto;
+
+    border-radius: 50%;
+
+    color: var(--blue);
+    border: 2px solid var(--blue);
+
+    box-shadow:
+        0 2px 6px
+        rgba(59, 130, 246, 0.25);
+
+    font-weight: 700;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
+/* ==========================================================
+   YEAR VIEW EVENT INDICATORS
+========================================================== */
+
+.year-mini-day {
+
+    position: relative;
+
+}
+
+
+/*
+   Colored event indicator
+*/
+
+.year-mini-day.has-event::after {
+
+    content: "";
+
+    position: absolute;
+
+    bottom: 1px;
+
+    left: 50%;
+
+    transform:
+        translateX(-50%);
+
+    width: 5px;
+
+    height: 5px;
+
+    border-radius: 50%;
+
+    background:
+        var(--year-event-color);
+
+}
+
+
+/*
+   Multiple events
+
+   Make the indicator slightly
+   larger so it is easier to notice.
+*/
+
+.year-mini-day.multiple-events::after {
+
+    width: 6px;
+
+    height: 6px;
+
+}
+
+.calendar {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+#calendar-days {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* ==========================================================
+   YEAR VIEW EVENT COUNT
+========================================================== */
+
+.year-mini-day {
+
+    position: relative;
+
+}
+
+
+.year-event-count {
+
+    position: absolute;
+
+    top: -3px;
+
+    right: -3px;
+
+    width: 13px;
+
+    height: 13px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #ef4444;
+
+    color: #ffffff;
+
+    font-size: 7px;
+
+    font-weight: 700;
+
+    line-height: 1;
+
+    box-sizing: border-box;
+
+    z-index: 2;
+
+}
+
+/* ==========================================================
+   SMALLER DEVICES
+========================================================== */
+
+@media (max-width: 900px) {
+
+    .year-view-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 12px;
+
+        width: 100%;
+        max-width: 100%;
+    }
+
+
+    .year-month {
+        min-width: 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+}
+
+/* ==========================================================
+   PHONE
+========================================================== */
+
+@media (max-width: 600px) {
+
+    .year-view-grid {
+        grid-template-columns: 1fr;
+
+        gap: 12px;
+
+        width: 100%;
+        max-width: 100%;
+
+        box-sizing: border-box;
+    }
+
+
+    .year-month {
+        width: 100%;
+        min-width: 0;
+
+        min-height: 0;
+
+        padding: 13px;
+    }
+
+
+    .year-mini-calendar {
+        grid-template-columns:
+            repeat(7, minmax(0, 1fr));
+
+        gap: 3px 1px;
+
+        width: 100%;
+    }
+
+
+    .year-mini-day {
+        max-width: 28px;
+        max-height: 28px;
+
+        font-size: 11px;
+    }
+
+
+    .year-mini-day.today {
+        max-width: 28px;
+    }
+
+}
+
+/* ==========================================================
+   YEAR VIEW — FINAL RESPONSIVE FIX
+========================================================== */
+
+/* Desktop / large tablet */
+.calendar-days:has(.year-month) {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 12px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+.calendar-days:has(.year-month) .year-month {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* ==========================================================
+   TABLET
+========================================================== */
+
+@media (max-width: 900px) {
+
+    .calendar-days:has(.year-month) {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+}
+
+/* ==========================================================
+   PHONE
+========================================================== */
+
+@media (max-width: 600px) {
+
+    .calendar-days:has(.year-month) {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+        padding: 10px !important;
+    }
+
+    .calendar-days:has(.year-month) .year-month {
+        width: 100% !important;
+        min-width: 0 !important;
+        padding: 12px !important;
+    }
+
+    .calendar-days:has(.year-month) .year-mini-calendar {
+        width: 100% !important;
+        min-width: 0 !important;
+        grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+    }
+
+}
+
+/* ==========================================================
+   VERY SMALL PHONE
+========================================================== */
+
+@media (max-width: 400px) {
+
+    .calendar-days:has(.year-month) {
+        grid-template-columns: 1fr !important;
+        padding: 8px !important;
+    }
+
+    .calendar-days:has(.year-month) .year-month {
+        padding: 10px !important;
+    }
+
+    .calendar-days:has(.year-month) .year-mini-day {
+        font-size: 10px !important;
+        max-width: 24px !important;
+        max-height: 24px !important;
+    }
+
+}
+
+/* ==========================================================
+   VERY SMALL SCREENS — CALENDAR NAVIGATION
+========================================================== */
+
+@media (max-width: 400px) {
+
+    .calendar-toolbar {
+        width: 100%;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .calendar-top {
+        width: 100%;
+        display: flex;
+        flex-wrap: nowrap !important;
+        align-items: center;
+        justify-content: space-between !important;
+        gap: 6px;
+        box-sizing: border-box;
+    }
+
+    .calendar-top h2 {
+        flex: 1 1 auto;
+        min-width: 0 !important;
+        width: auto;
+        margin: 0;
+        font-size: 18px !important;
+        white-space: nowrap;
+        text-align: center;
+    }
+
+    .month-btn {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        flex: 0 0 36px !important;
+    }
+
+    .month-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+
+}
+
+/* ==========================================================
+   ALL DAY SWITCH — CLEAN HOMEUP STYLE
+========================================================== */
+
+.all-day-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 0;
+    box-sizing: border-box;
+}
+
+.all-day-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.all-day-title {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.all-day-subtitle {
+    font-size: 12px;
+    line-height: 1.2;
+    opacity: 0.55;
+}
+
+/* Switch */
+
+.switch {
+    position: relative;
+    display: inline-flex;
+    width: 46px;
+    height: 26px;
+    flex: 0 0 46px;
+    cursor: pointer;
+}
+
+.switch input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch-slider {
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: #d1d5db;
+    transition:
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.switch-slider::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: 3px;
+    top: 3px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.2);
+    transition:
+        transform 0.2s ease;
+}
+
+.switch input:checked + .switch-slider {
+    background: var(--blue);
+}
+
+.switch input:checked + .switch-slider::before {
+    transform: translateX(20px);
+}
+
+.switch input:focus-visible + .switch-slider {
+    outline: 2px solid var(--blue);
+    outline-offset: 3px;
+}
+
+/* ==========================================================
+   WEEK VIEW
+   Hide the normal calendar Sun-Sat header.
+   Week View creates its own headers.
+========================================================== */
+
+.calendar:has(#calendar-days.week-view-grid)
+.calendar-weekdays {
+    display: none;
+}
+
+/* ==========================================================
+   WEEK / DAY VIEW — VERY SMALL SCREENS
+   Prevent header from overlapping navigation buttons
+========================================================== */
+
+@media (max-width: 420px) {
+
+    /* Keep the navigation row contained */
+    .calendar-top {
+        display: grid;
+
+        grid-template-columns:
+            40px
+            minmax(0, 1fr)
+            40px;
+
+        align-items: center;
+
+        width: 100%;
+
+        gap: 6px;
+
+        box-sizing: border-box;
+
+        padding:
+            0 6px;
+    }
+
+
+    /* Keep previous / next buttons fixed */
+    .calendar-top .month-btn {
+        width: 40px;
+        height: 40px;
+
+        min-width: 40px;
+        min-height: 40px;
+
+        flex: none;
+    }
+
+
+    /* Stop the title from pushing into the buttons */
+    .calendar-top h2 {
+        min-width: 0;
+
+        width: 100%;
+
+        margin: 0;
+
+        padding: 0 2px;
+
+        text-align: center;
+
+        font-size: 16px;
+
+        line-height: 1.25;
+
+        white-space: normal;
+
+        overflow-wrap: break-word;
+
+        word-break: normal;
+    }
+
+
+    /* Make the calendar itself stay below the toolbar */
+    .calendar-toolbar {
+        position: relative;
+
+        z-index: 2;
+
+        width: 100%;
+
+        box-sizing: border-box;
+
+        margin-bottom: 10px;
+    }
+
+
+    .calendar {
+        position: relative;
+
+        z-index: 1;
+
+        width: 100%;
+
+        box-sizing: border-box;
+    }
+
+
+    /* WEEK VIEW HEADER */
+    .week-view-grid {
+        margin-top: 0;
+
+        width: 100%;
+
+        box-sizing: border-box;
+    }
+
+
+    .week-day-header {
+        position: relative;
+
+        z-index: 1;
+
+        min-height: 58px;
+
+        padding:
+            5px 1px;
+    }
+
+
+    .week-day-header > div:first-child {
+        font-size: 9px;
+
+        line-height: 1.1;
+
+        white-space: nowrap;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+
+        max-width: 100%;
+    }
+
+
+    .week-day-header .week-day-number {
+        width: 27px;
+        height: 27px;
+
+        font-size: 13px;
+    }
+
+
+    /* DAY VIEW */
+    .day-view-grid {
+        width: 100%;
+
+        box-sizing: border-box;
+
+        margin-top: 0;
+    }
+
+
+    .day-hour-row {
+        grid-template-columns:
+            60px minmax(0, 1fr);
+    }
+
+
+    .day-hour-label {
+        padding:
+            10px 7px;
+
+        font-size: 10px;
+    }
+
+
+    .day-hour-content {
+        min-width: 0;
+
+        padding:
+            6px;
+    }
+
+}
+
+
+/* ==========================================================
+   EXTREMELY SMALL SCREENS
+========================================================== */
+
+@media (max-width: 340px) {
+
+    .calendar-top {
+        grid-template-columns:
+            36px
+            minmax(0, 1fr)
+            36px;
+
+        gap: 4px;
+
+        padding:
+            0 4px;
+    }
+
+
+    .calendar-top .month-btn {
+        width: 36px;
+        height: 36px;
+
+        min-width: 36px;
+        min-height: 36px;
+    }
+
+
+    .calendar-top .month-btn svg {
+        width: 19px;
+        height: 19px;
+    }
+
+
+    .calendar-top h2 {
+        font-size: 14px;
+    }
+
+
+    .week-day-header {
+        min-height: 54px;
+
+        gap: 3px;
+    }
+
+
+    .week-day-header > div:first-child {
+        font-size: 8px;
+    }
+
+
+    .week-day-header .week-day-number {
+        width: 25px;
+        height: 25px;
+
+        font-size: 12px;
+    }
+
+
+    .day-hour-row {
+        grid-template-columns:
+            52px minmax(0, 1fr);
+    }
+
+
+    .day-hour-label {
+        padding:
+            9px 5px;
+
+        font-size: 9px;
+    }
+
+}
+
+/* ==========================================================
+   MULTI-DAY EVENTS
+========================================================== */
+
+.calendar-event.multi-day-start,
+.calendar-event.multi-day-middle,
+.calendar-event.multi-day-end {
+
+    border-radius: 0;
+
+}
+
+
+/* ----------------------------------------------------------
+   MONTH VIEW
+---------------------------------------------------------- */
+
+.calendar-day-events
+.calendar-event.multi-day-start {
+
+    margin-right: -10px;
+
+    border-top-left-radius: 7px;
+    border-bottom-left-radius: 7px;
+
+}
+
+
+.calendar-day-events
+.calendar-event.multi-day-middle {
+
+    margin-left: -10px;
+    margin-right: -10px;
+
+}
+
+
+.calendar-day-events
+.calendar-event.multi-day-end {
+
+    margin-left: -10px;
+
+    border-top-right-radius: 7px;
+    border-bottom-right-radius: 7px;
+
+}
+
+
+/* ----------------------------------------------------------
+   WEEK VIEW
+---------------------------------------------------------- */
+
+.week-day-column
+.calendar-event.multi-day-start {
+
+    width: calc(100% + 8px);
+
+    margin-right: -8px;
+
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+
+}
+
+
+.week-day-column
+.calendar-event.multi-day-middle {
+
+    width: calc(100% + 16px);
+
+    margin-left: -8px;
+    margin-right: -8px;
+
+}
+
+
+.week-day-column
+.calendar-event.multi-day-end {
+
+    width: calc(100% + 8px);
+
+    margin-left: -8px;
+
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+
+}
+
+/* ==========================================================
+   MULTI-DAY EVENT CONTINUATION
+========================================================== */
+
+.calendar-event.multi-day-continuation {
+
+    display: block;
+
+    width: 100%;
+
+    height: 24px;
+
+    min-height: 24px;
+
+    margin: 0;
+
+    padding: 0;
+
+    border-radius: 0;
+
+    background:
+        var(--event-color);
+
+    color: transparent;
+
+    overflow: hidden;
+
+    cursor: pointer;
+
+}
+
+/* ==========================================================
+   MULTI-DAY EVENT BAR
+========================================================== */
+
+.calendar-day-events {
+    position: relative;
+    width: 100%;
+}
+
+
+/* Every multi-day segment */
+
+.calendar-event.multi-day-start,
+.calendar-event.multi-day-middle,
+.calendar-event.multi-day-end {
+    margin-top: 0;
+    margin-bottom: 2px;
+    border-radius: 0;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 20;
+}
+
+
+/* FIRST DAY */
+
+.calendar-event.multi-day-start {
+    margin-left: 0;
+    border-radius: 6px 0 0 6px;
+}
+
+
+/* MIDDLE DAYS */
+
+.calendar-event.multi-day-middle {
+    margin-left: 0;
+    border-radius: 0;
+}
+
+
+/* LAST DAY */
+
+.calendar-event.multi-day-end {
+    margin-left: 0;
+    border-radius: 0 6px 6px 0;
+}
+
+
+/* A one-day event remains fully rounded */
+
+.calendar-event.multi-day-single {
+    border-radius: 6px;
+}
+
+/* ==========================================================
+   REDUCED MOTION
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    #repeat-panel,
+    #repeat-panel * {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* ==========================================================
+   SIDEBAR
+========================================================== */
+
+.sidebar-rec {
+    width: 120px;
+    height: 100vh;
+
+    flex-shrink: 0;
+
+    z-index: 1;
+
+    box-shadow:
+        0 2px 10px rgba(0, 0, 0, 0.1);
+
+    animation:
+        moveDown
+        1s
+        ease-out
+        forwards;
+}
+
+
+.side {
+    width: 100%;
+    height: 100%;
+
+    background: #ffffff;
+
+    border-right:
+        1px solid #ececec;
+
+    padding:
+        20px 14px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+
+#navi {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    font-weight: bold;
+}
+
+
+.nav-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.nav-bottom {
+    margin-top: auto;
+
+    padding-top: 20px;
+}
+
+
+/* ==========================================================
+   PROFILE
+========================================================== */
+
+.profile {
+    width: 54px;
+    height: 54px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    border:
+        2px solid #e5e7eb;
+
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease;
+}
+
+
+.profile:hover {
+    border-color: var(--blue);
+
+    transform:
+        scale(1.05);
+}
+
+
+/* ==========================================================
+   SIDEBAR LINKS — MOBILE MENU STYLE
+========================================================== */
+
+#navi a {
+    width: 90px;
+    height: 70px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    border-radius: 14px;
+
+    text-decoration: none;
+
+    color: #374151;
+
+    background: transparent;
+
+    opacity: 1;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* ==========================================================
+   SIDEBAR HOVER
+========================================================== */
+
+#navi a:hover {
+
+    background:
+        rgba(79, 142, 247, 0.08);
+
+    color: var(--blue);
+
+    transform:
+        translateX(2px);
+}
+
+
+/* ==========================================================
+   SIDEBAR ACTIVE TAB
+========================================================== */
+
+#navi a.active {
+
+    color: var(--blue);
+
+    background:
+        rgba(79, 142, 247, 0.12);
+
+    font-weight: 700;
+}
+
+
+/* ==========================================================
+   ACTIVE TAB HOVER
+========================================================== */
+
+#navi a.active:hover {
+
+    background:
+        rgba(79, 142, 247, 0.16);
+
+    color: var(--dark-blue);
+}
+
+
+/* ==========================================================
+   SIDEBAR ICONS
+========================================================== */
+
+#navi svg {
+
+    width: 24px;
+    height: 24px;
+
+    margin-bottom: 0;
+
+    flex-shrink: 0;
+
+    color: currentColor;
+}
+
+
+/* ==========================================================
+   SIDEBAR TEXT
+========================================================== */
+
+#navi span {
+
+    font-size: 14px;
+
+    text-align: center;
+
+    font-weight: 500;
+
+    color: currentColor;
+}
+
+
+/* ==========================================================
+   ACTIVE TEXT
+========================================================== */
+
+#navi a.active span {
+
+    font-weight: 700;
+}
+
+
+/* ==========================================================
+   PROFILE
+========================================================== */
+
+#navi a.sidebar-profile {
+
+    background: transparent;
+
+    transform: none;
+}
+
+#navi a.sidebar-profile:hover {
+
+    background: transparent;
+
+    color: inherit;
+
+    transform: none;
+}
+
+
+/* ==========================================================
+   MOBILE MENU CONTAINER
+========================================================== */
+
+.menu-container {
+    display: none;
+
+    position: absolute;
+
+    top: 1em;
+    left: 20px;
+
+    z-index: 1000;
+}
+
+
+/* ==========================================================
+   MOBILE MENU TRIGGER
+========================================================== */
+
+#menu-trigger {
+    padding:
+        6.5px 7.5px;
+
+    background: transparent;
+
+    border: none;
+
+    border-radius: 50%;
+
+    box-shadow: var(--shadow);
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    cursor: pointer;
+
+    color: #374151;
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+#menu-trigger:hover {
+    color: var(--blue);
+
+    transform:
+        scale(1.05);
+}
+
+
+#menu-trigger svg {
+    width: 30px;
+    height: 30px;
+
+    display: block;
+}
+
+
+/* ==========================================================
+   MOBILE DROPDOWN
+========================================================== */
+
+#dropdown-menu {
+    position: absolute;
+
+    top: 45px;
+    left: 0;
+
+    min-width: 200px;
+
+    background:
+        rgba(255, 255, 255, 0.75);
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    border:
+        1px solid rgba(255, 255, 255, 0.4);
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.15);
+
+    overflow: hidden;
+
+    border-radius: 14px;
+
+    transform:
+        translateY(-10px)
+        scale(0.97);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transition:
+        transform 0.25s ease,
+        opacity 0.25s ease,
+        visibility 0.25s ease;
+}
+
+
+#dropdown-menu:not(.hidden) {
+    transform:
+        translateY(0)
+        scale(1);
+
+    opacity: 1;
+
+    visibility: visible;
+
+    pointer-events: auto;
+
+    z-index: 999;
+}
+
+
+#dropdown-menu ul {
+    list-style: none;
+
+    margin: 0;
+    padding: 6px;
+}
+
+
+/* ==========================================================
+   MOBILE DROPDOWN ITEMS
+========================================================== */
+
+.dropdown-item {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding:
+        12px 16px;
+
+    border-radius: 12px;
+
+    text-decoration: none;
+
+    color: #374151;
+
+    background: transparent;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.dropdown-item svg {
+    width: 24px;
+    height: 24px;
+
+    flex-shrink: 0;
+
+    color: currentColor;
+}
+
+
+.dropdown-item:hover {
+    background:
+        rgba(79, 142, 247, 0.08);
+
+    color: var(--blue);
+
+    transform:
+        translateX(2px);
+}
+
+
+/* ==========================================================
+   MOBILE ACTIVE TAB
+========================================================== */
+
+/*
+   IMPORTANT:
+   JavaScript should add .active to the current page.
+*/
+
+.dropdown-item.active {
+    color: var(--blue);
+
+    background:
+        rgba(79, 142, 247, 0.12);
+
+    font-weight: 700;
+}
+
+
+.dropdown-item.active svg {
+    color: var(--blue);
+}
+
+
+.dropdown-item.active:hover {
+    background:
+        rgba(79, 142, 247, 0.16);
+
+    color: var(--dark-blue);
+}
+
+/* ==========================================================
+   LARGE TABLET
+========================================================== */
+
+@media (max-width: 1205px) {
+
+    .sidebar-rec {
+        display: none;
+    }
+
+    .menu-container {
+        display: block;
+    }
+
+    .calendar-container {
+      left: 70px;
+    }
+
+}
+
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width: 700px) {
+
+    .menu-container {
+        top: 15px;
+        left: 15px;
+    }
+
+    .calendar-container {
+        left: 70px;
+    }
+
+}
+
+/* ==========================================================
+   MONTH VIEW
+   MULTI-DAY EVENT BAR
+========================================================== */
+
+.calendar-day-events {
+    position: relative;
+    min-width: 0;
+    width: 100%;
+}
+
+
+/*
+   The event itself is allowed to extend across
+   the following calendar cells.
+*/
+
+.calendar-event.month-multi-day-span {
+
+    width: calc(
+        var(--event-span) * 100%
+    );
+
+    max-width: none;
+
+    position: relative;
+
+    z-index: 10;
+
+    margin-right: -10px;
+  
+    box-sizing: border-box;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+}
+
+
+/*
+   Keep the event's contents above
+   the calendar grid lines.
+*/
+
+.calendar-event.month-multi-day-span
+.calendar-event-icon,
+.calendar-event.month-multi-day-span
+.calendar-event-time,
+.calendar-event.month-multi-day-span
+.calendar-event-title {
+
+    position: relative;
+
+    z-index: 11;
+}
+
+
+/*
+   Start of a multi-day event.
+*/
+
+.calendar-event.multi-day-start {
+
+    border-radius:
+        7px 0 0 7px;
+}
+
+
+/*
+   Middle of a multi-day event.
+*/
+
+.calendar-event.multi-day-middle {
+
+    border-radius: 0;
+}
+
+
+/*
+   End of a multi-day event.
+*/
+
+.calendar-event.multi-day-end {
+
+    border-radius:
+        0 7px 7px 0;
+}
+
+
+/*
+   One-day event.
+*/
+
+.calendar-event.multi-day-single {
+
+    border-radius: 7px;
+}

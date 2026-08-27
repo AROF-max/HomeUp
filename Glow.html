@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Infinite Carousel Fix</title>
+  <style>
+    /* Reset & Page Layout */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: #f4f4f7;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    /* --- CAROUSEL STYLES START --- */
+    .carousel-container {
+      overflow: hidden; /* Hides duplicate items off-screen */
+      width: 100%;
+      max-width: 900px; /* Limits container width on large screens */
+      background-color: #ffffff;
+      padding: 20px 0;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      position: relative;
+      display: flex;
+    }
+
+    .carousel-track {
+      display: flex;
+      width: max-content; /* Core fix: allows track to expand to its true combined size */
+      animation: scrollInfinite 15s linear infinite;
+    }
+
+    .carousel-card {
+      width: 200px; /* Exact card width */
+      height: 100px;
+      flex-shrink: 0; /* Core fix: stops cards from collapsing/shrinking */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.5rem;
+      color: white;
+      border-radius: 8px;
+      margin-right: 20px; /* Consistent gap between items */
+    }
+
+    /* Assigning varied colors to track items visually */
+    .carousel-card:nth-child(1), .carousel-card:nth-child(5) { background: #ff5733; }
+    .carousel-card:nth-child(2), .carousel-card:nth-child(6) { background: #33ff57; }
+    .carousel-card:nth-child(3), .carousel-card:nth-child(7) { background: #3357ff; }
+    .carousel-card:nth-child(4), .carousel-card:nth-child(8) { background: #f333ff; }
+
+    /* Core fix animation: loops exactly at the 50% halfway point */
+    @keyframes scrollInfinite {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+
+    /* Pauses the carousel behavior on user hover */
+    .carousel-container:hover .carousel-track {
+      animation-play-state: paused;
+    }
+    /* --- CAROUSEL STYLES END --- */
+  </style>
+</head>
+<body>
+
+  <h1>Seamless Infinite Carousel</h1>
+
+  <div class="carousel-container">
+    <div class="carousel-track">
+      <!-- Group 1: Original Items -->
+      <div class="carousel-card">1</div>
+      <div class="carousel-card">2</div>
+      <div class="carousel-card">3</div>
+      <div class="carousel-card">4</div>
+
+      <!-- Group 2: Duplicate Items (Exact Match) -->
+      <div class="carousel-card" aria-hidden="true">1</div>
+      <div class="carousel-card" aria-hidden="true">2</div>
+      <div class="carousel-card" aria-hidden="true">3</div>
+      <div class="carousel-card" aria-hidden="true">4</div>
+    </div>
+  </div>
+
+</body>
+</html>

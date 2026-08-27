@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="view-transition" content="same-origin">
+    <title>HomeUp | Calendar</title>
+    <link rel="stylesheet" href="calendar.css">
+</head>
+
+<body>
+
+
+                         
+<!-- ==========================================================
+     SIDEBAR
+========================================================== -->
+
+<div class="sidebar-rec">
+
+    <aside class="side">
+
+        <nav id="navi">
+
+            <div class="nav-top">
+
+                <!-- PROFILE -->
+                <a href="profile.html">
+
+                    <img
+                        class="profile"
+                        src="Profilepic.jpg"
+                        alt="User profile picture"
+                    >
+
+                </a>
+
+
+                <!-- HOME -->
+                <a href="Dash.html">
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+
+                        <path d="M3 10.5L12 3l9 7.5"/>
+                        <path d="M5 9.5V21h14V9.5"/>
+                        <path d="M9 21v-6h6v6"/>
+
+                    </svg>
+
+                    <span>Home</span>
+
+                </a>
+
+
+                <!-- CALENDAR -->
+                <a
+                    href="calendar.html"
+                    class="active"
+                >
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+
+                        <rect
+                            x="3"
+                            y="5"
+                            width="18"
+                            height="16"
+                            rx="3"
+                        />
+
+                        <path d="M3 10h18"/>
+                        <path d="M8 3v4"/>
+                        <path d="M16 3v4"/>
+
+                    </svg>
+
+                    <span>Calendar</span>
+
+                </a>
+
+
+                <!-- REMINDERS -->
+                <a href="reminders.html">
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+
+                        <circle
+                            cx="12"
+                            cy="13"
+                            r="7"
+                        />
+
+                        <path d="M12 10v4l2 2"/>
+                        <path d="M6 4L4 6"/>
+                        <path d="M18 4l2 2"/>
+
+                    </svg>
+
+                    <span>Reminders</span>
+
+                </a>
+
+
+                <!-- AI ASSISTANT -->
+                <a href="chatbot.html">
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+
+                        <path
+                            d="M12 2.5
+                               C12.5 6.8 14.2 8.5 18.5 9
+                               C14.2 9.5 12.5 11.2 12 15.5
+                               C11.5 11.2 9.8 9.5 5.5 9
+                               C9.8 8.5 11.5 6.8 12 2.5Z"
+                        />
+
+                        <path
+                            d="M18 15
+                               C18.2 16.6 19.1 17.5 20.7 17.7
+                               C19.1 17.9 18.2 18.8 18 20.5
+                               C17.8 18.8 16.9 17.9 15.3 17.7
+                               C16.9 17.5 17.8 16.6 18 15Z"
+                        />
+
+                    </svg>
+
+                    <span>AI Assistant</span>
+
+                </a>
+
+
+                <!-- MESSAGES -->
+                <a href="messages.html">
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+
+                        <path
+                            d="M21 11.5a8.38 8.38 0 0 1-1 3.8
+                               8.5 8.5 0 0 1-7.5 4.7
+                               8.38 8.38 0 0 1-3.8-1L3 21l1.9-5.7
+                               A8.38 8.38 0 0 1 4 11.5
+                               8.5 8.5 0 0 1 8.7 4
+                               a8.38 8.38 0 0 1 3.8-1
+                               h.5a8.5 8.5 0 0 1 8 8.5z"
+                        />
+
+                    </svg>
+
+                    <span>Messages</span>
+
+                </a>
+
+            </div>
+
+
+            <div class="nav-bottom">
+
+                <!-- SETTINGS -->
+                <a href="Settings.html">
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+
+                        <circle
+                            cx="12"
+                            cy="12"
+                            r="3"
+                        />
+
+                        <path
+                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82
+                               l.06.06a2 2 0 1 1-2.83 2.83
+                               l-.06-.06a1.65 1.65 0 0 0-1.82-.33
+                               1.65 1.65 0 0 0-1 1.51V21
+                               a2 2 0 1 1-4 0v-.09
+                               a1.65 1.65 0 0 0-1-1.51
+                               1.65 1.65 0 0 0-1.82.33
+                               l-.06.06a2 2 0 1 1-2.83-2.83
+                               l.06-.06a1.65 1.65 0 0 0 .33-1.82
+                               1.65 1.65 0 0 0-1.51-1H3
+                               a2 2 0 1 1 0-4h.09
+                               a1.65 1.65 0 0 0 1.51-1
+                               a1.65 1.65 0 0 0-.33-1.82
+                               l-.06-.06a2 2 0 1 1 2.83-2.83
+                               l.06.06a1.65 1.65 0 0 0 1.82.33
+                               A1.65 1.65 0 0 0 10 3.09V3
+                               a2 2 0 1 1 4 0v.09
+                               a1.65 1.65 0 0 0 1 1.51
+                               a1.65 1.65 0 0 0 1.82-.33
+                               l.06-.06a2 2 0 1 1 2.83 2.83
+                               l-.06.06a1.65 1.65 0 0 0-.33 1.82
+                               v0a1.65 1.65 0 0 0 1.51 1H21
+                               a2 2 0 1 1 0 4h-.09
+                               a1.65 1.65 0 0 0-1.51 1z"
+                        />
+
+                    </svg>
+
+                    <span>Settings</span>
+
+                </a>
+
+            </div>
+
+        </nav>
+
+    </aside>
+
+</div>
+
+
+<!-- ==========================================================
+     MOBILE MENU
+========================================================== -->
+
+<div class="menu-container">
+
+    <button
+        id="menu-trigger"
+        type="button"
+        aria-label="Open navigation menu"
+        aria-expanded="false"
+    >
+
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+        >
+
+            <path d="M4 6h16"/>
+            <path d="M4 12h16"/>
+            <path d="M4 18h16"/>
+
+        </svg>
+
+    </button>
+
+
+    <nav
+        id="dropdown-menu"
+        class="hidden"
+    >
+
+        <ul>
+
+
+            <!-- PROFILE -->
+            <li>
+
+                <a
+                    href="profile.html"
+                    class="dropdown-item"
+                    role="menuitem"
+                >
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+
+                        <circle cx="12" cy="8" r="4"/>
+
+                        <path
+                            d="M5 20c1.5-4 4-6 7-6s5.5 2 7 6"
+                        />
+
+                    </svg>
+
+                    <span>Profile</span>
+
+                </a>
+
+            </li>
+
+
+            <!-- HOME -->
+            <li>
+
+                <a
+                    href="Dash.html"
+                    class="dropdown-item"
+                    role="menuitem"
+                >
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+
+                        <path d="M3 10.5L12 3l9 7.5"/>
+                        <path d="M5 9.5V21h14V9.5"/>
+                        <path d="M9 21v-6h6v6"/>
+
+                    </svg>
+
+                    <span>Home</span>
+
+                </a>
+
+            </li>
+
+
+            <!-- CALENDAR -->
+            <li>
+
+                <a
+                    href="calendar.html"
+                    class="dropdown-item active"
+                    role="menuitem"
+                >
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+
+                        <rect
+                            x="3"
+                            y="5"
+                            width="18"
+                            height="16"
+                            rx="3"
+                        />
+
+                        <path d="M3 10h18"/>
+                        <path d="M8 3v4"/>
+                        <path d="M16 3v4"/>
+
+                    </svg>
+
+                    <span>Calendar</span>
+
+                </a>
+
+            </li>
+
+
+            <!-- REMINDERS -->
+            <li>
+
+                <a
+                    href="reminders.html"
+                    class="dropdown-item"
+                    role="menuitem"
+                >
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+
+                        <circle cx="12" cy="13" r="7"/>
+
+                        <path d="M12 10v4l2 2"/>
+                        <path d="M6 4L4 6"/>
+                        <path d="M18 4l2 2"/>
+
+                    </svg>
+
+                    <span>Reminders</span>
+
+                </a>
+
+            </li>
+
+
+            <!-- AI ASSISTANT -->
+            <li>
+
+                <a
+                    href="chatbot.html"
+                    class="dropdown-item"
+                    role="menuitem"
+                >
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+
+                        <path
+                            d="M12 2.5
+                               C12.5 6.8 14.2 8.5 18.5 9
+                               C14.2 9.5 12.5 11.2 12 15.5
+                               C11.5 11.2 9.8 9.5 5.5 9
+                               C9.8 8.5 11.5 6.8 12 2.5Z"
+                        />
+
+                        <path
+                            d="M18 15
+                               C18.2 16.6 19.1 17.5 20.7 17.7
+                               C19.1 17.9 18.2 18.8 18 20.5
+                               C17.8 18.8 16.9 17.9 15.3 17.7
+                               C16.9 17.5 17.8 16.6 18 15Z"
+                        />
+
+                    </svg>
+
+                    <span>AI Assistant</span>
+
+                </a>
+
+            </li>
+
+
+            <!-- MESSAGES -->
+            <li>
+
+                <a
+                    href="messages.html"
+                    class="dropdown-item"
+                    role="menuitem"
+                >
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+
+                        <path
+                            d="M21 11.5a8.38 8.38 0 0 1-1 3.8
+                               8.5 8.5 0 0 1-7.5 4.7
+                               8.38 8.38 0 0 1-3.8-1L3 21l1.9-5.7
+                               A8.38 8.38 0 0 1 4 11.5
+                               8.5 8.5 0 0 1 8.7 4
+                               a8.38 8.38 0 0 1 3.8-1
+                               h.5a8.5 8.5 0 0 1 8 8.5z"
+                        />
+
+                    </svg>
+
+                    <span>Messages</span>
+
+                </a>
+
+            </li>
+
+
+            <!-- SETTINGS -->
+            <li>
+
+                <a
+                    href="Settings.html"
+                    class="dropdown-item"
+                    role="menuitem"
+                >
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+
+                        <circle
+                            cx="12"
+                            cy="12"
+                            r="3"
+                        />
+
+                        <path
+                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82
+                               l.06.06a2 2 0 1 1-2.83 2.83
+                               l-.06-.06a1.65 1.65 0 0 0-1.82-.33
+                               1.65 1.65 0 0 0-1 1.51V21
+                               a2 2 0 1 1-4 0v-.09
+                               a1.65 1.65 0 0 0-1-1.51
+                               1.65 1.65 0 0 0-1.82.33
+                               l-.06.06a2 2 0 1 1-2.83-2.83
+                               l.06-.06a1.65 1.65 0 0 0 .33-1.82
+                               1.65 1.65 0 0 0-1.51-1H3
+                               a2 2 0 1 1 0-4h.09
+                               a1.65 1.65 0 0 0 1.51-1
+                               a1.65 1.65 0 0 0-.33-1.82
+                               l-.06-.06a2 2 0 1 1 2.83-2.83
+                               l.06.06a1.65 1.65 0 0 0 1.82.33
+                               A1.65 1.65 0 0 0 10 3.09V3
+                               a2 2 0 1 1 4 0v.09
+                               a1.65 1.65 0 0 0 1 1.51
+                               a1.65 1.65 0 0 0 1.82-.33
+                               l.06-.06a2 2 0 1 1 2.83 2.83
+                               l-.06.06a1.65 1.65 0 0 0-.33 1.82
+                               v0a1.65 1.65 0 0 0 1.51 1H21
+                               a2 2 0 1 1 0 4h-.09
+                               a1.65 1.65 0 0 0-1.51 1z"
+                        />
+
+                    </svg>
+
+                    <span>Settings</span>
+
+                </a>
+
+            </li>
+
+
+        </ul>
+
+    </nav>
+
+</div>
+
+
+<!-- ==========================================================
+     CALENDAR VIEW MENU
+========================================================== -->
+
+<div class="calendar-container">
+
+    <button
+        id="calendar-trigger"
+        type="button"
+        aria-label="Calendar views"
+        aria-expanded="false">
+
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="24"
+             height="24"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round">
+            <rect x="3" y="5" width="18" height="16" rx="3"/>
+            <path d="M3 10h18"/>
+            <path d="M8 3v4"/>
+            <path d="M16 3v4"/>
+        </svg>
+
+    </button>
+
+
+    <nav id="calendar-view-menu" class="hidden">
+
+        <ul>
+
+            <!-- Year -->
+            <li>
+                <button
+                    class="calendar-view-item"
+                    data-view="year"
+                    type="button">
+
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         width="24"
+                         height="24"
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="2"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <path d="M3 9h18"/>
+                        <path d="M9 9v12"/>
+                        <path d="M15 9v12"/>
+                    </svg>
+
+                    <span>Year</span>
+
+                </button>
+            </li>
+
+
+            <!-- Month -->
+            <li>
+                <button
+                    class="calendar-view-item active"
+                    data-view="month"
+                    type="button">
+
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         width="24"
+                         height="24"
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="2"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <rect x="3" y="5" width="18" height="16" rx="3"/>
+                        <path d="M3 10h18"/>
+                        <path d="M8 3v4"/>
+                        <path d="M16 3v4"/>
+                    </svg>
+
+                    <span>Month</span>
+
+                </button>
+            </li>
+
+            <!-- Week -->
+<li>
+    <button
+        class="calendar-view-item"
+        data-view="week"
+        type="button">
+
+        <svg xmlns="http://www.w3.org/2000/svg"
+     width="24"
+     height="24"
+     viewBox="0 0 24 24"
+     fill="none"
+     stroke="currentColor"
+     stroke-width="1.8"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     aria-hidden="true">
+
+    <rect x="3" y="4" width="18" height="17" rx="3"/>
+
+    <path d="M3 9h18"/>
+
+    <path d="M8 2.5v3"/>
+    <path d="M16 2.5v3"/>
+
+    <path d="M7 13h.01"/>
+    <path d="M12 13h.01"/>
+    <path d="M17 13h.01"/>
+
+    <path d="M7 17h.01"/>
+    <path d="M12 17h.01"/>
+    <path d="M17 17h.01"/>
+
+</svg>
+
+        <span>Week</span>
+
+    </button>
+</li>
+          
+            <!-- Day -->
+            <li>
+                <button
+                    class="calendar-view-item"
+                    data-view="day"
+                    type="button">
+
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         width="24"
+                         height="24"
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="2"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <rect x="5" y="3" width="14" height="18" rx="2"/>
+                        <path d="M9 3v4"/>
+                        <path d="M15 3v4"/>
+                        <path d="M5 9h14"/>
+                    </svg>
+
+                    <span>Day</span>
+
+                </button>
+            </li>
+
+        </ul>
+
+    </nav>
+
+</div>
+
+
+<!-- ==========================================================
+     CALENDAR
+========================================================== -->
+
+<main class="calendar-page">
+
+    <header class="calendar-header">
+
+    <div class="calendar-header-actions">
+
+      <button
+            id="today-btn"
+            type="button"
+            aria-label="Go to today">
+            24
+        </button>
+
+        <button
+            id="add-event-btn"
+            type="button">
+
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true">
+
+                <path d="M12 5v14"/>
+                <path d="M5 12h14"/>
+
+            </svg>
+
+        </button>
+
+    </div>
+
+</header>
+
+
+    <section class="calendar-toolbar">
+
+        <div class="calendar-top">
+
+            <button
+                id="prev-month"
+                class="month-btn"
+                type="button"
+                aria-label="Previous month">
+
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2.5"
+                     stroke-linecap="round"
+                     stroke-linejoin="round"
+                     aria-hidden="true">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+
+            </button>
+
+
+            <h2 id="month-title">August 2026</h2>
+
+
+            <button
+                id="next-month"
+                class="month-btn"
+                type="button"
+                aria-label="Next month">
+
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2.5"
+                     stroke-linecap="round"
+                     stroke-linejoin="round"
+                     aria-hidden="true">
+                    <path d="M9 18l6-6-6-6"/>
+                </svg>
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <section class="calendar" aria-label="Calendar">
+
+        <div class="calendar-weekdays">
+            <div>Sun</div>
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+        </div>
+
+        <div id="calendar-days" class="calendar-days"></div>
+
+    </section>
+
+</main>
+
+
+<!-- ==========================================================
+     ADD EVENT MODAL
+========================================================== -->
+
+<div id="event-modal" class="event-modal hidden">
+
+    <div class="event-modal-content">
+
+        <div class="event-modal-header">
+
+            <h2>Add Event</h2>
+
+            <button
+                id="close-event-modal"
+                type="button"
+                aria-label="Close">
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="event-form">
+
+            <div class="form-group">
+                <label for="event-title">Event title</label>
+
+                <input
+                    id="event-title"
+                    type="text"
+                    placeholder="e.g. Electricity bill"
+                    required>
+            </div>
+
+<!-- ======================================================
+     ALL DAY
+====================================================== -->
+
+<div class="all-day-row">
+
+    <div class="all-day-info">
+        <span class="all-day-title">All day</span>
+
+    </div>
+
+    <label class="switch" aria-label="All day">
+
+        <input
+            id="event-all-day"
+            type="checkbox">
+
+        <span class="switch-slider"></span>
+
+    </label>
+
+</div>
+
+
+<!-- ======================================================
+     EVENT DATES
+====================================================== -->
+
+<div class="event-date-row">
+
+    <div class="form-group">
+
+        <label for="event-date">
+            Start date
+        </label>
+
+        <input
+            id="event-date"
+            type="date"
+            required>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="event-end-date">
+            End date
+        </label>
+
+        <input
+            id="event-end-date"
+            type="date"
+            required>
+
+    </div>
+
+</div>
+
+
+<!-- ======================================================
+     EVENT TIMES
+====================================================== -->
+
+<div
+    id="event-time-row"
+    class="time-row">
+
+    <div class="form-group">
+
+        <label for="event-start">
+            Start
+        </label>
+
+        <input
+            id="event-start"
+            type="time"
+            required>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="event-end">
+            End
+        </label>
+
+        <input
+            id="event-end"
+            type="time">
+
+    </div>
+
+</div>
+
+
+            <!-- Repeat -->
+
+            <div class="form-group repeat-form-group">
+
+                <button
+                    type="button"
+                    id="event-repeat-row"
+                    class="repeat-row">
+
+                    <span class="repeat-row-label">
+                        Repeat
+                    </span>
+
+                    <span class="repeat-row-value">
+                        Does not repeat
+                    </span>
+
+                    <svg
+                        class="repeat-row-chevron"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true">
+                        <path d="m9 18 6-6-6-6"/>
+                    </svg>
+
+                </button>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="event-description">
+                    Description
+                </label>
+
+                <textarea
+                    id="event-description"
+                    placeholder="Optional"></textarea>
+
+            </div>
+
+
+            <div class="event-form-actions">
+
+                <button
+                    id="cancel-event"
+                    type="button">
+                    Cancel
+                </button>
+
+                <button type="submit">
+                    Add event
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     REPEAT PANEL
+========================================================== -->
+
+<div
+    id="repeat-panel"
+    class="repeat-panel hidden"
+    aria-hidden="true">
+
+    <div class="repeat-panel-content">
+
+        <div class="repeat-panel-header">
+
+            <button
+                id="repeat-back-btn"
+                type="button"
+                class="repeat-back-btn"
+                aria-label="Back">
+
+                <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    >
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+
+            </button>
+
+        </div>
+
+
+        <div class="repeat-options">
+
+            <!-- Don't repeat -->
+            <button
+                type="button"
+                class="repeat-option"
+                data-repeat="none">
+
+                <span class="repeat-radio"></span>
+
+                <span class="repeat-option-text">
+                    Don't repeat
+                </span>
+
+            </button>
+
+
+            <!-- Daily -->
+            <button
+                type="button"
+                class="repeat-option"
+                data-repeat="daily">
+
+                <span class="repeat-radio"></span>
+
+                <span class="repeat-option-text">
+                    Every
+                </span>
+
+                <input
+                    id="repeat-daily-interval"
+                    class="repeat-number"
+                    type="number"
+                    min="1"
+                    value="1">
+
+                <span class="repeat-option-text">
+                    day
+                </span>
+
+            </button>
+
+
+            <!-- Weekly -->
+            <button
+                type="button"
+                class="repeat-option"
+                data-repeat="weekly">
+
+                <span class="repeat-radio"></span>
+
+                <span class="repeat-option-text">
+                    Every
+                </span>
+
+                <input
+                    id="repeat-weekly-interval"
+                    class="repeat-number"
+                    type="number"
+                    min="1"
+                    value="1">
+
+                <span class="repeat-option-text">
+                    week
+                </span>
+
+            </button>
+
+
+            <div
+                id="repeat-weekdays"
+                class="repeat-extra hidden">
+
+                <div class="repeat-weekday-label">
+                    Repeat on
+                </div>
+
+                <div class="repeat-weekdays">
+
+                    <button type="button" data-day="0">S</button>
+                    <button type="button" data-day="1">M</button>
+                    <button type="button" data-day="2">T</button>
+                    <button type="button" data-day="3">W</button>
+                    <button type="button" data-day="4">T</button>
+                    <button type="button" data-day="5">F</button>
+                    <button type="button" data-day="6">S</button>
+
+                </div>
+
+            </div>
+
+
+            <!-- Monthly -->
+            <button
+                type="button"
+                class="repeat-option"
+                data-repeat="monthly">
+
+                <span class="repeat-radio"></span>
+
+                <span class="repeat-option-text">
+                    Every
+                </span>
+
+                <input
+                    id="repeat-monthly-interval"
+                    class="repeat-number"
+                    type="number"
+                    min="1"
+                    value="1">
+
+                <span class="repeat-option-text">
+                    month
+                </span>
+
+            </button>
+
+
+            <!-- Yearly -->
+            <button
+                type="button"
+                class="repeat-option"
+                data-repeat="yearly">
+
+                <span class="repeat-radio"></span>
+
+                <span class="repeat-option-text">
+                    Every
+                </span>
+
+                <input
+                    id="repeat-yearly-interval"
+                    class="repeat-number"
+                    type="number"
+                    min="1"
+                    value="1">
+
+                <span class="repeat-option-text">
+                    year
+                </span>
+
+            </button>
+
+        </div>
+
+
+        <div
+            id="repeat-duration"
+            class="repeat-duration hidden">
+
+            <h3>Duration</h3>
+
+
+            <!-- Forever -->
+            <button
+                type="button"
+                class="duration-option active"
+                data-duration="forever">
+
+                <span class="repeat-radio"></span>
+                <span>Forever</span>
+
+            </button>
+
+
+            <!-- Count -->
+            <button
+                type="button"
+                class="duration-option"
+                data-duration="count">
+
+                <span class="repeat-radio"></span>
+                <span>Specific number of times</span>
+
+            </button>
+
+
+            <input
+                id="repeat-count"
+                class="duration-input hidden"
+                type="number"
+                min="1"
+                placeholder="Number of times">
+
+
+            <!-- Until -->
+            <button
+                type="button"
+                class="duration-option"
+                data-duration="until">
+
+                <span class="repeat-radio"></span>
+                <span>Until</span>
+
+            </button>
+
+
+            <input
+                id="repeat-until"
+                class="duration-input hidden"
+                type="date">
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     EVENT ACTIONS
+========================================================== -->
+
+<div
+    id="event-actions-modal"
+    class="event-actions-modal hidden">
+
+    <div class="event-actions-content">
+
+        <div class="event-actions-header">
+
+            <h2 id="event-actions-title">
+                Event
+            </h2>
+
+            <button
+                id="close-event-actions"
+                type="button"
+                aria-label="Close">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="event-actions-buttons">
+
+            <!-- Edit -->
+            <button
+                id="edit-event-btn"
+                type="button"
+                class="edit-event-action">
+
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="20"
+                     height="20"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round"
+                     aria-hidden="true">
+                    <path d="M12 20h9"/>
+                    <path d="M16.5 3.5
+                             a2.121 2.121 0 0 1 3 3
+                             L7 19l-4 1 1-4Z"/>
+                </svg>
+
+                <span>Edit</span>
+
+            </button>
+
+
+            <!-- Delete -->
+            <button
+                id="delete-event-btn"
+                type="button"
+                class="delete-event-action">
+
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="20"
+                     height="20"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round"
+                     aria-hidden="true">
+                    <path d="M3 6h18"/>
+                    <path d="M8 6V4
+                             a2 2 0 0 1 2-2h4
+                             a2 2 0 0 1 2 2v2"/>
+                    <path d="M19 6v14
+                             a2 2 0 0 1-2 2H7
+                             a2 2 0 0 1-2-2V6"/>
+                    <path d="M10 11v6"/>
+                    <path d="M14 11v6"/>
+                </svg>
+
+                <span>Delete</span>
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
+     SCRIPTS
+========================================================== -->
+
+<script defer src="calendar-events.js"></script>
+<script defer src="calendar.js"></script>
+
+</body>
+</html>

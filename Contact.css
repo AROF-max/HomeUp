@@ -1,0 +1,764 @@
+/* ==========================================================
+   GLOBAL RESET
+========================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f3f4f6;
+    overflow-x: hidden;
+}
+
+
+/* ==========================================================
+   VARIABLES
+========================================================== */
+
+:root {
+    --blue: #4f8ef7;
+    --dark-blue: #3968b7;
+    --green: #7ed957;
+    --dark-green: #3ea53d;
+    --bg: #f3f4f6;
+    --text: #333;
+
+    --shadow:
+        0 4px 12px rgba(0,0,0,0.15),
+        inset 0 2px 4px rgba(255,255,255,0.4);
+}
+
+
+/* ==========================================================
+   ANIMATIONS
+========================================================== */
+
+@keyframes fadeIn {
+
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+}
+
+@keyframes moveUp {
+  0% {
+    opacity: 0;
+    transform: translateY(200px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes moveDown {
+
+    from {
+        opacity: 0;
+        transform: translateY(-100px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+@keyframes moveInRight {
+
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+}
+
+
+@keyframes pulse {
+
+    0%,100% {
+        transform: scale(1);
+        box-shadow: 0 0 8px rgba(79,142,247,.6);
+    }
+
+    50% {
+        transform: scale(1.08);
+        box-shadow: 0 0 20px rgba(79,142,247,.9);
+    }
+
+}
+
+
+@property --angle {
+
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+
+}
+
+
+@keyframes chase {
+
+    to {
+        --angle:360deg;
+    }
+
+}
+
+
+
+/* ==========================================================
+   TOP HEADER
+========================================================== */
+
+.header {
+
+    position: fixed;
+    top:0;
+    left:0;
+
+    width:100%;
+    height:60px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 24px;
+
+    z-index:1000;
+
+}
+
+
+
+/* ==========================================================
+   DESKTOP NAV
+========================================================== */
+
+@keyframes moveUp {
+  0% {
+    opacity: 0;
+    transform: translateY(200px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#large-nav {
+  background-color: none;
+  z-index: 100000;
+  position: fixed;
+  animation: moveDown 1.7s ease-out forwards;
+}
+
+#large-nav ul{
+  width: 100%;
+  list-style: none;
+  display: flex;
+  gap: 1em;
+  margin-top: 5px;
+  scale: 0.75;
+  justify-content: flex-end;
+  align-items: center;
+  z-index: 100000;
+}
+
+#large-nav li{
+  height: 50px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.4);
+  border-radius: 50px;
+  gap: 1em;
+  z-index: 100000;
+}
+
+#large-nav a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 5px 20px;
+  transform-origin: center;
+  text-decoration: none;
+  align-items: center;
+  color: #f0f0f0;
+  font-weight: bold;
+  z-index: 100000;
+  transition: scale 0.2s, background-color 0.2s;
+}
+
+#large-nav a:hover{
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  transform: scale(1.03);
+  background-color: gray;
+  border-radius: 50px;
+}
+
+@keyframes glow {
+  0%,100% {
+    box-shadow: 0 0 20px #3ea53d;
+  }
+  50% {
+    box-shadow: 0 0 20px #3968b7;
+  }
+}
+
+.nav-btn.active {
+  background: linear-gradient(90deg, #4f8ef7, #7ed957);
+  border-radius: 50px;
+  animation: glow 1.5s infinite;
+}
+
+
+
+.menu-container {
+
+    display:none;
+
+}
+/* ==========================================================
+   HERO SECTION
+========================================================== */
+
+
+/* ==========================================================
+   PROGRESS BAR
+========================================================== */
+
+
+#progress {
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:0%;
+
+    height:4px;
+
+    background:linear-gradient(
+        90deg,
+        var(--dark-blue),
+        var(--green)
+    );
+
+    z-index:99999;
+
+    transition:width .1s linear;
+
+}
+
+
+
+
+/* ==========================================================
+   HEADER GRADIENT BAR
+========================================================== */
+
+
+.line-breaker {
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100%;
+
+    height:60px;
+
+    background:linear-gradient(
+        135deg,
+        var(--blue),
+        var(--green)
+    );
+
+    z-index:5;
+
+    box-shadow:0 2px 10px rgba(0,0,0,.1);
+
+}
+
+
+
+/* ==========================================================
+   AUTH BUTTONS
+========================================================== */
+
+
+.auth-buttons {
+
+    display:flex;
+
+    gap:12px;
+
+    margin-left:auto;
+
+    animation:moveDown 1.5s ease forwards;
+
+}
+
+
+
+.Log-In,
+.Sign-Up {
+
+
+    padding:10px 20px;
+
+    border:none;
+
+    border-radius:50px;
+
+    cursor:pointer;
+
+    font-weight:bold;
+
+    color:white;
+
+    box-shadow:var(--shadow);
+
+    transition:.2s;
+
+}
+
+
+
+.Log-In {
+
+    background:var(--green);
+
+}
+
+
+.Sign-Up {
+
+    background:var(--blue);
+
+}
+
+
+
+.Log-In:hover {
+
+    background:var(--dark-green);
+
+    transform:scale(1.03);
+
+}
+
+
+.Sign-Up:hover {
+
+    background:var(--dark-blue);
+
+    transform:scale(1.03);
+
+}
+
+
+
+/* ==========================================================
+   CAROUSEL
+========================================================== */
+
+
+.carousel {
+
+    width:100%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:3em;
+
+    margin-top:15vh;
+    animation: moveUp 2s ease forwards;
+    animation-timeline: scroll();
+}
+
+
+
+.group {
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    justify-content:center;
+
+    gap:2rem;
+
+}
+
+
+
+.card-1,
+.card-2,
+.card-3,
+.card-4 {
+
+    width:15em;
+
+    height:25em;
+
+    border-radius:25px;
+
+    background:white;
+
+    border:3px solid transparent;
+
+    position:relative;
+
+    box-shadow:var(--shadow);
+
+    animation:chase 4s linear infinite;
+
+}
+
+
+
+/* Animated borders */
+
+.card-1 {
+
+    background:
+    linear-gradient(#fff,#f3f4f6) padding-box,
+    conic-gradient(
+        from var(--angle),
+        transparent,
+        var(--dark-green),
+        var(--green)
+    ) border-box;
+
+}
+
+
+.card-2 {
+
+    background:
+    linear-gradient(#fff,#f3f4f6) padding-box,
+    conic-gradient(
+        from var(--angle),
+        transparent,
+        var(--green),
+        var(--blue)
+    ) border-box;
+
+}
+
+
+.card-3 {
+
+    background:
+    linear-gradient(#fff,#f3f4f6) padding-box,
+    conic-gradient(
+        from var(--angle),
+        transparent,
+        var(--blue),
+        var(--green)
+    ) border-box;
+
+}
+
+
+.card-4 {
+
+    background:
+    linear-gradient(#fff,#f3f4f6) padding-box,
+    conic-gradient(
+        from var(--angle),
+        transparent,
+        var(--dark-blue),
+        var(--blue)
+    ) border-box;
+
+}
+
+
+
+/* ==========================================================
+   DROPDOWN MENU
+========================================================== */
+
+
+#menu-trigger {
+
+    background:none;
+
+    border:none;
+
+    cursor:pointer;
+
+}
+
+
+
+#menu-trigger img {
+
+    width:30px;
+
+    height:30px;
+
+}
+
+
+
+#dropdown-menu {
+
+    position:absolute;
+
+    top:45px;
+
+    left:0;
+
+    min-width:200px;
+
+    background:white;
+
+    border-radius:10px;
+
+    box-shadow:var(--shadow);
+
+    overflow:hidden;
+
+    opacity:1;
+
+    visibility:visible;
+
+    transform:translateX(0);
+
+    transition:.3s;
+
+}
+
+
+
+#dropdown-menu.hidden {
+
+    opacity:0;
+
+    visibility:hidden;
+
+    transform:translateX(-50px);
+
+}
+
+
+
+#dropdown-menu ul {
+
+    list-style:none;
+
+}
+
+
+
+.dropdown-item {
+
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:12px 16px;
+
+    text-decoration:none;
+
+    color:#374151;
+
+    transition:.2s;
+
+}
+
+
+
+.dropdown-item:hover {
+
+    background:#f3f4f6;
+
+    color:var(--blue);
+
+}
+
+
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+
+
+@media(max-width:1024px){
+
+
+    #large-nav {
+
+        display:none;
+
+    }
+
+
+    .menu-container {
+
+        display:block;
+
+    }
+
+
+    .hero-section {
+
+        gap:3vw;
+
+        padding:90px 5vw 40px;
+
+    }
+
+
+    #sideVid {
+
+        width:35vw;
+
+    }
+
+
+}
+
+
+
+@media(max-width:768px){
+
+
+    .header {
+
+        padding:0 12px;
+
+    }
+
+
+
+    .Log-In,
+    .Sign-Up {
+
+        padding:7px 10px;
+
+        font-size:12px;
+
+    }
+
+
+
+    .hero-section {
+
+        flex-direction:column;
+
+        text-align:center;
+
+        padding-top:90px;
+
+    }
+
+
+
+    .hero-content {
+
+        align-items:center;
+
+    }
+
+
+
+    .head-txt {
+
+        flex-direction:column;
+
+        gap:0;
+
+    }
+
+
+
+    .txt {
+
+        text-align:center;
+
+    }
+
+
+
+    #sideVid {
+
+        width:70vw;
+
+        max-width:320px;
+
+        margin-top:40px;
+
+    }
+
+
+}
+
+
+
+
+@media(max-width:480px){
+
+
+    .Log-In,
+    .Sign-Up {
+
+        padding:6px 8px;
+
+        font-size:11px;
+
+    }
+
+
+
+    #menu-trigger img {
+
+        width:25px;
+
+        height:25px;
+
+    }
+
+
+
+    .carousel {
+
+        margin-top:20vh;
+
+    }
+
+
+}

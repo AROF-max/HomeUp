@@ -1,0 +1,600 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f3f4f6;
+}
+
+@keyframes moveUp {
+  0% {
+    opacity: 0;
+    transform: translateY(200px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#large-nav {
+  background-color: none;
+  z-index: 100000;
+  position: fixed;
+  animation: moveDown 1.7s ease-out forwards;
+}
+
+#large-nav ul{
+  width: 100%;
+  list-style: none;
+  display: flex;
+  gap: 1em;
+  margin-top: 5px;
+  margin-left: 26.5em;
+  scale: 0.75;
+  justify-content: flex-end;
+  align-items: center;
+  z-index: 100000;
+}
+
+#large-nav li{
+  height: 50px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.4);
+  border-radius: 50px;
+  gap: 1em;
+  z-index: 100000;
+}
+
+#large-nav a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 5px 20px;
+  transform-origin: center;
+  text-decoration: none;
+  align-items: center;
+  color: #f0f0f0;
+  font-weight: bold;
+  z-index: 100000;
+  transition: scale 0.2s, background-color 0.2s;
+}
+
+#large-nav a:hover{
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  transform: scale(1.03);
+  background-color: gray;
+  border-radius: 50px;
+}
+
+@keyframes glow {
+  0%,100% {
+    box-shadow: 0 0 8px #4f8ef7;
+  }
+  50% {
+    box-shadow: 0 0 20px #3968b7;
+  }
+}
+
+.nav-btn.active {
+  background: linear-gradient(135deg, #4f8ef7, #7ed957);
+  border-radius: 50px;
+  animation: glow 1.5s infinite;
+}
+
+#large-nav {
+    display: block;
+}
+
+.menu-container {
+    display: none;
+}
+
+
+@media (max-width: 768px) {
+    #large-nav {
+        display: none;
+    }
+
+    .menu-container {
+        display: block;
+    }
+}
+
+
+#progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(-135deg, #3968b7, #3ea53d);
+  z-index: 9999;
+  transform-origin: 0 50%;
+  animation: growProgress auto linear;
+  animation-timeline: scroll();
+}
+
+#sideVid {
+    position: absolute;
+    width: 30vw;
+    height: 30vw;
+    top: 10vh;
+    left: 120vh;
+    object-fit: cover;
+    border-radius: 50%;
+    z-index: 1;
+    animation: fadeIn 5s ease-out forwards;
+}
+
+/* ==========================================================================
+   HEADER & TOP BAR NAVIGATION
+   ========================================================================== */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    display: flex;
+    justify-content: space-between; /* Pushes menu left, buttons right */
+    align-items: center;
+    padding: 0 24px;
+    z-index: 100;
+    background: transparent;
+}
+
+@property --angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+    
+@keyframes growProgress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+    
+@keyframes chase {
+  to {
+    --angle: 360deg;
+    }
+  }
+
+@keyframes moveInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes moveBack {
+  0% {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes moveDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-100px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes Spin {
+  from {
+    translate: 0;
+  }
+  to {
+    translate: -50%;
+  }
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 120px 24px 24px 24px; /* Top padding keeps it safely below your 60px fixed header */
+  max-width: 800px; /* Prevents text lines from getting too long on wide monitors */
+  width: 100%;
+}
+
+.head-txt {
+  font-size: clamp(1rem, 1vw + 1rem, 1.5rem); /* Scales dynamically */
+  font-weight: bold;
+  gap: 12px;
+  margin-left: 0.5em;
+  display: flex;
+  justify-content: left;
+  align-items: left;
+  animation: moveInRight 1.2s ease forwards;
+}
+
+.word1 {
+  background-color: #f3f4f6;
+  color: #4f8ef7;
+}
+
+.word2 {
+  background-color: #f3f4f6;
+  color: #7ed957;
+}
+
+.txt {
+  color: #333;
+  font-size: clamp(1rem, 0.5vw + 0.5rem, 1.25rem); /* Scales dynamically */
+  left: calc(1.5% + 2px);
+  justify-content: left;
+  align-items: left;
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+  transform-origin: left center;
+  animation: fadeIn 2.5s ease forwards;
+}
+
+.txt span {
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* Background Gradient Bar */
+.line-breaker {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: linear-gradient(135deg, #4f8ef7, #7ed957);
+    z-index: 5;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    animation: fadeIn 0.5s ease forwards;
+    
+}
+
+.carousel {
+  top: 0;
+  left: 0;
+  position: relative;
+  gap: 1em;
+  padding: 3em;
+  margin-bottom: 10em;
+  margin-top: 45vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.card-1 {
+  width: 15em;
+  height: 25em;
+  border-radius: 25px;
+  border: none;
+  background-color: #ffffff;
+  color: #222;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.4);
+}
+
+.card-2 {
+  width: 15em;
+  height: 25em;
+  border-radius: 25px;
+  border: none;
+  background-color: #ffffff;
+  color: #222;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.4);
+}
+
+.card-3 {
+  width: 15em;
+  height: 25em;
+  border-radius: 25px;
+  border: none;
+  background-color: #ffffff;
+  color: #222;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.4);
+}
+
+.card-4 {
+  width: 15em;
+  height: 25em;
+  border-radius: 25px;
+  border: none;
+  background-color: #ffffff;
+  color: #222;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.4);
+}
+
+.card-1 {
+      position: relative;
+      padding: 4px;
+      background: 
+        linear-gradient(#fff, #f3f4f6) padding-box,
+        conic-gradient(from var(--angle), transparent 20%, #3ea53d 50%, #7ed957 100%) border-box;
+      
+      border: 3px solid transparent;
+      animation: chase 4s linear infinite;
+    }
+
+    .card-1::after {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      border-radius: 20px;
+      background: conic-gradient(from var(--angle), transparent 20%, rgba(0, 255, 128, 0.4) 100%);
+      animation: chase 4s linear infinite;
+      filter: blur(25px);
+      z-index: -1;
+    }
+    
+.card-2 {
+      position: relative;
+      padding: 4px;
+      background: 
+        linear-gradient(#fff, #f3f4f6) padding-box,
+        conic-gradient(from var(--angle), transparent 0%, 
+          #7ed957 25%,   /* Snake 1 Head */
+          transparent 0%, 
+          transparent 50%, 
+          #4f8ef7 75%,  /* Snake 2 Head */
+          transparent 0%
+        ) border-box;
+      
+      border: 3px solid transparent;
+      animation: chase 4s linear infinite;
+    }
+
+    .card-2::after {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      border-radius: 20px;
+      background: conic-gradient(from var(--angle), transparent 0%, 
+          #3ea53d 25%,
+          transparent 35%, 
+          transparent 50%, 
+          #3968b7 75%,
+          transparent 85%
+        )
+      animation: chase 4s linear infinite;
+      filter: blur(25px);
+      z-index: -1;
+    }
+    
+.card-3 {
+      position: relative;
+      padding: 4px;
+      background: 
+        linear-gradient(#fff, #f3f4f6) padding-box,
+        conic-gradient(from var(--angle), transparent 0%, 
+          #4f8ef7 25%,   /* Snake 1 Head */
+          transparent 0%, 
+          transparent 50%, 
+          #7ed957 75%,  /* Snake 2 Head */
+          transparent 0%
+        ) border-box;
+      
+      border: 3px solid transparent;
+      animation: chase 4s linear infinite;
+    }
+
+    .card-3::after {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      border-radius: 20px;
+      background: conic-gradient(from var(--angle), transparent 0%, 
+          #3968b7 25%,
+          transparent 35%, 
+          transparent 50%, 
+          #3ea53d 75%,
+          transparent 85%
+        )
+      animation: chase 4s linear infinite;
+      filter: blur(25px);
+      z-index: -1;
+    }
+    
+.card-4 {
+      position: relative;
+      padding: 4px;
+      background: 
+        linear-gradient(#fff, #f3f4f6) padding-box,
+        conic-gradient(from var(--angle), transparent 20%, #3968b7 50%, #4f8ef7 100%) border-box;
+      
+      border: 3px solid transparent;
+      animation: chase 4s linear infinite;
+    }
+
+    .card-4::after {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      border-radius: 20px;
+      background: conic-gradient(from var(--angle), transparent 20%, #7792c0ff 100%);
+      animation: chase 4s linear infinite;
+      filter: blur(25px);
+      z-index: -1;
+    }
+    
+.group {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap; /* optional, wraps on smaller screens */
+}
+
+
+.auth-buttons {
+    display: flex;
+    align-items: right;
+    justify-content: right;
+    gap: 12px;
+    animation: moveDown 1.5s ease-out forwards;
+}
+
+/* ==========================================================================
+   BUTTON DESIGNS
+   ========================================================================== */
+.Sign-Up {
+    padding: 10px 20px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.4);
+    text-decoration: none;
+    background-color: #4f8ef7;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+}
+.Sign-Up:hover {
+    background-color: #3968b7;
+    transform: scale(1.03);
+}
+
+.Log-In {
+    padding: 10px 20px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.4);
+    text-decoration: none;
+    background-color: #7ed957;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+}
+.Log-In:hover {
+    background-color: #3ea53d;
+    transform: scale(1.03);
+}
+
+/* ==========================================================================
+   DROPDOWN MECHANICS (FIXED FOR EXIT ANIMATION)
+   ========================================================================== */
+.menu-container {
+    position: relative; /* Anchor target for absolute child element positioning */
+}
+
+#menu-trigger {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+#menu-trigger img {
+    width: 30px;
+    height: 30px;
+    animation: moveInRight 0.8s ease-out forwards;
+}
+
+#dropdown-menu {
+    position: absolute;
+    top: calc(100% + 15px); /* Spacings directly below trigger icon */
+    left: 0;
+    min-width: 200px;
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow:
+        0 5px 15px rgba(0,0,0,0.35),
+        inset 0 2px 8px rgba(255,255,255,0.6);
+    z-index: 10000;
+    overflow: hidden;
+
+    /* Modern approach: Define the active/visible styles */
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+
+    /* Handles both entering and leaving animations smoothly */
+    transition: opacity 0.8s ease, transform 0.8s ease, visibility 0.8s ease;
+}
+
+.hidden {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transform: translateX(-50px) !important;
+}
+
+
+
+#dropdown-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dropdown-item {
+    display: block;
+    padding: 12px 16px;
+    color: #374151;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.15s, color 0.15s ;
+}
+.dropdown-item:hover {
+    background-color: #f3f4f6;
+    color: #4f8ef7;
+}
+
+/* Align icon and text side-by-side */
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Spacing between the icon and text */
+    padding: 12px 16px;
+    color: #374151;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+/* Base icon color and smooth hover transitions */
+.item-icon {
+    color: #222222; /* Subtle gray color */
+    transition: color 0.15s;
+    flex-shrink: 0; /* Prevents icon from shrinking on small text lengths */
+}
+
+/* Changes icon color dynamically when the link container is hovered */
+.dropdown-item:hover .item-icon {
+    color: #4f8ef7 /* Matches the blue hover text link color */
+}
+

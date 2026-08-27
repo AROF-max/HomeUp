@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>HomePulse — Sign In</title>
+
+    <link
+        rel="stylesheet"
+        href="login.css"
+    >
+</head>
+
+<body>
+
+    <!-- BACKGROUND VIDEO -->
+
+    <video
+        id="bgVid"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto"
+    >
+        <source
+            src="Background.mp4"
+            type="video/mp4"
+        >
+    </video>
+
+    <div class="video-overlay"></div>
+
+
+    <!-- LOGIN PAGE -->
+
+    <main class="login-page">
+
+        <section class="login-card">
+
+
+            <!-- TOP ACCENT -->
+
+            <div class="accent-line"></div>
+
+
+            <!-- BRAND -->
+
+            <div class="brand">
+
+                <div class="brand-logo">
+
+                    <img
+                        src="HomeUp Logo.png"
+                        alt="HomeUp's Logo"
+                    >
+
+                </div>
+
+                <div class="brand-name">
+                    HOME<span>PULSE</span>
+                </div>
+
+            </div>
+
+
+            <!-- HEADING -->
+
+            <div class="heading">
+
+                <div class="eyebrow">
+                    FAMILY ACCOUNT
+                </div>
+
+                <h1>
+                    Welcome
+                    <em>home.</em>
+                </h1>
+
+                <p>
+                    Sign in to continue to your
+                    family's HomePulse.
+                </p>
+
+            </div>
+
+
+            <!-- FORM -->
+
+            <form
+                class="login-form"
+                id="loginForm"
+            >
+
+                <!-- EMAIL -->
+
+                <div class="input-group">
+
+                    <label for="username">
+                        Email address
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">
+                            @
+                        </span>
+
+                        <input
+                            type="email"
+                            id="username"
+                            placeholder="you@example.com"
+                            autocomplete="email"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- PASSWORD -->
+
+                <div class="input-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">
+                            •
+                        </span>
+
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- FORGOT -->
+
+                <div class="form-options">
+
+                    <a
+                        class="forgot-password"
+                        href="forgotPass.html"
+                    >
+                        Forgot password?
+                    </a>
+
+                </div>
+
+
+                <!-- SIGN IN -->
+
+                <button
+                    class="login-button"
+                    id="loginButton"
+                    type="submit"
+                >
+
+                    <span id="buttonText">
+                        Sign In
+                    </span>
+
+                    <span class="button-arrow">
+                        →
+                    </span>
+
+                </button>
+
+            </form>
+
+
+            <!-- SIGN UP -->
+
+            <p class="signup-text">
+
+                Don't have a family account?
+
+                <a href="signup.html">
+                    Create one
+                </a>
+
+            </p>
+
+
+            <!-- FOOTER -->
+
+            <div class="footer">
+
+                <span></span>
+
+                <p>
+                    HOME • FAMILY • TOGETHER
+                </p>
+
+                <span></span>
+
+            </div>
+
+
+        </section>
+
+    </main>
+
+
+    <!-- FIREBASE -->
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script src="login.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Choose Profile | HomeUp</title>
+
+    <link rel="stylesheet" href="chooseMember.css">
+</head>
+
+<body>
+
+<video id="bgVid" autoplay muted loop src="Background.mp4"></video>
+ <div class="login-card">
+      <div id="logos">
+        <img class="logo" src="HomeUp Logo.png" alt="HomeUp Logo">
+        <img class="log2" src="HomeUp Name.png" alr="HomeUp Name">
+      </div>
+    
+    <header class="profile-header">
+        <h1>Who's Home?</h1>
+        <p>Select a person to continue.</p>
+    </header>
+
+
+    <section class="profiles" id="profiles">
+
+        <!-- Firebase will add members here -->
+
+        <button class="profile-card add-profile">
+            <div class="profile-picture plus">
+                +
+            </div>
+        </button>
+
+    </section>
+
+
+    <footer class="profile-footer">
+
+        <button class="logout">
+            Log Out
+        </button>
+
+    </footer>
+</div>
+
+
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <script src="chooseMember.js"></script>
+</body>
+
+</html>

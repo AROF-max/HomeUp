@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HomeUp — Create Account</title>
+
+    <link rel="stylesheet" href="signup.css">
+</head>
+
+<body>
+
+    <!-- Background -->
+    <video
+        id="bgVid"
+        autoplay
+        muted
+        loop
+        playsinline
+        src="Background.mp4">
+    </video>
+
+    <div class="background-overlay"></div>
+
+    <main class="signup-page">
+
+        <section class="signup-card">
+
+            <div class="card-accent"></div>
+
+            <!-- Brand -->
+            <div class="brand">
+
+                <div class="brand-mark">
+                    <img
+                        src="HomeUp Logo.png"
+                        alt="HomeUp">
+                </div>
+
+                <div class="brand-name">
+                    <span class="home">HOME</span><span class="up">UP</span>
+                </div>
+
+                <p class="tagline">
+                    Everything your family needs, together.
+                </p>
+
+            </div>
+
+
+            <!-- Heading -->
+            <div class="welcome">
+
+                <h1>Create your account</h1>
+
+                <p>
+                    Set up your HomeUp family space in just a few steps.
+                </p>
+
+            </div>
+
+
+            <!-- Signup Form -->
+            <form
+                id="signupForm"
+                class="signup-form"
+                onsubmit="event.preventDefault(); signup();">
+
+                <!-- Name -->
+                <div class="input-group">
+
+                    <label for="familyName">
+                        Family name
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">⌂</span>
+
+                        <input
+                            type="text"
+                            id="familyName"
+                            placeholder="e.g. The Smith Family"
+                            autocomplete="organization"
+                            required>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Email -->
+                <div class="input-group">
+
+                    <label for="email">
+                        Email address
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">✉</span>
+
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="you@example.com"
+                            autocomplete="email"
+                            required>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Password -->
+                <div class="input-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">●</span>
+
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="Create a password"
+                            autocomplete="new-password"
+                            minlength="6"
+                            required>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Confirm Password -->
+                <div class="input-group">
+
+                    <label for="confirmPassword">
+                        Confirm password
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <span class="input-icon">●</span>
+
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            placeholder="Enter your password again"
+                            autocomplete="new-password"
+                            minlength="6"
+                            required>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Create Account -->
+                <button
+                    class="signup-button"
+                    type="submit"
+                    id="signupButton">
+
+                    <span id="buttonText">
+                        Create account
+                    </span>
+
+                    <span class="button-arrow">
+                        →
+                    </span>
+
+                </button>
+
+            </form>
+
+
+            <!-- Login -->
+            <p class="login-text">
+
+                Already have an account?
+
+                <a href="login.html">
+                    Sign in
+                </a>
+
+            </p>
+
+
+            <!-- Footer -->
+            <div class="signup-footer">
+
+                <span class="footer-line"></span>
+
+                <span>HOMEUP FAMILY PLATFORM</span>
+
+                <span class="footer-line"></span>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <!-- Signup logic -->
+    <script src="signup.js"></script>
+
+</body>
+
+</html>
