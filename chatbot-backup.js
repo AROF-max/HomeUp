@@ -336,21 +336,8 @@ function initializeHomeUp() {
     initializeSuggestions();
     initializeDropdown();
     initializeChatScrolling();
-  
-    try {
-
     initializeSpeechRecognition();
-
-} catch (error) {
-
-    console.error(
-        "HomeUp: Speech initialization failed:",
-        error
-    );
-
-}
-
-initializeForm();
+    initializeForm();
 
     /*
        Make sure the button starts as SEND.
@@ -3209,6 +3196,14 @@ function initializeForm() {
 
             }
 
+
+            if (isListening) {
+
+                stopListening(false);
+
+            }
+
+
             startConversation();
 
 
@@ -3955,20 +3950,17 @@ let isVoiceListening = false;
 
 let voiceText = "";
 
-let voiceSessionActive = false;
 
 function initializeSpeechRecognition() {
 
-    if (!micButton) {
-        return;
-    }
-
     if (
-        !("SpeechRecognition" in window) &&
-        !("webkitSpeechRecognition" in window)
+        !(
+            "SpeechRecognition" in window ||
+            "webkitSpeechRecognition" in window
+        )
     ) {
 
-        console.log(
+        console.warn(
             "HomeUp: Speech Recognition is not supported."
         );
 
@@ -3986,8 +3978,23 @@ function initializeSpeechRecognition() {
         new SpeechRecognition();
 
 
+    console.log(
+        "HomeUp: Speech Recognition Loaded"
+    );
+
+
     recognition.lang =
         "en-US";
+
+
+    /*
+       IMPORTANT:
+
+       These are deliberately kept the same
+       as your old working version.
+
+       We are NOT using interim results.
+    */
 
     recognition.continuous =
         false;
@@ -3996,203 +4003,60 @@ function initializeSpeechRecognition() {
         false;
 
 
-    /*
-       ======================================================
-       VOICE BUTTON ICONS
-       ======================================================
-    */
-
-    const voiceIcon = `
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="22"
-            height="22"
-            viewBox="1 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-        >
-            <path d="M6 9v6"/>
-            <path d="M10 6v12"/>
-            <path d="M14 3v18"/>
-            <path d="M18 8v8"/>
-        </svg>
-    `;
+    recognition.maxAlternatives =
+        1;
 
 
-    const stopIcon = `
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-        >
-            <rect
-                x="7"
-                y="7"
-                width="10"
-                height="10"
-                rx="1.5"
-            />
-        </svg>
-    `;
-
-
-    /*
-       ======================================================
-       RESTORE VOICE BUTTON
-       ======================================================
-    */
-
-    function restoreVoiceButton() {
-
-        micButton.innerHTML =
-            voiceIcon;
-
-        micButton.classList.remove(
-            "listening"
-        );
-
-        micButton.disabled =
-            false;
-
-        micButton.setAttribute(
-            "aria-label",
-            "Voice input"
-        );
-
-        isListening =
-            false;
-
-    }
-
-
-    /*
-       ======================================================
-       SHOW STOP BUTTON
-       ======================================================
-    */
-
-    function showVoiceStopButton() {
-
-        micButton.innerHTML =
-            stopIcon;
-
-        micButton.classList.add(
-            "listening"
-        );
-
-        micButton.disabled =
-            false;
-
-        micButton.setAttribute(
-            "aria-label",
-            "Stop voice input"
-        );
-
-        isListening =
-            true;
-
-    }
-
-
-    /*
-       ======================================================
-       START / STOP BUTTON
-       ======================================================
-    */
-
-    micButton.onclick = () => {
-
-    if (isListening) {
-
-        stopListening(false);
-
-        return;
-
-    }
-
-    try {
-
-        recognition.start();
-
-    } catch (error) {
-
-        console.error(
-            "HomeUp Speech Start Error:",
-            error
-        );
-
-    }
-
-};
-
-    /*
-       ======================================================
-       SPEECH STARTED
-       ======================================================
-    */
+    // ======================================================
+    // START
+    // ======================================================
 
     recognition.onstart = () => {
+
+        isVoiceListening =
+            true;
+
+
+        if (micButton) {
+
+            micButton.classList.add(
+                "listening"
+            );
+
+            micButton.setAttribute(
+                "aria-label",
+                "Stop voice input"
+            );
+
+            micButton.setAttribute(
+                "title",
+                "Stop voice input"
+            );
+
+        }
+
 
         console.log(
             "HomeUp: Voice listening started."
         );
 
-
-        showVoiceStopButton();
-
-
-        const greeting =
-            document.getElementById(
-                "greeting-text"
-            );
-
-        const visualizer =
-            document.getElementById(
-                "voice-visualizer"
-            );
-
-
-        if (greeting) {
-
-            greeting.classList.add(
-                "voice-hidden"
-            );
-
-        }
-
-
-        if (visualizer) {
-
-            visualizer.classList.add(
-                "active"
-            );
-
-        }
-
     };
 
 
-    /*
-       ======================================================
-       SPEECH RESULT
-       ======================================================
-    */
+    // ======================================================
+    // RESULT
+    // ======================================================
 
     recognition.onresult = event => {
 
-        let transcript = "";
+        let transcript =
+            "";
 
+
+        /*
+           This is intentionally based directly
+           on your original working code.
+        */
 
         for (
             let i = 0;
@@ -4206,139 +4070,156 @@ function initializeSpeechRecognition() {
         }
 
 
+        transcript =
+            transcript.trim();
+
+
+        if (!transcript) {
+
+            return;
+
+        }
+
+
+        voiceText =
+            transcript;
+
+        // Capitalize the first letter only.
+// Do not modify the rest of the transcription.
+if (voiceText.length > 0) {
+
+    voiceText =
+        voiceText.charAt(0).toUpperCase() +
+        voiceText.slice(1);
+
+}
+
         if (inputField) {
 
             inputField.value =
-                transcript.trim();
+                voiceText;
+
 
             inputField.focus();
 
 
-            inputField.setSelectionRange(
-                inputField.value.length,
-                inputField.value.length
-            );
+            try {
+
+                inputField.setSelectionRange(
+                    inputField.value.length,
+                    inputField.value.length
+                );
+
+            }
+
+            catch {}
 
         }
+
+
+        console.log(
+            "HomeUp: Voice transcript:",
+            voiceText
+        );
 
     };
 
 
-    /*
-       ======================================================
-       SPEECH ENDED
-       ======================================================
-    */
+    // ======================================================
+    // END
+    // ======================================================
 
     recognition.onend = () => {
 
+        isVoiceListening =
+            false;
+
+
+        if (micButton) {
+
+            micButton.classList.remove(
+                "listening"
+            );
+
+
+            micButton.setAttribute(
+                "aria-label",
+                "Voice input"
+            );
+
+
+            micButton.setAttribute(
+                "title",
+                "Voice input"
+            );
+
+        }
+
+
         console.log(
-            "HomeUp: Voice listening ended."
+            "HomeUp: Voice listening stopped."
         );
-
-
-        const greeting =
-            document.getElementById(
-                "greeting-text"
-            );
-
-        const visualizer =
-            document.getElementById(
-                "voice-visualizer"
-            );
-
-
-        if (visualizer) {
-
-            visualizer.classList.remove(
-                "active"
-            );
-
-        }
-
-
-        if (greeting) {
-
-            greeting.classList.remove(
-                "voice-hidden"
-            );
-
-        }
-
-
-        /*
-           VERY IMPORTANT:
-           Always restore the four voice bars.
-        */
-
-        restoreVoiceButton();
 
     };
 
 
-    /*
-       ======================================================
-       SPEECH ERROR
-       ======================================================
-    */
+    // ======================================================
+    // ERROR
+    // ======================================================
 
     recognition.onerror = event => {
 
         console.error(
-            "HomeUp Speech Error:",
+            "HomeUp: Speech recognition error:",
             event.error
         );
 
 
-        const visualizer =
-            document.getElementById(
-                "voice-visualizer"
+        isVoiceListening =
+            false;
+
+
+        if (micButton) {
+
+            micButton.classList.remove(
+                "listening"
             );
 
 
-        const greeting =
-            document.getElementById(
-                "greeting-text"
+            micButton.setAttribute(
+                "aria-label",
+                "Voice input"
             );
 
 
-        if (visualizer) {
-
-            visualizer.classList.remove(
-                "active"
-            );
-
-        }
-
-
-        if (greeting) {
-
-            greeting.classList.remove(
-                "voice-hidden"
+            micButton.setAttribute(
+                "title",
+                "Voice input"
             );
 
         }
-
-
-        /*
-           Even after an error,
-           restore the microphone icon.
-        */
-
-        restoreVoiceButton();
 
     };
 
 
-    /*
-       ======================================================
-       INITIAL STATE
-       ======================================================
-    */
+    // ======================================================
+    // MICROPHONE BUTTON
+    // ======================================================
 
-    restoreVoiceButton();
+    if (micButton) {
+
+        /*
+           Prevent accidentally attaching the
+           listener more than once.
+        */
+
+        micButton.onclick =
+            handleVoiceButton;
+
+    }
 
 }
+
 
 // ==========================================================
 // VOICE BUTTON
@@ -4358,10 +4239,11 @@ function handleVoiceButton() {
 
 
     /*
-       SECOND TAP = STOP
+       If we're listening, the SAME button
+       becomes the Stop button.
     */
 
-    if (voiceSessionActive) {
+    if (isVoiceListening) {
 
         stopVoiceInput();
 
@@ -4370,13 +4252,10 @@ function handleVoiceButton() {
     }
 
 
-    /*
-       FIRST TAP = START
-    */
-
     startVoiceInput();
 
 }
+
 
 // ==========================================================
 // START VOICE
@@ -4386,7 +4265,7 @@ function startVoiceInput() {
 
     if (
         !recognition ||
-        voiceSessionActive
+        isVoiceListening
     ) {
 
         return;
@@ -4394,9 +4273,12 @@ function startVoiceInput() {
     }
 
 
-    voiceText = "";
+    /*
+       Start a fresh voice message.
+    */
 
-    voiceSessionActive = true;
+    voiceText =
+        "";
 
 
     try {
@@ -4407,8 +4289,6 @@ function startVoiceInput() {
 
     catch (error) {
 
-        voiceSessionActive = false;
-
         console.warn(
             "HomeUp: Could not start speech recognition.",
             error
@@ -4418,6 +4298,7 @@ function startVoiceInput() {
 
 }
 
+
 // ==========================================================
 // STOP VOICE
 // ==========================================================
@@ -4425,22 +4306,15 @@ function startVoiceInput() {
 function stopVoiceInput() {
 
     if (!recognition) {
+
         return;
+
     }
 
 
     console.log(
-        "HomeUp: User stopped voice input."
+        "HomeUp: Stopping voice input."
     );
-
-
-    /*
-       This flag is the important part.
-
-       onend will see false and will NOT restart.
-    */
-
-    voiceSessionActive = false;
 
 
     try {
