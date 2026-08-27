@@ -29,7 +29,7 @@ let inputField = null;
 
 let hero = null;
 let greetingText = null;
-let voiceVisualizer = null;
+
 let scrollDownBtn = null;
 
 let attachButton = null;
@@ -220,33 +220,6 @@ let attachments = [];
 let autoScroll = true;
 let scrollTimer = null;
 
-
-/* ==========================================================
-   VOICE STATE
-   ========================================================== */
-
-let recognition = null;
-
-let speechSupported = false;
-let isListening = false;
-let manuallyStopped = false;
-
-let finalTranscript = "";
-let interimTranscript = "";
-
-let speechRestartTimer = null;
-
-
-/* ==========================================================
-   VOICE VISUALIZER STATE
-   ========================================================== */
-
-let microphoneStream = null;
-let audioContext = null;
-let analyser = null;
-let animationFrame = null;
-
-
 /* ==========================================================
    PLACEHOLDER
    ========================================================== */
@@ -315,9 +288,6 @@ function initializeHomeUp() {
 
     greetingText =
         document.getElementById("greeting-text");
-
-    voiceVisualizer =
-        document.getElementById("voice-visualizer");
 
     scrollDownBtn =
         document.getElementById("scroll-down-btn");
@@ -3970,23 +3940,24 @@ if (
 
 }
 
+/* ==========================================================
+   FRESH VOICE INPUT
+   ========================================================== */
+
+let voiceRecognition = null;
+let voiceSupported = false;
+let voiceListening = false;
+let voiceStopping = false;
+
+let voiceFinalText = "";
+let voiceRestartTimer = null;
+
 
 /* ==========================================================
-   VOICE RECOGNITION
+   INITIALIZE VOICE RECOGNITION
    ========================================================== */
 
 function initializeSpeechRecognition() {
-
-    if (!micButton) {
-
-        console.warn(
-            "HomeUp: #micButton not found."
-        );
-
-        return;
-
-    }
-
 
     const SpeechRecognition =
         window.SpeechRecognition ||
@@ -3996,133 +3967,248 @@ function initializeSpeechRecognition() {
     if (!SpeechRecognition) {
 
         console.warn(
-            "Speech recognition is not supported."
+            "HomeUp: Speech recognition is not supported."
         );
 
-
-        speechSupported =
+        voiceSupported =
             false;
-
-
-        micButton.disabled =
-            true;
-
-
-        micButton.setAttribute(
-            "aria-label",
-            "Speech recognition is not supported"
-        );
-
 
         return;
 
     }
 
 
-    speechSupported =
+    voiceSupported =
         true;
 
 
-    recognition =
+    voiceRecognition =
         new SpeechRecognition();
 
 
-    recognition.lang =
+    voiceRecognition.lang =
         "en-US";
 
 
-    recognition.continuous =
+    /*
+       Keep the recognition session continuous.
+
+       Chrome can still end an individual
+       recognition session, so onend below
+       will restart it while Voice mode
+       is active.
+    */
+
+    voiceRecognition.continuous =
         true;
 
 
-    recognition.interimResults =
+    voiceRecognition.interimResults =
         true;
 
 
-    recognition.maxAlternatives =
+    voiceRecognition.maxAlternatives =
         1;
 
 
-    recognition.onstart =
-        handleSpeechStart;
+    voiceRecognition.onstart =
+        () => {
+
+            voiceListening =
+                true;
+
+            voiceStopping =
+                false;
+
+            updateVoiceButton();
+
+        };
 
 
-    recognition.onresult =
-        handleSpeechResult;
+    voiceRecognition.onresult =
+        event => {
+
+            handleNewVoiceResult(
+                event
+            );
+
+        };
 
 
-    recognition.onerror =
-        handleSpeechError;
+    voiceRecognition.onerror =
+        event => {
+
+            console.warn(
+                "HomeUp voice error:",
+                event.error
+            );
 
 
-    recognition.onend =
-        handleSpeechEnd;
+            /*
+               Permission and microphone
+               failures should stop voice mode.
+            */
+
+            if (
+                event.error ===
+                "not-allowed" ||
+                event.error ===
+                "service-not-allowed" ||
+                event.error ===
+                "audio-capture"
+            ) {
+
+                voiceStopping =
+                    true;
+
+                voiceListening =
+                    false;
+
+                updateVoiceButton();
+
+                return;
+
+            }
+
+        };
 
 
-    micButton.addEventListener(
-        "click",
-        handleMicButton
-    );
+    voiceRecognition.onend =
+        () => {
+
+            /*
+               If the user pressed STOP,
+               this is the end of the
+               voice session.
+            */
+
+            if (voiceStopping) {
+
+                voiceListening =
+                    false;
+
+                updateVoiceButton();
+
+                return;
+
+            }
 
 
-    micButton.setAttribute(
-        "aria-pressed",
-        "false"
-    );
+            /*
+               Chrome sometimes ends a
+               recognition session even
+               though the user is still
+               speaking.
+
+               Restart it automatically.
+            */
+
+            voiceListening =
+                false;
+
+            updateVoiceButton();
 
 
-    console.log(
-        "HomeUp voice recognition initialized"
-    );
+            clearTimeout(
+                voiceRestartTimer
+            );
+
+
+            voiceRestartTimer =
+                setTimeout(
+                    () => {
+
+                        if (
+                            !voiceStopping &&
+                            voiceRecognition
+                        ) {
+
+                            try {
+
+                                voiceRecognition.start();
+
+                            }
+
+                            catch (error) {
+
+                                console.warn(
+                                    "HomeUp: Could not restart voice recognition.",
+                                    error
+                                );
+
+                            }
+
+                        }
+
+                    },
+                    150
+                );
+
+        };
+
+
+    /*
+       Voice button
+    */
+
+    if (micButton) {
+
+        micButton.addEventListener(
+            "click",
+            handleNewVoiceButton
+        );
+
+    }
+
 }
 
 
 /* ==========================================================
-   MICROPHONE BUTTON
+   VOICE BUTTON
    ========================================================== */
 
-async function handleMicButton(
-    event
-) {
+function handleNewVoiceButton() {
 
-    event.preventDefault();
-    event.stopPropagation();
+    if (!voiceSupported) {
 
-
-    if (!speechSupported) {
+        alert(
+            "Voice input is not supported by this browser."
+        );
 
         return;
 
     }
 
 
-    if (isListening) {
+    /*
+       Currently listening:
+       clicking the button means STOP.
+    */
 
-        stopListening(true);
+    if (voiceListening) {
+
+        stopNewVoiceInput();
 
         return;
 
     }
 
 
-    await startListening();
+    startNewVoiceInput();
+
 }
 
 
 /* ==========================================================
-   START LISTENING
+   START VOICE INPUT
    ========================================================== */
 
-async function startListening() {
+function startNewVoiceInput() {
 
-    if (!recognition) {
-
-        return;
-
-    }
-
-
-    if (isListening) {
+    if (
+        !voiceRecognition ||
+        voiceListening
+    ) {
 
         return;
 
@@ -4130,155 +4216,48 @@ async function startListening() {
 
 
     clearTimeout(
-        speechRestartTimer
+        voiceRestartTimer
     );
 
 
-    manuallyStopped =
+    voiceStopping =
         false;
 
 
-    finalTranscript =
-        inputField
-            ? inputField.value.trim()
-            : "";
+    /*
+       Start a fresh transcript only
+       when a new Voice session begins.
+    */
 
-
-    interimTranscript =
-        "";
-
-
-    try {
-
-        await requestMicrophone();
-
-    }
-
-
-    catch (error) {
-
-        console.error(
-            "Microphone permission error:",
-            error
-        );
-
-
-        manuallyStopped =
-            true;
-
-
-        setMicVisualState(false);
-
-        return;
-
-    }
+    voiceFinalText = "";
 
 
     try {
 
-        recognition.start();
+        voiceRecognition.start();
 
     }
 
-
     catch (error) {
 
-        console.error(
-            "Speech recognition could not start:",
+        console.warn(
+            "HomeUp: Voice recognition could not start.",
             error
         );
 
     }
-}
-
-
-/* ==========================================================
-   MICROPHONE PERMISSION
-   ========================================================== */
-
-async function requestMicrophone() {
-
-    if (
-        !navigator.mediaDevices ||
-        !navigator.mediaDevices.getUserMedia
-    ) {
-
-        throw new Error(
-            "Microphone API unavailable."
-        );
-
-    }
-
-
-    const stream =
-        await navigator.mediaDevices.getUserMedia(
-            {
-                audio: {
-                    echoCancellation: true,
-                    noiseSuppression: true,
-                    autoGainControl: true
-                }
-            }
-        );
-
-
-    stream
-        .getTracks()
-        .forEach(
-            track => track.stop()
-        );
-}
-
-
-/* ==========================================================
-   SPEECH START
-   ========================================================== */
-
-function handleSpeechStart() {
-
-    isListening =
-        true;
-
-
-    setMicVisualState(true);
-
-
-    if (greetingText) {
-
-        greetingText.classList.add(
-            "voice-hidden"
-        );
-
-    }
-
-
-    if (voiceVisualizer) {
-
-        voiceVisualizer.classList.add(
-            "active"
-        );
-
-    }
-
-
-    startVoiceVisualizer();
 
 }
 
 
 /* ==========================================================
-   SPEECH RESULT
+   PROCESS VOICE RESULTS
    ========================================================== */
 
-function handleSpeechResult(
+function handleNewVoiceResult(
     event
 ) {
 
-    if (inputField) {
-    inputField.placeholder =
-        "Speech detected...";
-}
-  
     if (!inputField) {
 
         return;
@@ -4288,7 +4267,6 @@ function handleSpeechResult(
 
     let sessionFinal =
         "";
-
 
     let sessionInterim =
         "";
@@ -4304,51 +4282,95 @@ function handleSpeechResult(
             event.results[i];
 
 
-        const transcript =
-            result[0].transcript;
+        if (!result ||
+            !result[0]
+        ) {
+
+            continue;
+
+        }
+
+
+        const text =
+            result[0]
+                .transcript
+                .trim();
+
+
+        if (!text) {
+
+            continue;
+
+        }
 
 
         if (result.isFinal) {
 
             sessionFinal +=
-                transcript;
+                text + " ";
 
-        } else {
+        }
+
+        else {
 
             sessionInterim +=
-                transcript;
+                text + " ";
 
         }
 
     }
 
 
+    sessionFinal =
+        sessionFinal.trim();
+
+
+    sessionInterim =
+        sessionInterim.trim();
+
+
+    /*
+       Add only NEW final speech to
+       the existing voice transcript.
+    */
+
     if (sessionFinal) {
 
-        finalTranscript =
-            (
-                finalTranscript +
-                " " +
-                sessionFinal
-            ).trim();
+        if (
+            voiceFinalText &&
+            !voiceFinalText.endsWith(" ")
+        ) {
+
+            voiceFinalText +=
+                " ";
+
+        }
+
+
+        voiceFinalText +=
+            sessionFinal;
 
     }
 
 
-    interimTranscript =
-        sessionInterim;
+    /*
+       Show final + current interim text.
+    */
 
-
-    inputField.value =
+    const displayText =
         (
-            finalTranscript +
+            voiceFinalText +
             (
-                interimTranscript
+                sessionInterim
                     ? " " +
-                      interimTranscript
+                      sessionInterim
                     : ""
             )
         ).trim();
+
+
+    inputField.value =
+        displayText;
 
 
     inputField.focus();
@@ -4369,305 +4391,32 @@ function handleSpeechResult(
 
 
 /* ==========================================================
-   SPEECH ERROR
+   STOP VOICE INPUT
    ========================================================== */
 
-function handleSpeechError(
-    event
-) {
+function stopNewVoiceInput() {
 
-    console.error(
-        "Speech recognition error:",
-        event.error
-    );
-
-
-    if (
-        event.error === "not-allowed" ||
-        event.error === "service-not-allowed"
-    ) {
-
-        manuallyStopped =
-            true;
-
-
-        isListening =
-            false;
-
-
-        setMicVisualState(false);
-
-        stopVoiceVisualizer();
-
-        return;
-
-    }
-
-
-    if (
-        event.error === "audio-capture"
-    ) {
-
-        manuallyStopped =
-            true;
-
-
-        isListening =
-            false;
-
-
-        setMicVisualState(false);
-
-        stopVoiceVisualizer();
-
-        return;
-
-    }
-
-
-    if (
-        event.error === "network"
-    ) {
-
-        console.warn(
-            "Speech recognition network error."
-        );
-
-    }
-
-}
-
-
-/* ==========================================================
-   SPEECH END
-   ========================================================== */
-
-function handleSpeechEnd() {
-
-    /*
-       If the user pressed STOP,
-       stay stopped.
-
-       The transcript remains in
-       the input for editing/sending.
-    */
-
-    if (manuallyStopped) {
-
-        isListening =
-            false;
-
-        setMicVisualState(
-            false
-        );
-
-        stopVoiceVisualizer();
-
-
-        if (voiceVisualizer) {
-
-            voiceVisualizer.classList.remove(
-                "active"
-            );
-
-        }
-
-
-        if (greetingText) {
-
-            greetingText.classList.remove(
-                "voice-hidden"
-            );
-
-        }
-
-
-        interimTranscript =
-            "";
-
-        if (inputField) {
-
-            inputField.value =
-                finalTranscript.trim();
-
-        }
-
-        return;
-    }
-
-
-    /*
-       The browser ended the recognition
-       session by itself.
-
-       DO NOT stop the HomeUp voice mode.
-
-       Start recognition again so the user
-       can continue speaking.
-    */
-
-    isListening =
-        false;
-
-
-    clearTimeout(
-        speechRestartTimer
-    );
-
-
-    speechRestartTimer =
-        setTimeout(
-            () => {
-
-                if (
-                    !manuallyStopped &&
-                    !isListening &&
-                    recognition
-                ) {
-
-                    try {
-
-                        recognition.start();
-
-                    }
-
-                    catch (error) {
-
-                        console.warn(
-                            "Speech recognition restart failed:",
-                            error
-                        );
-
-                    }
-
-                }
-
-            },
-            100
-        );
-
-}
-
-/* ==========================================================
-   RESTART RECOGNITION
-   ========================================================== */
-
-async function startRecognitionAgain() {
-
-    if (
-        manuallyStopped ||
-        isListening ||
-        !recognition
-    ) {
-
-        return;
-
-    }
-
-
-    try {
-
-        recognition.start();
-
-    }
-
-
-    catch (error) {
-
-        console.warn(
-            "Speech restart failed:",
-            error
-        );
-
-
-        clearTimeout(
-            speechRestartTimer
-        );
-
-
-        speechRestartTimer =
-            setTimeout(
-                () => {
-
-                    if (
-                        !manuallyStopped &&
-                        !isListening
-                    ) {
-
-                        try {
-
-                            recognition.start();
-
-                        }
-
-                        catch (retryError) {
-
-                            console.warn(
-                                "Second speech restart failed:",
-                                retryError
-                            );
-
-                        }
-
-                    }
-
-                },
-                500
-            );
-
-    }
-}
-
-
-/* ==========================================================
-   STOP LISTENING
-   ========================================================== */
-
-function stopListening(
-    keepText = true
-) {
-
-    manuallyStopped =
+    voiceStopping =
         true;
 
 
     clearTimeout(
-        speechRestartTimer
+        voiceRestartTimer
     );
 
 
-    if (keepText && inputField) {
-
-        const currentText =
-            inputField.value.trim();
-
-
-        if (currentText) {
-
-            finalTranscript =
-                currentText;
-
-        }
-
-    }
-
-
-    interimTranscript =
-        "";
-
-
-    if (recognition) {
+    if (voiceRecognition) {
 
         try {
 
-            recognition.stop();
+            voiceRecognition.stop();
 
         }
 
         catch (error) {
 
             console.warn(
-                "Speech stop error:",
+                "HomeUp: Voice recognition stop failed.",
                 error
             );
 
@@ -4676,50 +4425,33 @@ function stopListening(
     }
 
 
-    isListening =
+    voiceListening =
         false;
 
 
-    setMicVisualState(false);
-
-    stopVoiceVisualizer();
-
-
-    if (voiceVisualizer) {
-
-        voiceVisualizer.classList.remove(
-            "active"
-        );
-
-    }
-
-
-    if (greetingText) {
-
-        greetingText.classList.remove(
-            "voice-hidden"
-        );
-
-    }
-
+    /*
+       Make sure the final transcript
+       remains in the input field.
+    */
 
     if (inputField) {
 
         inputField.value =
-            finalTranscript.trim();
+            voiceFinalText.trim();
 
     }
+
+
+    updateVoiceButton();
 
 }
 
 
 /* ==========================================================
-   MIC VISUAL STATE
+   UPDATE VOICE BUTTON
    ========================================================== */
 
-function setMicVisualState(
-    active
-) {
+function updateVoiceButton() {
 
     if (!micButton) {
 
@@ -4728,447 +4460,47 @@ function setMicVisualState(
     }
 
 
-    micButton.classList.toggle(
-        "listening",
-        active
-    );
+    if (voiceListening) {
 
-
-    micButton.setAttribute(
-        "aria-pressed",
-        String(active)
-    );
-
-}
-
-
-/* ==========================================================
-   VOICE VISUALIZER
-   ========================================================== */
-
-async function startVoiceVisualizer() {
-
-    if (!voiceVisualizer) {
-
-        return;
-
-    }
-
-
-    if (microphoneStream) {
-
-        return;
-
-    }
-
-
-    if (
-        !navigator.mediaDevices ||
-        !navigator.mediaDevices.getUserMedia
-    ) {
-
-        return;
-
-    }
-
-
-    try {
-
-        microphoneStream =
-            await navigator.mediaDevices.getUserMedia(
-                {
-                    audio: {
-                        echoCancellation: true,
-                        noiseSuppression: true,
-                        autoGainControl: true
-                    }
-                }
-            );
-
-
-        const AudioContextClass =
-            window.AudioContext ||
-            window.webkitAudioContext;
-
-
-        if (!AudioContextClass) {
-
-            stopVoiceVisualizer();
-
-            return;
-
-        }
-
-
-        audioContext =
-            new AudioContextClass();
-
-
-        if (
-            audioContext.state ===
-            "suspended"
-        ) {
-
-            await audioContext.resume();
-
-        }
-
-
-        analyser =
-            audioContext.createAnalyser();
-
-
-        analyser.fftSize =
-            256;
-
-
-        analyser.smoothingTimeConstant =
-            0.65;
-
-
-        const source =
-            audioContext.createMediaStreamSource(
-                microphoneStream
-            );
-
-
-        source.connect(
-            analyser
+        micButton.classList.add(
+            "voice-active"
         );
 
 
-        const bufferLength =
-            analyser.frequencyBinCount;
-
-
-        const frequencyData =
-            new Uint8Array(
-                bufferLength
-            );
-
-
-        const timeData =
-            new Uint8Array(
-                analyser.fftSize
-            );
-
-
-        const bars =
-            voiceVisualizer.querySelectorAll(
-                ".voice-bar"
-            );
-
-
-        if (!bars.length) {
-
-            return;
-
-        }
-
-
-        const currentHeights =
-            new Array(
-                bars.length
-            ).fill(6);
-
-
-        function animate() {
-
-            if (
-                !analyser ||
-                !isListening
-            ) {
-
-                return;
-
-            }
-
-
-            analyser.getByteFrequencyData(
-                frequencyData
-            );
-
-
-            analyser.getByteTimeDomainData(
-                timeData
-            );
-
-
-            let sum = 0;
-
-
-            for (
-                let i = 0;
-                i < timeData.length;
-                i++
-            ) {
-
-                const value =
-                    (
-                        timeData[i] -
-                        128
-                    ) / 128;
-
-
-                sum +=
-                    value * value;
-
-            }
-
-
-            const rms =
-                Math.sqrt(
-                    sum /
-                    timeData.length
-                );
-
-
-            let volume =
-                Math.min(
-                    1,
-                    rms * 4.5
-                );
-
-
-            bars.forEach(
-                (bar, index) => {
-
-                    const start =
-                        Math.floor(
-                            index *
-                            bufferLength /
-                            bars.length
-                        );
-
-
-                    const end =
-                        Math.max(
-                            start + 1,
-                            Math.floor(
-                                (
-                                    index + 1
-                                ) *
-                                bufferLength /
-                                bars.length
-                            )
-                        );
-
-
-                    let total = 0;
-                    let count = 0;
-
-
-                    for (
-                        let i = start;
-                        i < end;
-                        i++
-                    ) {
-
-                        total +=
-                            frequencyData[i];
-
-                        count++;
-
-                    }
-
-
-                    const frequencyLevel =
-                        count
-                            ? total /
-                              count /
-                              255
-                            : 0;
-
-
-                    let level =
-                        (
-                            volume * 0.75
-                        ) +
-                        (
-                            frequencyLevel * 0.9
-                        );
-
-
-                    level =
-                        Math.min(
-                            1,
-                            level
-                        );
-
-
-                    level =
-                        Math.pow(
-                            level,
-                            0.65
-                        );
-
-
-                    const minHeight = 6;
-                    const maxHeight = 55;
-
-
-                    const variation =
-                        0.75 +
-                        (
-                            Math.sin(
-                                index * 1.7 +
-                                performance.now() /
-                                120
-                            ) * 0.25
-                        );
-
-
-                    let targetHeight =
-                        minHeight +
-                        (
-                            level *
-                            maxHeight *
-                            variation
-                        );
-
-
-                    targetHeight =
-                        Math.max(
-                            minHeight,
-                            Math.min(
-                                maxHeight,
-                                targetHeight
-                            )
-                        );
-
-
-                    currentHeights[index] +=
-                        (
-                            targetHeight -
-                            currentHeights[index]
-                        ) *
-                        0.35;
-
-
-                    bar.style.height =
-                        `${currentHeights[index]}px`;
-
-
-                    bar.style.opacity =
-                        `${0.5 + level * 0.5}`;
-
-                }
-            );
-
-
-            animationFrame =
-                requestAnimationFrame(
-                    animate
-                );
-
-        }
-
-
-        animate();
-
-    }
-
-
-    catch (error) {
-
-        console.error(
-            "Voice visualizer error:",
-            error
+        micButton.setAttribute(
+            "aria-label",
+            "Stop voice input"
         );
 
 
-        stopVoiceVisualizer();
+        micButton.setAttribute(
+            "title",
+            "Stop voice input"
+        );
+
+    }
+
+    else {
+
+        micButton.classList.remove(
+            "voice-active"
+        );
+
+
+        micButton.setAttribute(
+            "aria-label",
+            "Voice input"
+        );
+
+
+        micButton.setAttribute(
+            "title",
+            "Voice input"
+        );
 
     }
 
 }
-
-
-/* ==========================================================
-   STOP VISUALIZER
-   ========================================================== */
-
-function stopVoiceVisualizer() {
-
-    if (animationFrame) {
-
-        cancelAnimationFrame(
-            animationFrame
-        );
-
-        animationFrame =
-            null;
-
-    }
-
-
-    if (microphoneStream) {
-
-        microphoneStream
-            .getTracks()
-            .forEach(
-                track => {
-
-                    try {
-
-                        track.stop();
-
-                    }
-
-                    catch {}
-
-                }
-            );
-
-
-        microphoneStream =
-            null;
-
-    }
-
-
-    if (audioContext) {
-
-        try {
-
-            audioContext.close();
-
-        }
-
-        catch {}
-
-        audioContext =
-            null;
-
-    }
-
-
-    analyser =
-        null;
-
-
-    if (voiceVisualizer) {
-
-        voiceVisualizer
-            .querySelectorAll(
-                ".voice-bar"
-            )
-            .forEach(
-                bar => {
-
-                    bar.style.height =
-                        "6px";
-
-                    bar.style.opacity =
-                        "0.5";
-
-                }
-            );
-
-    }
-
-}
-
 
 /* ==========================================================
    PAGE CLEANUP
@@ -5177,15 +4509,6 @@ function stopVoiceVisualizer() {
 window.addEventListener(
     "pagehide",
     () => {
-
-        manuallyStopped =
-            true;
-
-
-        clearTimeout(
-            speechRestartTimer
-        );
-
 
         clearTimeout(
             placeholderTimer
@@ -5200,22 +4523,6 @@ window.addEventListener(
             try {
 
                 currentAbortController.abort();
-
-            }
-
-            catch {}
-
-        }
-
-
-        stopVoiceVisualizer();
-
-
-        if (recognition) {
-
-            try {
-
-                recognition.stop();
 
             }
 
