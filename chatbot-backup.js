@@ -4274,6 +4274,11 @@ function handleSpeechResult(
     event
 ) {
 
+    if (inputField) {
+    inputField.placeholder =
+        "Speech detected...";
+}
+  
     if (!inputField) {
 
         return;
