@@ -202,11 +202,6 @@ function clearPendingConflict() {
    AI GENERATION STATE
    ========================================================== */
 
-let voiceGlowStream = null;
-let voiceGlowAudioContext = null;
-let voiceGlowAnalyser = null;
-let voiceGlowAnimation = null;
-
 let isSending = false;
 
 let currentAbortController = null;
@@ -4001,209 +3996,6 @@ let isVoiceListening = false;
 
 let voiceText = "";
 
-/* ==========================================================
-   VOICE REACTIVE GLOW
-   ========================================================== */
-
-async function startVoiceGlow() {
-
-    try {
-
-        if (voiceGlowAnimation) {
-
-            cancelAnimationFrame(
-                voiceGlowAnimation
-            );
-
-        }
-
-
-        if (voiceGlowStream) {
-
-            voiceGlowStream
-                .getTracks()
-                .forEach(
-                    track => track.stop()
-                );
-
-        }
-
-
-        voiceGlowStream =
-            await navigator.mediaDevices.getUserMedia({
-                audio: true,
-                video: false
-            });
-
-
-        voiceGlowAudioContext =
-            new (
-                window.AudioContext ||
-                window.webkitAudioContext
-            )();
-
-
-        const source =
-            voiceGlowAudioContext
-                .createMediaStreamSource(
-                    voiceGlowStream
-                );
-
-
-        voiceGlowAnalyser =
-            voiceGlowAudioContext
-                .createAnalyser();
-
-
-        voiceGlowAnalyser.fftSize =
-            256;
-
-
-        const bufferLength =
-            voiceGlowAnalyser.frequencyBinCount;
-
-
-        const dataArray =
-            new Uint8Array(
-                bufferLength
-            );
-
-
-        source.connect(
-            voiceGlowAnalyser
-        );
-
-
-        function updateVoiceGlow() {
-
-            voiceGlowAnimation =
-                requestAnimationFrame(
-                    updateVoiceGlow
-                );
-
-
-            if (!voiceGlowAnalyser) {
-                return;
-            }
-
-
-            voiceGlowAnalyser
-                .getByteFrequencyData(
-                    dataArray
-                );
-
-
-            let total = 0;
-
-
-            for (
-                let i = 0;
-                i < bufferLength;
-                i++
-            ) {
-
-                total += dataArray[i];
-
-            }
-
-
-            const average =
-                total / bufferLength;
-
-
-            const volumeScale =
-                Math.min(
-                    average / 80,
-                    1
-                );
-
-
-            document.documentElement
-                .style
-                .setProperty(
-                    "--volume-scale",
-                    volumeScale
-                );
-
-        }
-
-
-        updateVoiceGlow();
-
-    }
-
-    catch (error) {
-
-        console.warn(
-            "HomeUp: Voice glow microphone unavailable.",
-            error
-        );
-
-    }
-
-}
-
-
-/* ==========================================================
-   STOP VOICE REACTIVE GLOW
-   ========================================================== */
-
-function stopVoiceGlow() {
-
-    if (voiceGlowAnimation) {
-
-        cancelAnimationFrame(
-            voiceGlowAnimation
-        );
-
-        voiceGlowAnimation =
-            null;
-
-    }
-
-
-    if (voiceGlowStream) {
-
-        voiceGlowStream
-            .getTracks()
-            .forEach(
-                track => track.stop()
-            );
-
-        voiceGlowStream =
-            null;
-
-    }
-
-
-    if (voiceGlowAudioContext) {
-
-        try {
-
-            voiceGlowAudioContext.close();
-
-        }
-
-        catch {}
-
-        voiceGlowAudioContext =
-            null;
-
-    }
-
-
-    voiceGlowAnalyser =
-        null;
-
-
-    document.documentElement
-        .style
-        .setProperty(
-            "--volume-scale",
-            "0"
-        );
-
-}
 
 function initializeSpeechRecognition() {
 
@@ -4266,8 +4058,6 @@ function initializeSpeechRecognition() {
     // ======================================================
 
     recognition.onstart = () => {
-
-        recognition.onstart = () => {
 
         isVoiceListening =
             true;
@@ -4377,8 +4167,6 @@ function initializeSpeechRecognition() {
     // ======================================================
 
     recognition.onend = () => {
-
-        stopVoiceGlow();
 
         isVoiceListening =
             false;
