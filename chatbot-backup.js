@@ -336,8 +336,21 @@ function initializeHomeUp() {
     initializeSuggestions();
     initializeDropdown();
     initializeChatScrolling();
+  
+    try {
+
     initializeSpeechRecognition();
-    initializeForm();
+
+} catch (error) {
+
+    console.error(
+        "HomeUp: Speech initialization failed:",
+        error
+    );
+
+}
+
+initializeForm();
 
     /*
        Make sure the button starts as SEND.
