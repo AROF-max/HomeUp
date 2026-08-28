@@ -4062,7 +4062,6 @@ function initializeSpeechRecognition() {
         isVoiceListening =
             true;
 
-        startVoiceGlow();
 
         if (micButton) {
 
@@ -4172,7 +4171,6 @@ function initializeSpeechRecognition() {
         isVoiceListening =
             false;
 
-        stopVoiceGlow();
 
         if (micButton) {
 
@@ -4421,190 +4419,6 @@ window.addEventListener(
 
     }
 );
-
-/* ==========================================================
-   VOICE REACTIVE GLOW CONTROLLER
-   ========================================================== */
-
-let homeUpGlowStream = null;
-let homeUpGlowContext = null;
-let homeUpGlowAnalyser = null;
-let homeUpGlowData = null;
-let homeUpGlowAnimation = null;
-
-
-async function startVoiceGlow() {
-
-    if (homeUpGlowStream) {
-        return;
-    }
-
-    try {
-
-        homeUpGlowStream =
-            await navigator.mediaDevices.getUserMedia({
-                audio: true,
-                video: false
-            });
-
-
-        homeUpGlowContext =
-            new (
-                window.AudioContext ||
-                window.webkitAudioContext
-            )();
-
-
-        const source =
-            homeUpGlowContext.createMediaStreamSource(
-                homeUpGlowStream
-            );
-
-
-        homeUpGlowAnalyser =
-            homeUpGlowContext.createAnalyser();
-
-
-        homeUpGlowAnalyser.fftSize =
-            256;
-
-
-        homeUpGlowData =
-            new Uint8Array(
-                homeUpGlowAnalyser.frequencyBinCount
-            );
-
-
-        source.connect(
-            homeUpGlowAnalyser
-        );
-
-
-        updateVoiceGlow();
-
-    }
-
-    catch (error) {
-
-        console.warn(
-            "HomeUp: Voice glow unavailable.",
-            error
-        );
-
-    }
-
-}
-
-
-function updateVoiceGlow() {
-
-    if (
-        !homeUpGlowAnalyser ||
-        !homeUpGlowData
-    ) {
-
-        return;
-    }
-
-
-    homeUpGlowAnalyser.getByteFrequencyData(
-        homeUpGlowData
-    );
-
-
-    let total = 0;
-
-
-    for (
-        let i = 0;
-        i < homeUpGlowData.length;
-        i++
-    ) {
-
-        total +=
-            homeUpGlowData[i];
-
-    }
-
-
-    const average =
-        total /
-        homeUpGlowData.length;
-
-
-    const volumeScale =
-        Math.min(
-            average / 80,
-            1
-        );
-
-
-    document.documentElement.style.setProperty(
-        "--volume-scale",
-        volumeScale
-    );
-
-
-    homeUpGlowAnimation =
-        requestAnimationFrame(
-            updateVoiceGlow
-        );
-
-}
-
-
-function stopVoiceGlow() {
-
-    if (homeUpGlowAnimation) {
-
-        cancelAnimationFrame(
-            homeUpGlowAnimation
-        );
-
-        homeUpGlowAnimation =
-            null;
-
-    }
-
-
-    document.documentElement.style.setProperty(
-        "--volume-scale",
-        "0"
-    );
-
-
-    if (homeUpGlowStream) {
-
-        homeUpGlowStream
-            .getTracks()
-            .forEach(
-                track => track.stop()
-            );
-
-    }
-
-
-    homeUpGlowStream =
-        null;
-
-
-    if (homeUpGlowContext) {
-
-        homeUpGlowContext.close();
-
-    }
-
-
-    homeUpGlowContext =
-        null;
-
-    homeUpGlowAnalyser =
-        null;
-
-    homeUpGlowData =
-        null;
-
-}
 
 /* ==========================================================
    END
