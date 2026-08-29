@@ -1666,7 +1666,8 @@ function stopTypingAnimation() {
 
 function addMessage(
     text,
-    className
+    className,
+    sources = []
 ) {
 
     if (!messages) return null;
@@ -1699,6 +1700,12 @@ function addMessage(
     const isUser =
         className === "user-message";
 
+  console.log(
+    "HOMEUP MESSAGE SOURCES:",
+    sources,
+    "TEXT:",
+    safeText
+);
 
     wrapper.style.alignItems =
         isUser
@@ -1740,29 +1747,29 @@ function addMessage(
 
     if (className === "ai-message") {
 
-        activeAIWrapper =
-            wrapper;
+    activeAIWrapper =
+        wrapper;
 
 
-        animateWords(
-            bubble,
-            safeText
-        );
-
-    } else {
-
-        bubble.textContent =
-            safeText;
-
-    }
-
-
-    bubbleContainer.appendChild(
-        bubble
+    animateWords(
+        bubble,
+        safeText
     );
 
+} else {
 
-    if (className === "ai-message") {
+    bubble.textContent =
+        safeText;
+
+}
+
+
+bubbleContainer.appendChild(
+    bubble
+);
+
+
+if (className === "ai-message") {
 
     const actions =
         document.createElement("div");
@@ -1779,6 +1786,7 @@ function addMessage(
     actions.style.marginTop =
         "6px";
 
+
     actions.appendChild(
         createCopyButton(safeText)
     );
@@ -1788,18 +1796,39 @@ function addMessage(
     );
 
     actions.appendChild(
-        createRetryButton(wrapper)
+    createRetryButton(wrapper)
+);
+
+
+/*
+   SOURCE BUTTON
+*/
+
+const sourceButton =
+    createSourceButton(
+        sources
     );
 
-    bubbleContainer.appendChild(
-        actions
+
+if (sourceButton) {
+
+    actions.appendChild(
+        sourceButton
     );
+
 }
 
-    wrapper.appendChild(
-        bubbleContainer
-    );
 
+bubbleContainer.appendChild(
+    actions
+);
+
+}
+
+
+wrapper.appendChild(
+    bubbleContainer
+);
 
     messages.appendChild(
         wrapper
@@ -1822,6 +1851,622 @@ function addMessage(
     return wrapper;
 }
 
+/* ==========================================================
+   SOURCE BUTTON
+========================================================== */
+
+function createSourceButton(
+    sources
+) {
+
+    if (
+        !Array.isArray(sources) ||
+        sources.length === 0
+    ) {
+
+        return null;
+
+    }
+
+
+    const button =
+        document.createElement("button");
+
+
+    button.type =
+        "button";
+
+
+    button.className =
+        "ai-source-button";
+
+
+    button.setAttribute(
+        "aria-label",
+        "View sources"
+    );
+
+
+    /*
+       SOURCE ICONS
+       Show a maximum of 3.
+    */
+
+    const icons =
+        document.createElement("span");
+
+    icons.className =
+        "ai-source-icons";
+
+
+    const visibleSources =
+        sources.slice(
+            0,
+            3
+        );
+
+
+    visibleSources.forEach(
+        source => {
+
+            const icon =
+                document.createElement("img");
+
+
+            icon.className =
+                "ai-source-icon";
+
+
+            icon.src =
+                getSourceFavicon(
+                    source.url
+                );
+
+
+            icon.alt =
+                "";
+
+
+            icon.onerror =
+                () => {
+
+                    icon.style.display =
+                        "none";
+
+                };
+
+
+            icons.appendChild(
+                icon
+            );
+
+        }
+    );
+
+
+    /*
+       MORE SOURCES
+    */
+
+    if (
+        sources.length >
+        3
+    ) {
+
+        const more =
+            document.createElement("span");
+
+
+        more.className =
+            "ai-source-more";
+
+
+        more.textContent =
+            "+";
+
+
+        icons.appendChild(
+            more
+        );
+
+    }
+
+
+    button.appendChild(
+        icons
+    );
+
+
+    /*
+       SOURCE COUNT
+    */
+
+    const count =
+        document.createElement("span");
+
+
+    count.className =
+        "ai-source-count";
+
+
+    if (
+    sources.length >
+    3
+) {
+
+    count.textContent =
+        "3+";
+
+}
+      
+    else {
+
+        count.textContent =
+            `${sources.length} ${
+                sources.length === 1
+                    ? "source"
+                    : "sources"
+            }`;
+
+    }
+
+
+    button.appendChild(
+        count
+    );
+
+
+    /*
+       OPEN SOURCE MENU
+    */
+
+    button.addEventListener(
+    "click",
+    () => {
+
+        console.log(
+            "HOMEUP: Source button clicked",
+            sources
+        );
+
+        showSourceMenu(
+            sources,
+            button
+        );
+
+    }
+);
+
+
+    return button;
+
+}
+
+/* ==========================================================
+   SOURCE FAVICON
+========================================================== */
+
+function getSourceFavicon(
+    url
+) {
+
+    try {
+
+        const hostname =
+            new URL(url).hostname;
+
+
+        return (
+            "https://www.google.com/s2/favicons" +
+            `?domain=${encodeURIComponent(hostname)}` +
+            "&sz=64"
+        );
+
+    }
+
+    catch {
+
+        return "";
+
+    }
+
+}
+
+/* ==========================================================
+   SOURCE MENU
+========================================================== */
+
+function showSourceMenu(
+    sources,
+    sourceButton
+) {
+
+    /*
+       Remove an existing menu first.
+    */
+
+    const existingMenu =
+    document.querySelector(
+        ".ai-source-menu"
+    );
+
+if (existingMenu) {
+
+    existingMenu.classList.remove(
+        "show"
+    );
+
+    existingMenu.classList.add(
+        "closing"
+    );
+
+    setTimeout(
+        () => {
+
+            if (existingMenu) {
+
+                existingMenu.remove();
+
+            }
+
+        },
+        200
+    );
+
+}
+
+
+    if (
+        !Array.isArray(sources) ||
+        !sources.length
+    ) {
+
+        return;
+
+    }
+
+
+    const menu =
+        document.createElement("div");
+
+
+    menu.className =
+    "ai-source-menu";
+  
+    requestAnimationFrame(
+    () => {
+
+        menu.classList.add(
+            "show"
+        );
+
+    }
+);
+
+    /*
+       SOURCE TITLE
+    */
+
+    const header =
+    document.createElement("div");
+
+header.className =
+    "ai-source-menu-header";
+
+
+const title =
+    document.createElement("div");
+
+title.className =
+    "ai-source-menu-title";
+
+title.textContent =
+    "Sources";
+
+
+const closeButton =
+    document.createElement("button");
+
+closeButton.type =
+    "button";
+
+closeButton.className =
+    "ai-source-menu-close";
+
+closeButton.setAttribute(
+    "aria-label",
+    "Close sources"
+);
+
+closeButton.setAttribute(
+    "title",
+    "Close sources"
+);
+
+closeButton.innerHTML =
+    "×";
+
+
+header.appendChild(
+    title
+);
+
+header.appendChild(
+    closeButton
+);
+
+menu.appendChild(
+    header
+);
+
+  function closeSourceMenu() {
+
+    if (!menu) {
+        return;
+    }
+
+
+    if (
+        menu.classList.contains(
+            "closing"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    menu.classList.remove(
+        "show"
+    );
+
+
+    menu.classList.add(
+        "closing"
+    );
+
+
+    setTimeout(
+        () => {
+
+            if (
+                menu.parentNode
+            ) {
+
+                menu.remove();
+
+            }
+
+        },
+        200
+    );
+
+}
+
+  closeButton.addEventListener(
+    "click",
+    event => {
+
+        event.stopPropagation();
+
+        closeSourceMenu();
+
+    }
+);
+
+    /*
+       CREATE EVERY SOURCE
+    */
+
+    sources.forEach(
+        source => {
+
+            if (
+                !source ||
+                !source.url
+            ) {
+
+                return;
+
+            }
+
+
+            const link =
+                document.createElement("a");
+
+
+            link.className =
+                "ai-source-item";
+
+
+            link.href =
+                source.url;
+
+
+            link.target =
+                "_blank";
+
+
+            link.rel =
+                "noopener noreferrer";
+
+
+            /*
+               FAVICON
+            */
+
+            const icon =
+                document.createElement("img");
+
+
+            icon.className =
+                "ai-source-item-icon";
+
+
+            icon.src =
+                getSourceFavicon(
+                    source.url
+                );
+
+
+            icon.alt =
+                "";
+
+
+            icon.onerror =
+                () => {
+
+                    icon.style.display =
+                        "none";
+
+                };
+
+
+            /*
+               TEXT
+            */
+
+            const text =
+                document.createElement("div");
+
+
+            text.className =
+                "ai-source-item-text";
+
+
+            const sourceTitle =
+                document.createElement("div");
+
+
+            sourceTitle.className =
+                "ai-source-item-title";
+
+
+            sourceTitle.textContent =
+                source.title ||
+                source.url;
+
+
+            const sourceUrl =
+                document.createElement("div");
+
+
+            sourceUrl.className =
+                "ai-source-item-url";
+
+
+            sourceUrl.textContent =
+                source.url;
+
+
+            text.appendChild(
+                sourceTitle
+            );
+
+
+            text.appendChild(
+                sourceUrl
+            );
+
+
+            link.appendChild(
+                icon
+            );
+
+
+            link.appendChild(
+                text
+            );
+
+
+            menu.appendChild(
+                link
+            );
+
+        }
+    );
+
+
+    /*
+       Put the menu directly above
+       the source button.
+    */
+
+    document.body.appendChild(
+        menu
+    );
+
+
+    /*
+   CENTER THE SOURCE MENU
+   ----------------------
+   Use the actual viewport,
+   not the source button position.
+
+   This keeps the menu centered on:
+   - large screens
+   - small screens
+   - tablets
+   - split screen
+*/
+
+menu.style.position =
+    "fixed";
+
+menu.style.left =
+    "50%";
+
+menu.style.top =
+    "55%";
+
+menu.style.right =
+    "auto";
+
+menu.style.bottom =
+    "auto";
+
+    /*
+       Close when clicking elsewhere.
+    */
+
+    const closeMenu =
+        event => {
+
+            if (
+    !menu.contains(
+        event.target
+    ) &&
+    !sourceButton.contains(
+        event.target
+    )
+) {
+
+    closeSourceMenu();
+
+    document.removeEventListener(
+        "click",
+        closeMenu
+    );
+
+}
+
+        };
+
+
+    setTimeout(
+        () => {
+
+            document.addEventListener(
+                "click",
+                closeMenu
+            );
+
+        },
+        0
+    );
+
+}
 
 /* ==========================================================
    COPY BUTTON
@@ -2674,6 +3319,10 @@ async function sendToAI(
                 currentAbortController.signal
             );
 
+      console.log(
+    "HOMEUP FRONTEND SOURCES:",
+    data.sources
+);
 
         if (thinking) {
 
@@ -2683,9 +3332,10 @@ async function sendToAI(
 
 
         addMessage(
-            extractReply(data),
-            "ai-message"
-        );
+    extractReply(data),
+    "ai-message",
+    data.sources || []
+);
 
     }
 
@@ -3868,9 +4518,10 @@ if (
         */
 
         addMessage(
-            extractReply(data),
-            "ai-message"
-        );
+    extractReply(data),
+    "ai-message",
+    data.sources || []
+);
 
 
         if (files.length) {
