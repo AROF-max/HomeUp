@@ -333,6 +333,7 @@ function initializeHomeUp() {
     initializePlaceholder();
     initializeSidebar();
     initializeAttachments();
+    initializeChatInputResize();
     initializeSuggestions();
     initializeDropdown();
     initializeChatScrolling();
@@ -1070,6 +1071,138 @@ function getFileIcon(file) {
     return "📎";
 }
 
+/* ==========================================================
+   CHAT INPUT AUTO RESIZE
+========================================================== */
+
+function initializeChatInputResize() {
+
+    const chatField =
+        document.getElementById(
+            "chatbot-talk"
+        );
+
+    const inputChat =
+        document.querySelector(
+            ".input-chat"
+        );
+
+    const hero =
+        document.getElementById(
+            "hero"
+        );
+
+    if (
+        !chatField ||
+        !inputChat ||
+        !hero
+    ) {
+        return;
+    }
+
+    const BASE_HEIGHT = 52;
+    const MAX_HEIGHT = 160;
+
+    function resizeChatInput() {
+
+        chatField.style.height =
+            BASE_HEIGHT + "px";
+
+        const requiredHeight =
+            Math.min(
+                chatField.scrollHeight,
+                MAX_HEIGHT
+            );
+
+        const isMultiline =
+            requiredHeight > BASE_HEIGHT + 2;
+
+        chatField.style.height =
+            requiredHeight + "px";
+
+        document
+    .querySelector(".chat-container")
+    ?.style
+    .setProperty(
+        "--input-height",
+        requiredHeight + "px"
+    );
+
+        inputChat.classList.toggle(
+            "multiline",
+            isMultiline
+        );
+
+        if (isMultiline) {
+
+    const growth =
+        requiredHeight -
+        BASE_HEIGHT;
+
+    const greeting =
+        document.getElementById(
+            "greeting-text"
+        );
+
+    const suggestions =
+        document.querySelector(
+            ".suggestions"
+        );
+
+    if (greeting) {
+
+        greeting.style.transform =
+            `translateY(-${growth}px)`;
+
+    }
+
+    if (suggestions) {
+    suggestions.style.transform =
+        `translateY(${Math.min(growth, 8)}px)`;
+}
+
+} else {
+
+    const greeting =
+        document.getElementById(
+            "greeting-text"
+        );
+
+    const suggestions =
+        document.querySelector(
+            ".suggestions"
+        );
+
+    if (greeting) {
+
+        greeting.style.transform =
+            "";
+
+    }
+
+    if (suggestions) {
+
+        suggestions.style.transform =
+            "";
+
+    }
+
+}
+      
+    }
+
+    chatField.addEventListener(
+        "input",
+        resizeChatInput
+    );
+
+    chatField.addEventListener(
+        "focus",
+        resizeChatInput
+    );
+
+    resizeChatInput();
+}
 
 /* ==========================================================
    SUGGESTION CHIPS
@@ -3912,10 +4045,19 @@ function initializeForm() {
 
             if (inputField) {
 
-                inputField.value = "";
+    inputField.value = "";
 
-            }
+    inputField.style.height = "auto";
 
+    inputField.scrollTop = 0;
+
+    inputField.dispatchEvent(
+        new Event("input", {
+            bubbles: true
+        })
+    );
+
+}
 
             if (filesToSend.length) {
 
