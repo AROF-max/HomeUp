@@ -3596,8 +3596,10 @@ async function requestAI(
     );
 
 
-    const response = await fetch(API_URL + "/chat-image", {
-      
+    const response = await fetch(
+    "https://homeup-ai.onrender.com/chat-image",
+    {
+  
                 method: "POST",
                 body: formData,
                 signal: signal
