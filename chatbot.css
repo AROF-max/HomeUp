@@ -1070,55 +1070,59 @@ body {
 }
 
 #attachment-container{
-    position:absolute;
-    left:70px;
-    right:70px;
-    bottom:65px;
-    transform:none;
-    margin-bottom: 10px;
-    padding: 0 8px;
-    display:flex;
-    align-items:center;
-    gap:10px;
+    width:100%;
+    box-sizing:border-box;
 
-    overflow-x:auto;
-    overflow-y:hidden;
-
-    scrollbar-width:none;
-    -ms-overflow-style:none;
-    z-index: 500;
-}
-
-#attachment-container::-webkit-scrollbar{
     display:none;
+    flex-direction:column;
+
+    padding:8px 8px 0;
+
+    gap:8px;
+
+    overflow:visible;
+
+    order:-1;
 }
+
 
 .attachment-preview{
     position:relative;
-    width:72px;
-    height:72px;
-    min-width:72px;
-    flex:0 0 72px;
+
+    width:100%;
+    height:120px;
+
+    flex:none;
+
     border-radius:14px;
+
     overflow:hidden;
+
     background:#fff;
-    box-shadow:0 2px 8px rgba(0,0,0,.15);
+
+    box-shadow:
+        0 2px 8px rgba(0,0,0,.15);
 }
+
 
 .attachment-preview img{
     width:100%;
     height:100%;
-    object-fit:cover;
+
+    object-fit:contain;
+
     display:block;
 }
 
+
 .remove-attachment{
     position:absolute;
-    top:4px;
-    right:4px;
 
-    width:18px;
-    height:18px;
+    top:6px;
+    right:6px;
+
+    width:22px;
+    height:22px;
 
     border:none;
     border-radius:50%;
@@ -1127,18 +1131,25 @@ body {
     color:white;
 
     cursor:pointer;
-    font-size:12px;
+
+    font-size:14px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    z-index:2;
 }
 
-.attachment-status{
 
+.attachment-status{
     position:absolute;
 
-    bottom:5px;
-    right:5px;
+    bottom:6px;
+    right:6px;
 
-    width:20px;
-    height:20px;
+    width:22px;
+    height:22px;
 
     border-radius:50%;
 
@@ -1150,12 +1161,14 @@ body {
 
     font-size:12px;
 
-    box-shadow:0 2px 6px rgba(0,0,0,.2);
+    box-shadow:
+        0 2px 6px rgba(0,0,0,.2);
 
+    z-index:2;
 }
 
-.upload-spinner{
 
+.upload-spinner{
     width:12px;
     height:12px;
 
@@ -1164,7 +1177,19 @@ body {
 
     border-radius:50%;
 
-    animation:spin .8s linear infinite;
+    animation:
+        SPINNER .8s linear infinite;
+}
+
+@keyframes SPINNER {
+
+    from{
+        transform:rotate(0deg);
+    }
+
+    to{
+        transform:rotate(360deg);
+    }
 
 }
 
