@@ -3577,7 +3577,11 @@ async function requestAI(
         "message",
         message
     );
-
+  
+    formData.append(
+    "calendarEvents",
+    localStorage.getItem("homeup-events") || "[]"
+);
 
     files.forEach(
         item => {
@@ -3592,10 +3596,8 @@ async function requestAI(
     );
 
 
-    const response =
-        await fetch(
-            API_URL,
-            {
+    const response = await fetch(API_URL + "/chat-image", {
+      
                 method: "POST",
                 body: formData,
                 signal: signal
