@@ -1834,12 +1834,14 @@ function addMessage(
     const isUser =
         className === "user-message";
 
-  console.log(
-    "HOMEUP MESSAGE SOURCES:",
-    sources,
-    "TEXT:",
-    safeText
-);
+
+    console.log(
+        "HOMEUP MESSAGE SOURCES:",
+        sources,
+        "TEXT:",
+        safeText
+    );
+
 
     wrapper.style.alignItems =
         isUser
@@ -1855,323 +1857,349 @@ function addMessage(
     }
 
 
-    const bubbleContainer =
-        document.createElement("div");
-
-
-    bubbleContainer.style.display =
-        "flex";
-
-    bubbleContainer.style.flexDirection =
-        "column";
-
-    bubbleContainer.style.alignItems =
-        isUser
-            ? "flex-end"
-            : "flex-start";
-
-
-    const bubble =
-        document.createElement("div");
-
-
-    bubble.className =
-        className;
-
-
-    if (className === "ai-message") {
-
-    activeAIWrapper =
-        wrapper;
-
-
-    animateWords(
-        bubble,
-        safeText
-    );
-
-} else {
-
     /*
-   USER IMAGE ATTACHMENTS
-*/
+       USER IMAGE ATTACHMENTS
 
-let imageContainer = null;
-
-if (files.length) {
-
-    imageContainer =
-        document.createElement(
-            "div"
-        );
-
-    imageContainer.style.display =
-        "flex";
-
-    imageContainer.style.flexWrap =
-        "wrap";
-
-    imageContainer.style.justifyContent =
-        "flex-end";
-
-    imageContainer.style.gap =
-        "8px";
-
-    imageContainer.style.width =
-        "100%";
-
-    imageContainer.style.maxWidth =
-        "100%";
-
-    files.forEach(
-        fileItem => {
-
-            if (
-                !fileItem.file ||
-                !fileItem.file.type ||
-                !fileItem.file.type.startsWith(
-                    "image/"
-                )
-            ) {
-                return;
-            }
-
-
-            const imageWrap =
-                document.createElement(
-                    "div"
-                );
-
-
-            imageWrap.style.position =
-                "relative";
-
-            imageWrap.style.display =
-                "block";
-
-            imageWrap.style.width =
-                "180px";
-
-            imageWrap.style.maxWidth =
-                "100%";
-
-            imageWrap.style.borderRadius =
-                "14px";
-
-            imageWrap.style.overflow =
-                "hidden";
-
-
-            const img =
-                document.createElement(
-                    "img"
-                );
-
-
-            img.src =
-                URL.createObjectURL(
-                    fileItem.file
-                );
-
-            img.alt =
-                fileItem.file.name;
-
-
-            img.style.display =
-                "block";
-
-            img.style.width =
-                "100%";
-
-            img.style.height =
-                "auto";
-
-            img.style.maxHeight =
-                "240px";
-
-            img.style.objectFit =
-                "contain";
-
-
-            imageWrap.appendChild(
-                img
-            );
-
-
-            /*
-               PROCESSING SPINNER
-            */
-
-            const spinner =
-                document.createElement(
-                    "div"
-                );
-
-
-            spinner.className =
-                "upload-spinner";
-
-
-            spinner.style.position =
-                "absolute";
-
-            spinner.style.left =
-                "50%";
-
-            spinner.style.top =
-                "50%";
-
-            spinner.style.transform =
-                "translate(-50%, -50%)";
-
-            spinner.style.width =
-                "24px";
-
-            spinner.style.height =
-                "24px";
-
-            spinner.style.borderWidth =
-                "3px";
-
-            spinner.style.opacity =
-                "0";
-
-            spinner.style.pointerEvents =
-                "none";
-
-
-            imageWrap.appendChild(
-                spinner
-            );
-
-
-            imageContainer.appendChild(
-                imageWrap
-            );
-
-
-            /*
-               SAVE REFERENCES
-               FOR PROCESSING STATE
-            */
-
-            fileItem._messageImage =
-                img;
-
-            fileItem._messageSpinner =
-                spinner;
-
-        }
-    );
-
-}
-
-
-    /*
-       USER CAPTION
+       Images are deliberately kept
+       OUTSIDE the blue text bubble.
     */
 
-    if (safeText) {
+    if (
+        isUser &&
+        files.length
+    ) {
 
-        const caption =
-            document.createElement(
-                "div"
-            );
+        files.forEach(
+            fileItem => {
+
+                if (
+                    !fileItem.file ||
+                    !fileItem.file.type ||
+                    !fileItem.file.type.startsWith(
+                        "image/"
+                    )
+                ) {
+                    return;
+                }
 
 
-        caption.textContent =
-            safeText;
+                const imageWrap =
+                    document.createElement(
+                        "div"
+                    );
 
 
-        if (files.length) {
+                imageWrap.style.position =
+                    "relative";
 
-            caption.style.marginTop =
-                "8px";
+                imageWrap.style.display =
+                    "block";
 
-        }
+                imageWrap.style.width =
+                    "180px";
+
+                imageWrap.style.maxWidth =
+                    "100%";
+
+                imageWrap.style.borderRadius =
+                    "14px";
+
+                imageWrap.style.overflow =
+                    "hidden";
 
 
-        bubble.appendChild(
-            caption
+                const img =
+                    document.createElement(
+                        "img"
+                    );
+
+
+                const objectURL =
+                    URL.createObjectURL(
+                        fileItem.file
+                    );
+
+
+                img.src =
+                    objectURL;
+
+                img.alt =
+                    fileItem.file.name;
+
+
+                img.style.display =
+                    "block";
+
+                img.style.width =
+                    "100%";
+
+                img.style.height =
+                    "auto";
+
+                img.style.maxHeight =
+                    "240px";
+
+                img.style.objectFit =
+                    "contain";
+
+
+                img.onload = () => {
+
+                    URL.revokeObjectURL(
+                        objectURL
+                    );
+
+                };
+
+
+                imageWrap.appendChild(
+                    img
+                );
+
+
+                /*
+                   PROCESSING SPINNER
+                */
+
+                const spinner =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                spinner.className =
+                    "upload-spinner";
+
+
+                spinner.style.position =
+                    "absolute";
+
+                spinner.style.left =
+                    "50%";
+
+                spinner.style.top =
+                    "50%";
+
+                spinner.style.transform =
+                    "translate(-50%, -50%)";
+
+                spinner.style.width =
+                    "24px";
+
+                spinner.style.height =
+                    "24px";
+
+                spinner.style.borderWidth =
+                    "3px";
+
+                spinner.style.opacity =
+                    "0";
+
+                spinner.style.pointerEvents =
+                    "none";
+
+
+                imageWrap.appendChild(
+                    spinner
+                );
+
+
+                /*
+                   IMAGE IS A SIBLING OF
+                   THE BLUE BUBBLE
+                */
+
+                wrapper.appendChild(
+                    imageWrap
+                );
+
+
+                /*
+                   SAVE REFERENCES
+                   FOR PROCESSING STATE
+                */
+
+                fileItem._messageImage =
+                    img;
+
+                fileItem._messageSpinner =
+                    spinner;
+
+            }
         );
 
     }
 
-}
 
-bubbleContainer.appendChild(
-    bubble
-);
+    /*
+       TEXT / BUBBLE
+    */
 
+    if (
+        !isUser ||
+        safeText
+    ) {
 
-if (className === "ai-message") {
-
-    const actions =
-        document.createElement("div");
-
-    actions.className =
-        "ai-message-actions";
-
-    actions.style.display =
-        "flex";
-
-    actions.style.gap =
-        "10px";
-
-    actions.style.marginTop =
-        "6px";
+        const bubbleContainer =
+            document.createElement("div");
 
 
-    actions.appendChild(
-        createCopyButton(safeText)
-    );
+        bubbleContainer.style.display =
+            "flex";
 
-    actions.appendChild(
-        createSpeechButton(safeText)
-    );
+        bubbleContainer.style.flexDirection =
+            "column";
 
-    actions.appendChild(
-    createRetryButton(wrapper)
-);
-
-
-/*
-   SOURCE BUTTON
-*/
-
-const sourceButton =
-    createSourceButton(
-        sources
-    );
+        bubbleContainer.style.alignItems =
+            isUser
+                ? "flex-end"
+                : "flex-start";
 
 
-if (sourceButton) {
-
-    actions.appendChild(
-        sourceButton
-    );
-
-}
+        const bubble =
+            document.createElement("div");
 
 
-if (imageContainer) {
-
-    bubbleContainer.appendChild(
-        imageContainer
-    );
-
-}
-
-bubbleContainer.appendChild(
-    bubble
-);
-
-}
+        bubble.className =
+            className;
 
 
-wrapper.appendChild(
-    bubbleContainer
-);
+        if (
+            className ===
+            "ai-message"
+        ) {
+
+            activeAIWrapper =
+                wrapper;
+
+
+            animateWords(
+                bubble,
+                safeText
+            );
+
+        } else {
+
+            /*
+               USER CAPTION
+            */
+
+            if (safeText) {
+
+                const caption =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                caption.textContent =
+                    safeText;
+
+
+                if (files.length) {
+
+                    caption.style.marginTop =
+                        "8px";
+
+                }
+
+
+                bubble.appendChild(
+                    caption
+                );
+
+            }
+
+        }
+
+
+        bubbleContainer.appendChild(
+            bubble
+        );
+
+
+        /*
+           AI ACTIONS
+        */
+
+        if (
+            className ===
+            "ai-message"
+        ) {
+
+            const actions =
+                document.createElement(
+                    "div"
+                );
+
+
+            actions.className =
+                "ai-message-actions";
+
+
+            actions.style.display =
+                "flex";
+
+            actions.style.gap =
+                "10px";
+
+            actions.style.marginTop =
+                "6px";
+
+
+            actions.appendChild(
+                createCopyButton(
+                    safeText
+                )
+            );
+
+
+            actions.appendChild(
+                createSpeechButton(
+                    safeText
+                )
+            );
+
+
+            actions.appendChild(
+                createRetryButton(
+                    wrapper
+                )
+            );
+
+
+            /*
+               SOURCE BUTTON
+            */
+
+            const sourceButton =
+                createSourceButton(
+                    sources
+                );
+
+
+            if (sourceButton) {
+
+                actions.appendChild(
+                    sourceButton
+                );
+
+            }
+
+
+            bubbleContainer.appendChild(
+                actions
+            );
+
+        }
+
+
+        wrapper.appendChild(
+            bubbleContainer
+        );
+
+    }
+
 
     messages.appendChild(
         wrapper

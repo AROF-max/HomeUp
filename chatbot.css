@@ -354,9 +354,22 @@ body {
     margin: auto;
     width: 100%;
     max-width: 760px;  
-    display: block;
+    display:flex;
+    flex-direction:column;
     animation: moveUp 2.1s forwards ease;
     z-index: 5;
+}
+
+.input-chat:has(#attachment-container[style*="display: flex"]) {
+    background:#ffffff;
+    border-radius:28px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.05);
+}
+
+.input-chat:has(#attachment-container[style*="display: flex"]) .chat-field {
+    background:transparent;
+    border-color:transparent;
+    box-shadow:none;
 }
 
 .chat-field {
@@ -1098,12 +1111,10 @@ body {
 
     overflow:hidden;
 
-    background:#fff;
+    background:#f8f8f8;
 
-    box-shadow:
-        0 2px 8px rgba(0,0,0,.15);
+    box-shadow:none;
 }
-
 
 .attachment-preview img{
     width:100%;
@@ -2584,4 +2595,43 @@ body {
     line-height: 1.4;
 
     color: #64748b;
+}
+
+/* ==========================================================
+   ATTACHMENT INPUT BOX
+========================================================== */
+
+.input-chat:has(#attachment-container[style*="display: flex"]) {
+
+    background:#ffffff;
+
+    border-radius:28px;
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,0.05);
+
+}
+
+
+/*
+   The textarea becomes the lower
+   section of the same box.
+*/
+
+.input-chat:has(#attachment-container[style*="display: flex"])
+.chat-field {
+
+    background:transparent;
+
+    box-shadow:none;
+
+}
+
+.input-chat:has(#attachment-container[style*="display: flex"])
+.chat-field {
+
+    border-color:transparent;
+
+    animation:none;
+
 }
