@@ -1872,16 +1872,25 @@ function addMessage(
         files.forEach(
             fileItem => {
 
-                if (
-                    !fileItem.file ||
-                    !fileItem.file.type ||
-                    !fileItem.file.type.startsWith(
-                        "image/"
-                    )
-                ) {
-                    return;
-                }
+                if (!fileItem.file) {
+    return;
+}
 
+const fileType =
+    (fileItem.file.type || "").toLowerCase();
+
+const fileName =
+    (fileItem.file.name || "").toLowerCase();
+
+const isImage =
+    fileType.startsWith("image/") ||
+    /\.(jpg|jpeg|png|gif|webp|bmp|svg|avif|heic|heif|tif|tiff)$/i.test(
+        fileName
+    );
+
+if (!isImage) {
+    return;
+}
 
                 const imageWrap =
                     document.createElement(
