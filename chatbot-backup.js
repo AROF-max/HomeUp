@@ -1893,153 +1893,178 @@ function addMessage(
 } else {
 
     /*
-       USER IMAGE ATTACHMENTS
-    */
+   USER IMAGE ATTACHMENTS
+*/
 
-    if (files.length) {
+let imageContainer = null;
 
-        files.forEach(
-            fileItem => {
+if (files.length) {
 
-                if (
-                    !fileItem.file ||
-                    !fileItem.file.type ||
-                    !fileItem.file.type.startsWith(
-                        "image/"
-                    )
-                ) {
-                    return;
-                }
-
-
-                const imageWrap =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                imageWrap.style.position =
-                    "relative";
-
-                imageWrap.style.display =
-                    "block";
-
-                imageWrap.style.width =
-                    "180px";
-
-                imageWrap.style.maxWidth =
-                    "100%";
-
-                imageWrap.style.borderRadius =
-                    "14px";
-
-                imageWrap.style.overflow =
-                    "hidden";
-
-
-                const img =
-                    document.createElement(
-                        "img"
-                    );
-
-
-                img.src =
-                    URL.createObjectURL(
-                        fileItem.file
-                    );
-
-                img.alt =
-                    fileItem.file.name;
-
-
-                img.style.display =
-                    "block";
-
-                img.style.width =
-                    "100%";
-
-                img.style.height =
-                    "auto";
-
-                img.style.maxHeight =
-                    "240px";
-
-                img.style.objectFit =
-                    "contain";
-
-
-                imageWrap.appendChild(
-                    img
-                );
-
-
-                /*
-                   PROCESSING SPINNER
-                */
-
-                const spinner =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                spinner.className =
-                    "upload-spinner";
-
-
-                spinner.style.position =
-                    "absolute";
-
-                spinner.style.left =
-                    "50%";
-
-                spinner.style.top =
-                    "50%";
-
-                spinner.style.transform =
-                    "translate(-50%, -50%)";
-
-                spinner.style.width =
-                    "24px";
-
-                spinner.style.height =
-                    "24px";
-
-                spinner.style.borderWidth =
-                    "3px";
-
-                spinner.style.opacity =
-                    "0";
-
-                spinner.style.pointerEvents =
-                    "none";
-
-
-                imageWrap.appendChild(
-                    spinner
-                );
-
-
-                bubble.appendChild(
-                    imageWrap
-                );
-
-
-                /*
-                   SAVE REFERENCES
-                   FOR PROCESSING STATE
-                */
-
-                fileItem._messageImage =
-                    img;
-
-                fileItem._messageSpinner =
-                    spinner;
-
-            }
+    imageContainer =
+        document.createElement(
+            "div"
         );
 
-    }
+    imageContainer.style.display =
+        "flex";
+
+    imageContainer.style.flexWrap =
+        "wrap";
+
+    imageContainer.style.justifyContent =
+        "flex-end";
+
+    imageContainer.style.gap =
+        "8px";
+
+    imageContainer.style.width =
+        "100%";
+
+    imageContainer.style.maxWidth =
+        "100%";
+
+    files.forEach(
+        fileItem => {
+
+            if (
+                !fileItem.file ||
+                !fileItem.file.type ||
+                !fileItem.file.type.startsWith(
+                    "image/"
+                )
+            ) {
+                return;
+            }
+
+
+            const imageWrap =
+                document.createElement(
+                    "div"
+                );
+
+
+            imageWrap.style.position =
+                "relative";
+
+            imageWrap.style.display =
+                "block";
+
+            imageWrap.style.width =
+                "180px";
+
+            imageWrap.style.maxWidth =
+                "100%";
+
+            imageWrap.style.borderRadius =
+                "14px";
+
+            imageWrap.style.overflow =
+                "hidden";
+
+
+            const img =
+                document.createElement(
+                    "img"
+                );
+
+
+            img.src =
+                URL.createObjectURL(
+                    fileItem.file
+                );
+
+            img.alt =
+                fileItem.file.name;
+
+
+            img.style.display =
+                "block";
+
+            img.style.width =
+                "100%";
+
+            img.style.height =
+                "auto";
+
+            img.style.maxHeight =
+                "240px";
+
+            img.style.objectFit =
+                "contain";
+
+
+            imageWrap.appendChild(
+                img
+            );
+
+
+            /*
+               PROCESSING SPINNER
+            */
+
+            const spinner =
+                document.createElement(
+                    "div"
+                );
+
+
+            spinner.className =
+                "upload-spinner";
+
+
+            spinner.style.position =
+                "absolute";
+
+            spinner.style.left =
+                "50%";
+
+            spinner.style.top =
+                "50%";
+
+            spinner.style.transform =
+                "translate(-50%, -50%)";
+
+            spinner.style.width =
+                "24px";
+
+            spinner.style.height =
+                "24px";
+
+            spinner.style.borderWidth =
+                "3px";
+
+            spinner.style.opacity =
+                "0";
+
+            spinner.style.pointerEvents =
+                "none";
+
+
+            imageWrap.appendChild(
+                spinner
+            );
+
+
+            imageContainer.appendChild(
+                imageWrap
+            );
+
+
+            /*
+               SAVE REFERENCES
+               FOR PROCESSING STATE
+            */
+
+            fileItem._messageImage =
+                img;
+
+            fileItem._messageSpinner =
+                spinner;
+
+        }
+    );
+
+}
 
 
     /*
@@ -2129,8 +2154,16 @@ if (sourceButton) {
 }
 
 
+if (imageContainer) {
+
+    bubbleContainer.appendChild(
+        imageContainer
+    );
+
+}
+
 bubbleContainer.appendChild(
-    actions
+    bubble
 );
 
 }
