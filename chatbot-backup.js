@@ -1800,7 +1800,8 @@ function stopTypingAnimation() {
 function addMessage(
     text,
     className,
-    sources = []
+    sources = [],
+    files = []
 ) {
 
     if (!messages) return null;
@@ -1891,11 +1892,187 @@ function addMessage(
 
 } else {
 
-    bubble.textContent =
-        safeText;
+    /*
+       USER IMAGE ATTACHMENTS
+    */
+
+    if (files.length) {
+
+        files.forEach(
+            fileItem => {
+
+                if (
+                    !fileItem.file ||
+                    !fileItem.file.type ||
+                    !fileItem.file.type.startsWith(
+                        "image/"
+                    )
+                ) {
+                    return;
+                }
+
+
+                const imageWrap =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                imageWrap.style.position =
+                    "relative";
+
+                imageWrap.style.display =
+                    "block";
+
+                imageWrap.style.width =
+                    "180px";
+
+                imageWrap.style.maxWidth =
+                    "100%";
+
+                imageWrap.style.borderRadius =
+                    "14px";
+
+                imageWrap.style.overflow =
+                    "hidden";
+
+
+                const img =
+                    document.createElement(
+                        "img"
+                    );
+
+
+                img.src =
+                    URL.createObjectURL(
+                        fileItem.file
+                    );
+
+                img.alt =
+                    fileItem.file.name;
+
+
+                img.style.display =
+                    "block";
+
+                img.style.width =
+                    "100%";
+
+                img.style.height =
+                    "auto";
+
+                img.style.maxHeight =
+                    "240px";
+
+                img.style.objectFit =
+                    "contain";
+
+
+                imageWrap.appendChild(
+                    img
+                );
+
+
+                /*
+                   PROCESSING SPINNER
+                */
+
+                const spinner =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                spinner.className =
+                    "upload-spinner";
+
+
+                spinner.style.position =
+                    "absolute";
+
+                spinner.style.left =
+                    "50%";
+
+                spinner.style.top =
+                    "50%";
+
+                spinner.style.transform =
+                    "translate(-50%, -50%)";
+
+                spinner.style.width =
+                    "24px";
+
+                spinner.style.height =
+                    "24px";
+
+                spinner.style.borderWidth =
+                    "3px";
+
+                spinner.style.opacity =
+                    "0";
+
+                spinner.style.pointerEvents =
+                    "none";
+
+
+                imageWrap.appendChild(
+                    spinner
+                );
+
+
+                bubble.appendChild(
+                    imageWrap
+                );
+
+
+                /*
+                   SAVE REFERENCES
+                   FOR PROCESSING STATE
+                */
+
+                fileItem._messageImage =
+                    img;
+
+                fileItem._messageSpinner =
+                    spinner;
+
+            }
+        );
+
+    }
+
+
+    /*
+       USER CAPTION
+    */
+
+    if (safeText) {
+
+        const caption =
+            document.createElement(
+                "div"
+            );
+
+
+        caption.textContent =
+            safeText;
+
+
+        if (files.length) {
+
+            caption.style.marginTop =
+                "8px";
+
+        }
+
+
+        bubble.appendChild(
+            caption
+        );
+
+    }
 
 }
-
 
 bubbleContainer.appendChild(
     bubble
@@ -4037,15 +4214,13 @@ function initializeForm() {
             startConversation();
 
 
-            if (message) {
-
-                addMessage(
-                    message,
-                    "user-message"
-                );
-
-            }
-
+            const userMessage =
+    addMessage(
+        message,
+        "user-message",
+        [],
+        filesToSend
+    );
 
             if (inputField) {
 
@@ -4084,9 +4259,10 @@ function initializeForm() {
 );
 
             await sendMessageWithFiles(
-                message,
-                filesToSend
-            );
+    message,
+    filesToSend,
+    userMessage
+);
 
         }
     );
@@ -4100,7 +4276,8 @@ function initializeForm() {
 
 async function sendMessageWithFiles(
     message,
-    files
+    files,
+    userMessage
 ) {
 
     if (isSending) {
@@ -4338,12 +4515,68 @@ addMessage(
        ======================================================
     */
 
+/*
+   SHOW IMAGE PROCESSING STATE
+*/
+
+if (files.length) {
+
+    files.forEach(
+        item => {
+
+            if (item._messageImage) {
+
+                item._messageImage.style.opacity =
+                    "0.55";
+
+            }
+
+            if (item._messageSpinner) {
+
+                item._messageSpinner.style.opacity =
+                    "1";
+
+            }
+
+        }
+    );
+
+}
+  
     const data =
         await requestAI(
             message,
             files,
             currentAbortController.signal
         );
+
+  /*
+   RESTORE SENT IMAGE AFTER PROCESSING
+*/
+
+if (files.length) {
+
+    files.forEach(
+        item => {
+
+            if (item._messageImage) {
+
+                item._messageImage.style.opacity =
+                    "1";
+
+            }
+
+            if (item._messageSpinner) {
+
+                item._messageSpinner.style.opacity =
+                    "0";
+
+            }
+
+        }
+    );
+
+}
   
         console.log(
     "HOMEUP AI DATA:",
@@ -4712,6 +4945,33 @@ if (
 
             }
 
+          /*
+   RESTORE SENT IMAGE IF PROCESSING WAS STOPPED
+*/
+
+if (files.length) {
+
+    files.forEach(
+        item => {
+
+            if (item._messageImage) {
+
+                item._messageImage.style.opacity =
+                    "1";
+
+            }
+
+            if (item._messageSpinner) {
+
+                item._messageSpinner.style.opacity =
+                    "0";
+
+            }
+
+        }
+    );
+
+}
 
             return;
 
@@ -4729,7 +4989,34 @@ if (
             thinking.remove();
 
         }
+      
+        /*
+   RESTORE SENT IMAGE AFTER ERROR
+*/
 
+if (files.length) {
+
+    files.forEach(
+        item => {
+
+            if (item._messageImage) {
+
+                item._messageImage.style.opacity =
+                    "1";
+
+            }
+
+            if (item._messageSpinner) {
+
+                item._messageSpinner.style.opacity =
+                    "0";
+
+            }
+
+        }
+    );
+
+}
 
         if (files.length) {
 
