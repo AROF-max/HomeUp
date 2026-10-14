@@ -274,6 +274,957 @@ function initializeHomeUp() {
 
     restorePendingConflict();
 
+        /* ==========================================================
+       CHAT HISTORY PANEL
+    ========================================================== */
+
+    const aiHistoryTrigger =
+        document.getElementById(
+            "ai-history-trigger"
+        );
+
+    const chatHistoryPanel =
+        document.getElementById(
+            "chat-history-panel"
+        );
+
+    const chatHistoryBackdrop =
+        document.getElementById(
+            "chat-history-backdrop"
+        );
+
+    const chatHistoryClose =
+        document.getElementById(
+            "chat-history-close"
+        );
+
+
+    function openChatHistory() {
+
+    renderChatHistory();
+
+    chatHistoryPanel.classList.add(
+        "open"
+    );
+
+        chatHistoryBackdrop.classList.add(
+            "open"
+        );
+
+        aiHistoryTrigger.setAttribute(
+            "aria-expanded",
+            "true"
+        );
+
+        chatHistoryPanel.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+    }
+
+
+    function closeChatHistory() {
+
+        chatHistoryPanel.classList.remove(
+            "open"
+        );
+
+        chatHistoryBackdrop.classList.remove(
+            "open"
+        );
+
+        aiHistoryTrigger.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+
+        chatHistoryPanel.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+    }
+  
+        /*
+       ======================================================
+       RENDER CHAT HISTORY
+       ======================================================
+    */
+
+    function renderChatHistory() {
+
+    const chatHistoryContent =
+        chatHistoryPanel.querySelector(
+            ".chat-history-content"
+        );
+
+    if (!chatHistoryContent) {
+        return;
+    }
+
+
+    /*
+       Remove dynamically created
+       history items and titles.
+    */
+
+    chatHistoryContent
+        .querySelectorAll(
+            ".chat-history-item, .chat-history-section-title-dynamic"
+        )
+        .forEach(
+            element => element.remove()
+        );
+
+
+    const conversations =
+        loadChatHistory();
+
+
+    /*
+       Find the three history views.
+    */
+
+    const recentView =
+        chatHistoryContent.querySelector(
+            '[data-history-view="recent"]'
+        );
+
+    const pinnedView =
+        chatHistoryContent.querySelector(
+            '[data-history-view="pinned"]'
+        );
+
+    const trashView =
+        chatHistoryContent.querySelector(
+            '[data-history-view="trash"]'
+        );
+
+
+    /*
+       Make sure every view exists
+       before continuing.
+    */
+
+    if (
+        !recentView ||
+        !pinnedView ||
+        !trashView
+    ) {
+        return;
+    }
+
+
+    /*
+       Determine which section is active.
+       Recent is the default.
+    */
+
+    const activeView =
+        window.darnaActiveHistoryView ||
+        "recent";
+
+
+    /*
+       Hide all three views first.
+    */
+
+    recentView.hidden = true;
+    pinnedView.hidden = true;
+    trashView.hidden = true;
+
+
+    /*
+       Select the correct conversations.
+    */
+
+    let selectedConversations = [];
+
+
+    if (activeView === "pinned") {
+
+        selectedConversations =
+            conversations
+                .filter(
+                    conversation =>
+                        conversation.pinned === true &&
+                        conversation.deleted !== true
+                )
+                .sort(
+                    (a, b) =>
+                        (b.updatedAt || 0) -
+                        (a.updatedAt || 0)
+                );
+
+        pinnedView.hidden = false;
+
+    }
+
+
+    else if (activeView === "trash") {
+
+        selectedConversations =
+            conversations
+                .filter(
+                    conversation =>
+                        conversation.deleted === true
+                )
+                .sort(
+                    (a, b) =>
+                        (b.updatedAt || 0) -
+                        (a.updatedAt || 0)
+                );
+
+        trashView.hidden = false;
+
+    }
+
+
+    else {
+
+        selectedConversations =
+            conversations
+                .filter(
+                    conversation =>
+                        conversation.pinned !== true &&
+                        conversation.deleted !== true
+                )
+                .sort(
+                    (a, b) =>
+                        (b.updatedAt || 0) -
+                        (a.updatedAt || 0)
+                )
+                .slice(
+                    0,
+                    5
+                );
+
+        recentView.hidden = false;
+
+    }
+
+
+    /*
+       Find the currently visible view.
+    */
+
+    const activeViewElement =
+        activeView === "pinned"
+            ? pinnedView
+            : activeView === "trash"
+                ? trashView
+                : recentView;
+
+
+    /*
+       Find the empty-state element
+       inside the active view.
+    */
+
+    const emptyState =
+        activeViewElement.querySelector(
+            ".chat-history-empty"
+        );
+
+
+    if (emptyState) {
+
+        emptyState.style.display =
+            selectedConversations.length === 0
+                ? ""
+                : "none";
+
+    }
+
+
+    /*
+       Stop here if the section is empty.
+    */
+
+    if (
+        selectedConversations.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+       Create each conversation row.
+    */
+
+    selectedConversations.forEach(
+        conversation => {
+
+            const item =
+                document.createElement(
+                    "button"
+                );
+
+
+            item.type =
+                "button";
+
+
+            item.className =
+                "chat-history-item";
+
+
+            /*
+               Open conversation.
+            */
+
+            let longPressTriggered = false;
+
+item.addEventListener("click", () => {
+    if (longPressTriggered) {
+        longPressTriggered = false;
+        return;
+    }
+
+    openConversation(conversation.id);
+});
+
+
+            /*
+               Existing temporary delete behavior.
+               For now this moves the chat to Trash
+               instead of permanently deleting it.
+            */
+
+            
+let pressTimer = null;
+
+item.addEventListener("contextmenu", event => {
+    event.preventDefault();
+
+    showConversationMenu(
+        conversation,
+        event.clientX,
+        event.clientY,
+        activeView
+    );
+});
+
+item.addEventListener("pointerdown", event => {
+    if (event.pointerType === "mouse") {
+        return;
+    }
+
+    pressTimer = setTimeout(() => {
+        longPressTriggered = true;
+
+        showConversationMenu(
+            conversation,
+            event.clientX,
+            event.clientY,
+            activeView,
+            true
+        );
+
+        // Prevent an accidental swallowed click
+        // if the browser does not generate one.
+        setTimeout(() => {
+            longPressTriggered = false;
+        }, 1000);
+    }, 600);
+});
+
+item.addEventListener("pointerup", () => {
+    clearTimeout(pressTimer);
+});
+
+item.addEventListener("pointercancel", () => {
+    clearTimeout(pressTimer);
+});
+
+item.addEventListener("pointerleave", () => {
+    clearTimeout(pressTimer);
+});
+
+
+
+            /*
+               Text container.
+            */
+
+            const text =
+                document.createElement(
+                    "div"
+                );
+
+
+            text.className =
+                "chat-history-item-text";
+
+
+            /*
+               Chat title.
+            */
+
+            const title =
+                document.createElement(
+                    "div"
+                );
+
+
+            title.className =
+                "chat-history-item-title";
+
+
+            title.textContent =
+                conversation.title ||
+                "New chat";
+
+
+            /*
+               Updated time.
+            */
+
+            const preview =
+                document.createElement(
+                    "div"
+                );
+
+
+            preview.className =
+                "chat-history-item-preview";
+
+
+            const updatedDate =
+                conversation.updatedAt
+                    ? new Date(
+                        conversation.updatedAt
+                    )
+                    : null;
+
+
+            let updatedLabel = "";
+
+
+            if (updatedDate) {
+
+                const now =
+                    new Date();
+
+
+                const isToday =
+                    updatedDate.toDateString() ===
+                    now.toDateString();
+
+
+                const yesterday =
+                    new Date(now);
+
+
+                yesterday.setDate(
+                    now.getDate() - 1
+                );
+
+
+                const isYesterday =
+                    updatedDate.toDateString() ===
+                    yesterday.toDateString();
+
+
+                const time =
+                    updatedDate.toLocaleTimeString(
+                        [],
+                        {
+                            hour: "numeric",
+                            minute: "2-digit"
+                        }
+                    );
+
+
+                if (isToday) {
+
+                    updatedLabel =
+                        "Today · " +
+                        time;
+
+                }
+
+
+                else if (isYesterday) {
+
+                    updatedLabel =
+                        "Yesterday · " +
+                        time;
+
+                }
+
+
+                else {
+
+                    updatedLabel =
+                        updatedDate.toLocaleDateString(
+                            [],
+                            {
+                                month: "short",
+                                day: "numeric"
+                            }
+                        ) +
+                        " · " +
+                        time;
+
+                }
+
+            }
+
+
+            preview.textContent =
+                updatedLabel;
+
+
+            text.appendChild(
+                title
+            );
+
+
+            text.appendChild(
+                preview
+            );
+
+
+            item.appendChild(
+                text
+            );
+
+
+            activeViewElement.appendChild(
+                item
+            );
+
+        }
+
+    );
+
+}
+
+      window.renderChatHistory = renderChatHistory;
+
+        /*
+       ======================================================
+       OPEN SAVED CONVERSATION
+       ======================================================
+    */
+
+    function openConversation(
+        conversationId
+    ) {
+
+        const conversations =
+            loadChatHistory();
+
+
+        const conversation =
+            conversations.find(
+                item =>
+                    item.id ===
+                    conversationId
+            );
+
+
+        if (!conversation) {
+
+            return;
+
+        }
+
+
+        /*
+           Make this the active conversation.
+        */
+
+        currentConversation =
+            conversation;
+
+
+        /*
+           Save the active conversation ID.
+        */
+
+        try {
+
+            localStorage.setItem(
+                ACTIVE_CHAT_STORAGE_KEY,
+                conversation.id
+            );
+
+        }
+        catch (error) {
+
+            console.error(
+                "Daarna: Could not save active chat.",
+                error
+            );
+
+        }
+
+
+        /*
+           Synchronize AI history.
+        */
+
+        currentConversationHistory =
+            conversation.messages
+                .map(
+                    item => ({
+                        role:
+                            item.role,
+
+                        content:
+                            item.content
+                    })
+                );
+
+
+        window.currentConversationHistory =
+            currentConversationHistory;
+
+
+        /*
+           Clear the current visible chat.
+        */
+
+        if (messages) {
+
+            messages.innerHTML = "";
+
+        }
+      
+        /*
+           Switch from welcome screen
+           to active conversation.
+        */
+
+        if (hero) {
+
+            hero.style.display = "none";
+
+        }
+
+        const suggestions =
+            document.querySelector(
+                ".suggestions"
+            );
+
+        if (suggestions) {
+
+            suggestions.style.display =
+                "none";
+
+        }
+
+        const talk =
+    document.querySelector(
+        ".talk"
+    );
+
+if (talk) {
+    talk.classList.add(
+        "bottom"
+    );
+}
+
+      const chatContainer =
+    document.querySelector(
+        ".chat-container"
+    );
+
+if (chatContainer) {
+    chatContainer.classList.add(
+        "show-fade"
+    );
+}
+
+        /*
+           Restore every saved message.
+        */
+
+        conversation.messages.forEach(
+            item => {
+
+                const wrapper =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                wrapper.className =
+                    "message-row";
+
+
+                wrapper.style.display =
+                    "flex";
+
+                wrapper.style.flexDirection =
+                    "column";
+
+                wrapper.style.margin =
+                    "12px 0";
+
+
+                const isUser =
+                    item.role ===
+                    "user";
+
+
+                wrapper.style.alignItems =
+                    isUser
+                        ? "flex-end"
+                        : "flex-start";
+
+
+                if (isUser) {
+
+                    wrapper.dataset.message =
+                        item.content;
+
+                }
+
+
+                const bubbleContainer =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                bubbleContainer.style.display =
+                    "flex";
+
+                bubbleContainer.style.flexDirection =
+                    "column";
+
+                bubbleContainer.style.alignItems =
+                    isUser
+                        ? "flex-end"
+                        : "flex-start";
+
+
+                const bubble =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                bubble.className =
+                    isUser
+                        ? "user-message"
+                        : "ai-message";
+
+
+                if (isUser) {
+
+    bubble.textContent =
+        item.content || "";
+
+} else {
+
+    renderAIFormatting(
+        bubble,
+        item.content || ""
+    );
+
+}
+
+bubbleContainer.appendChild(
+    bubble
+);
+
+/*
+   AI ACTIONS
+*/
+
+if (
+    !isUser
+) {
+
+    const actions =
+        document.createElement(
+            "div"
+        );
+
+    actions.className =
+        "ai-message-actions";
+
+    actions.style.display =
+        "flex";
+
+    actions.style.gap =
+        "10px";
+
+    actions.style.marginTop =
+        "6px";
+
+
+    actions.appendChild(
+        createCopyButton(
+            item.content || ""
+        )
+    );
+
+
+    actions.appendChild(
+        createSpeechButton(
+            item.content || ""
+        )
+    );
+
+
+    actions.appendChild(
+        createRetryButton(
+            wrapper
+        )
+    );
+
+
+    /*
+       RESTORE SOURCES
+    */
+
+    const sourceButton =
+        createSourceButton(
+            Array.isArray(item.sources)
+                ? item.sources
+                : []
+        );
+
+
+    if (sourceButton) {
+
+        actions.appendChild(
+            sourceButton
+        );
+
+    }
+
+
+    bubbleContainer.appendChild(
+        actions
+    );
+
+}
+
+
+wrapper.appendChild(
+    bubbleContainer
+);
+
+
+                messages.appendChild(
+                    wrapper
+                );
+
+            }
+        );
+
+
+        /*
+           Close the history panel.
+        */
+
+        closeChatHistory();
+
+
+        /*
+           Scroll to the latest message.
+        */
+
+        requestAnimationFrame(
+            () => {
+
+                scrollToBottom(
+                    false
+                );
+
+            }
+        );
+
+    }
+
+    if (
+    aiHistoryTrigger &&
+    chatHistoryPanel &&
+    chatHistoryBackdrop &&
+    chatHistoryClose
+) {
+    aiHistoryTrigger.addEventListener(
+        "click",
+        openChatHistory
+    );
+
+    chatHistoryClose.addEventListener(
+        "click",
+        closeChatHistory
+    );
+
+    chatHistoryBackdrop.addEventListener(
+        "click",
+        closeChatHistory
+    );
+
+
+    /*
+       HISTORY QUICK ACCESS
+    */
+
+    chatHistoryPanel.addEventListener(
+        "click",
+        event => {
+
+            const button =
+                event.target.closest(
+                    ".chat-history-quick-btn"
+                );
+
+            if (!button) {
+                return;
+            }
+
+
+            const targetView =
+                button.getAttribute(
+                    "data-history-target"
+                );
+
+            if (!targetView) {
+                return;
+            }
+
+
+            window.darnaActiveHistoryView =
+                targetView;
+
+
+            chatHistoryPanel
+                .querySelectorAll(
+                    ".chat-history-quick-btn"
+                )
+                .forEach(
+                    otherButton => {
+
+                        otherButton.classList.toggle(
+                            "active",
+                            otherButton === button
+                        );
+
+                    }
+                );
+
+
+            renderChatHistory();
+
+        }
+    );
+
+
+    renderChatHistory();
+}
+
     form =
         document.querySelector(".talk");
 
@@ -597,6 +1548,361 @@ function runPlaceholderAnimation() {
         );
 }
 
+/* ==========================================================
+   CHAT HISTORY STORAGE
+========================================================== */
+
+const CHAT_HISTORY_STORAGE_KEY =
+    "darna-chat-history";
+
+const ACTIVE_CHAT_STORAGE_KEY =
+    "darna-active-chat";
+
+let currentConversation =
+    null;
+
+let currentConversationHistory =
+    [];
+
+
+function loadChatHistory() {
+
+    try {
+
+        const saved =
+            localStorage.getItem(
+                CHAT_HISTORY_STORAGE_KEY
+            );
+
+        if (!saved) {
+
+            return [];
+
+        }
+
+
+        const conversations =
+            JSON.parse(saved);
+
+
+        if (
+            !Array.isArray(
+                conversations
+            )
+        ) {
+
+            return [];
+
+        }
+
+
+        return conversations;
+
+    }
+    catch (error) {
+
+        console.error(
+            "Darna: Could not load chat history.",
+            error
+        );
+
+        return [];
+
+    }
+
+}
+
+
+function saveChatHistory(
+    conversations
+) {
+
+    try {
+
+        localStorage.setItem(
+            CHAT_HISTORY_STORAGE_KEY,
+            JSON.stringify(
+                conversations
+            )
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "Daarna: Could not save chat history.",
+            error
+        );
+
+    }
+
+}
+
+
+function createConversation() {
+
+    const now =
+        Date.now();
+
+
+    return {
+
+        id:
+            "chat-" +
+            now +
+            "-" +
+            Math.random()
+                .toString(36)
+                .slice(2, 8),
+
+        title:
+            "New chat",
+
+        pinned:
+            false,
+
+        createdAt:
+            now,
+
+        updatedAt:
+            now,
+
+        messages:
+            []
+
+    };
+
+}
+
+
+/* ==========================================================
+   NEW CHAT BUTTON
+   ========================================================== */
+
+const newChatButton = document.getElementById("new-chat-button");
+
+if (newChatButton && !newChatButton.dataset.initialized) {
+    newChatButton.dataset.initialized = "true";
+
+    newChatButton.addEventListener("click", event => {
+        event.preventDefault();
+
+        const chat = createConversation();
+        const chats = loadChatHistory();
+
+        chats.unshift(chat);
+        saveChatHistory(chats);
+
+        if (typeof openConversation === "function") {
+            openConversation(chat.id);
+        }
+
+        if (typeof startConversation === "function") {
+            startConversation();
+        }
+
+        window.renderChatHistory?.();
+    });
+}
+
+
+
+function showConversationMenu(
+    conversation,
+    x,
+    y,
+    view,
+    ignoreFirstClick = false
+) {
+    document
+        .getElementById("darna-chat-action-menu")
+        ?.remove();
+
+    const menu = document.createElement("div");
+    menu.id = "darna-chat-action-menu";
+
+    Object.assign(menu.style, {
+        position: "fixed",
+        left: Math.max(
+            8,
+            Math.min(x, window.innerWidth - 205)
+        ) + "px",
+        top: Math.max(
+            8,
+            Math.min(y, window.innerHeight - 170)
+        ) + "px",
+        width: "195px",
+        padding: "6px",
+        background: "#ffffff",
+        color: "#222222",
+        border: "1px solid #dddddd",
+        borderRadius: "12px",
+        boxShadow: "0 6px 24px rgba(0,0,0,0.18)",
+        zIndex: "99999"
+    });
+
+    const actions = view === "trash"
+        ? [
+            ["Restore chat", "restore"],
+            ["Delete permanently", "permanent"]
+        ]
+        : [
+            ["Rename chat", "rename"],
+            [
+                conversation.pinned
+                    ? "Unpin chat"
+                    : "Pin chat",
+                conversation.pinned
+                    ? "unpin"
+                    : "pin"
+            ],
+            ["Delete chat", "trash"]
+        ];
+
+    actions.forEach(([label, action]) => {
+        const button = document.createElement("button");
+
+        button.type = "button";
+        button.textContent = label;
+
+        Object.assign(button.style, {
+            display: "block",
+            width: "100%",
+            padding: "11px 10px",
+            border: "0",
+            borderRadius: "7px",
+            background: "transparent",
+            color: "inherit",
+            textAlign: "left",
+            cursor: "pointer",
+            fontSize: "14px"
+        });
+
+        button.addEventListener("mouseenter", () => {
+            button.style.background = "#eeeeee";
+        });
+
+        button.addEventListener("mouseleave", () => {
+            button.style.background = "transparent";
+        });
+
+        button.addEventListener("click", event => {
+            event.stopPropagation();
+
+            const chats = loadChatHistory();
+
+            const target = chats.find(chat =>
+                chat.id === conversation.id
+            );
+
+            if (!target) {
+                menu.remove();
+                return;
+            }
+
+            if (action === "rename") {
+                const newTitle = prompt(
+                    "Enter a new chat name:",
+                    target.title || "New chat"
+                );
+
+                if (newTitle === null) {
+                    menu.remove();
+                    return;
+                }
+
+                if (newTitle.trim()) {
+                    target.title = newTitle.trim();
+                }
+            }
+
+            else if (action === "pin") {
+                target.pinned = true;
+                target.deleted = false;
+            }
+
+            else if (action === "unpin") {
+                target.pinned = false;
+            }
+
+            else if (action === "trash") {
+                target.deleted = true;
+                target.pinned = false;
+            }
+
+            else if (action === "restore") {
+                target.deleted = false;
+            }
+
+            else if (action === "permanent") {
+                const confirmed = confirm(
+                    "Permanently delete this chat? This cannot be undone."
+                );
+
+                if (!confirmed) {
+                    menu.remove();
+                    return;
+                }
+
+                saveChatHistory(
+                    chats.filter(chat =>
+                        chat.id !== target.id
+                    )
+                );
+
+                if (
+                    currentConversation?.id === target.id
+                ) {
+                    currentConversation = null;
+                    currentConversationHistory = [];
+
+                    localStorage.removeItem(
+                        ACTIVE_CHAT_STORAGE_KEY
+                    );
+                }
+
+                menu.remove();
+                window.renderChatHistory?.();
+                return;
+            }
+
+            target.updatedAt = Date.now();
+
+saveChatHistory(chats);
+
+menu.remove();
+
+// Refresh the history panel after the menu closes.
+requestAnimationFrame(() => {
+window.renderChatHistory?.();
+});
+        });
+
+        menu.appendChild(button);
+    });
+
+    document.body.appendChild(menu);
+
+    const closeMenu = event => {
+if (!menu.contains(event.target)) {
+menu.remove();
+
+    document.removeEventListener(
+        "click",
+        closeMenu
+    );
+}
+
+};
+
+menu.addEventListener("click", event => {
+event.stopPropagation();
+});
+
+document.addEventListener("click", closeMenu);
+  
+}
+
 
 /* ==========================================================
    START CONVERSATION
@@ -626,7 +1932,6 @@ function startConversation() {
 
     }
 }
-
 
 /* ==========================================================
    ATTACHMENT MENU
@@ -1474,24 +2779,44 @@ function initializeChatScrolling() {
             clearTimeout(scrollTimer);
 
 
-            scrollTimer =
-                setTimeout(
-                    () => {
+scrollTimer =
+    setTimeout(
+        () => {
 
-                        if (
-                            !autoScroll &&
-                            scrollDownBtn
-                        ) {
+            if (
+                !autoScroll &&
+                scrollDownBtn
+            ) {
 
-                            scrollDownBtn.classList.add(
-                                "show"
-                            );
-
-                        }
-
-                    },
-                    350
+                scrollDownBtn.classList.add(
+                    "show"
                 );
+
+                clearTimeout(scrollTimer);
+
+                scrollTimer =
+                    setTimeout(
+                        () => {
+
+                            if (
+                                scrollDownBtn
+                            ) {
+
+                                scrollDownBtn.classList.remove(
+                                    "show"
+                                );
+
+                            }
+
+                        },
+                        2000
+                    );
+
+            }
+
+        },
+        350
+    );
 
         }
     );
@@ -2859,7 +4184,6 @@ function createCopyButton(text) {
 
 
     button.type =
-        "button";
 
 
     button.className =
@@ -3533,10 +4857,8 @@ function animateWords(
     stopTypingAnimation();
 
 
-    const words =
-        String(text ?? "")
-            .split(/\s+/)
-            .filter(Boolean);
+    const fullText =
+        String(text ?? "");
 
 
     element.textContent =
@@ -3553,10 +4875,25 @@ function animateWords(
         animation;
 
 
+    /*
+       Preserve spaces AND line breaks.
+
+       The old version used:
+       split(/\s+/)
+
+       which destroyed the AI's formatting.
+    */
+
+    const parts =
+        fullText.match(
+            /\S+|\s+/g
+        ) || [];
+
+
     let index = 0;
 
 
-    function nextWord() {
+    function nextPart() {
 
         if (animation.stopped) {
 
@@ -3565,7 +4902,12 @@ function animateWords(
         }
 
 
-        if (index >= words.length) {
+        if (index >= parts.length) {
+
+            /*
+               Formatting is applied after
+               the typing animation finishes.
+            */
 
             if (
                 activeTypingAnimation ===
@@ -3577,18 +4919,27 @@ function animateWords(
 
             }
 
+
+            renderAIFormatting(
+                element,
+                fullText
+            );
+
+
             return;
 
         }
 
 
         element.textContent +=
-            (
-                index === 0
-                    ? ""
-                    : " "
-            ) +
-            words[index];
+            parts[index];
+
+
+        const currentPart =
+            parts[index];
+
+
+        index++;
 
 
         if (autoScroll) {
@@ -3610,16 +4961,9 @@ function animateWords(
         }
 
 
-        const currentWord =
-            words[index];
-
-
-        index++;
-
-
         const hasPunctuation =
-            /[.!?]$/.test(
-                currentWord
+            /[.!?]["')\]]?$/.test(
+                currentPart
             );
 
 
@@ -3631,14 +4975,393 @@ function animateWords(
 
         animation.timer =
             setTimeout(
-                nextWord,
+                nextPart,
                 delay
             );
 
     }
 
 
-    nextWord();
+    nextPart();
+
+}
+
+
+/* ==========================================================
+   AI RESPONSE FORMATTING
+   ========================================================== */
+
+function renderAIFormatting(
+    element,
+    text
+) {
+
+    element.textContent =
+        "";
+
+
+    const lines =
+        String(text ?? "")
+            .replace(/\r\n/g, "\n")
+            .split("\n");
+
+
+    let currentList = null;
+    let currentListType = null;
+
+
+    function closeList() {
+
+        if (currentList) {
+
+            element.appendChild(
+                currentList
+            );
+
+            currentList = null;
+            currentListType = null;
+
+        }
+
+    }
+
+
+    function addInlineContent(
+        container,
+        line
+    ) {
+
+        /*
+           Split safely into:
+           **bold**
+           `code`
+           "quoted text"
+           and normal text.
+        */
+
+        const parts =
+            line.split(
+                /(\*\*[^*]+\*\*|`[^`]+`)/g
+            );
+
+
+        parts.forEach(
+            part => {
+
+                if (
+                    /^\*\*[^*]+\*\*$/.test(
+                        part
+                    )
+                ) {
+
+                    const strong =
+                        document.createElement(
+                            "strong"
+                        );
+
+
+                    strong.textContent =
+                        part.slice(
+                            2,
+                            -2
+                        );
+
+
+                    container.appendChild(
+                        strong
+                    );
+
+
+                } else if (
+                    /^`[^`]+`$/.test(
+                        part
+                    )
+                ) {
+
+                    const code =
+                        document.createElement(
+                            "code"
+                        );
+
+
+                    code.textContent =
+                        part.slice(
+                            1,
+                            -1
+                        );
+
+
+                    container.appendChild(
+                        code
+                    );
+
+
+                } else {
+
+                    container.appendChild(
+                        document.createTextNode(
+                            part
+                        )
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    lines.forEach(
+        rawLine => {
+
+            const line =
+                rawLine.trim();
+
+
+            /*
+               Completely blank line.
+            */
+
+            if (!line) {
+
+                closeList();
+
+                const spacer =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                spacer.className =
+                    "ai-format-spacer";
+
+
+                element.appendChild(
+                    spacer
+                );
+
+
+                return;
+
+            }
+
+
+            /*
+               Heading
+            */
+
+            if (
+                /^#{1,3}\s+/.test(
+                    line
+                )
+            ) {
+
+                closeList();
+
+
+                const heading =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                heading.className =
+                    "ai-format-heading";
+
+
+                addInlineContent(
+                    heading,
+                    line.replace(
+                        /^#{1,3}\s+/,
+                        ""
+                    )
+                );
+
+
+                element.appendChild(
+                    heading
+                );
+
+
+                return;
+
+            }
+
+
+            /*
+               Bullet list
+            */
+
+            const bulletMatch =
+                line.match(
+                    /^[-*•]\s+(.+)$/
+                );
+
+
+            if (bulletMatch) {
+
+                if (
+                    currentListType !==
+                    "ul"
+                ) {
+
+                    closeList();
+
+
+                    currentList =
+                        document.createElement(
+                            "ul"
+                        );
+
+
+                    currentListType =
+                        "ul";
+
+                }
+
+
+                const item =
+                    document.createElement(
+                        "li"
+                    );
+
+
+                addInlineContent(
+                    item,
+                    bulletMatch[1]
+                );
+
+
+                currentList.appendChild(
+                    item
+                );
+
+
+                return;
+
+            }
+
+
+            /*
+               Numbered list
+            */
+
+            const numberedMatch =
+                line.match(
+                    /^\d+[.)]\s+(.+)$/
+                );
+
+
+            if (numberedMatch) {
+
+                if (
+                    currentListType !==
+                    "ol"
+                ) {
+
+                    closeList();
+
+
+                    currentList =
+                        document.createElement(
+                            "ol"
+                        );
+
+
+                    currentListType =
+                        "ol";
+
+                }
+
+
+                const item =
+                    document.createElement(
+                        "li"
+                    );
+
+
+                addInlineContent(
+                    item,
+                    numberedMatch[1]
+                );
+
+
+                currentList.appendChild(
+                    item
+                );
+
+
+                return;
+
+            }
+
+
+            /*
+               Block quote
+            */
+
+            if (
+                line.startsWith(">")
+            ) {
+
+                closeList();
+
+
+                const quote =
+                    document.createElement(
+                        "blockquote"
+                    );
+
+
+                addInlineContent(
+                    quote,
+                    line.replace(
+                        /^>\s?/,
+                        ""
+                    )
+                );
+
+
+                element.appendChild(
+                    quote
+                );
+
+
+                return;
+
+            }
+
+
+            /*
+               Normal paragraph
+            */
+
+            closeList();
+
+
+            const paragraph =
+                document.createElement(
+                    "p"
+                );
+
+
+            addInlineContent(
+                paragraph,
+                line
+            );
+
+
+            element.appendChild(
+                paragraph
+            );
+
+        }
+    );
+
+
+    closeList();
+
 }
 
 
@@ -3896,14 +5619,6 @@ async function fetchJSON(
     signal
 ) {
 
-    /*
-       Read the current HomeUp calendar
-       directly from localStorage.
-
-       This is persistent calendar data,
-       so it survives conversation resets.
-    */
-
     let calendarEvents = [];
 
     try {
@@ -3960,15 +5675,18 @@ async function fetchJSON(
                 },
 
                 body:
-                    JSON.stringify({
+    JSON.stringify({
 
-                        message:
-                            message,
+        message:
+            message,
 
-                        calendarEvents:
-                            calendarEvents
+        calendarEvents:
+            calendarEvents,
 
-                    }),
+        conversationHistory:
+            window.currentConversationHistory || []
+
+    }),
 
                 signal:
                     signal
@@ -4284,7 +6002,98 @@ function initializeForm() {
             startConversation();
 
 
-            const userMessage =
+/*
+   Create a conversation if this
+   is the first message.
+*/
+
+if (!currentConversation) {
+
+    currentConversation =
+        createConversation();
+
+}
+
+
+/*
+   Save the user's message.
+*/
+
+currentConversation.messages.push({
+
+    role:
+        "user",
+
+    content:
+        message,
+
+    timestamp:
+        Date.now()
+
+});
+
+
+currentConversation.updatedAt =
+    Date.now();
+
+
+const conversations =
+    loadChatHistory();
+
+
+const existingIndex =
+    conversations.findIndex(
+        conversation =>
+            conversation.id ===
+            currentConversation.id
+    );
+
+
+if (existingIndex === -1) {
+
+    conversations.push(
+        currentConversation
+    );
+
+}
+else {
+
+    conversations[existingIndex] =
+        currentConversation;
+
+}
+
+
+saveChatHistory(
+    conversations
+);
+
+
+
+/*
+   Keep the AI request in sync
+   with the saved conversation.
+*/
+
+currentConversationHistory =
+    currentConversation.messages
+        .slice(0, -1)
+        .map(
+            item => ({
+                role:
+                    item.role,
+
+                content:
+                    item.content
+            })
+        );
+
+
+window.currentConversationHistory =
+    currentConversationHistory;
+
+
+const userMessage =
     addMessage(
         message,
         "user-message",
@@ -4962,16 +6771,136 @@ if (
 
 }
 
-        /*
-           DISPLAY AI RESPONSE
-        */
+        /* ======================================================
+   DISPLAY AI RESPONSE
+*/
 
-        addMessage(
-    extractReply(data),
+const aiReply =
+    extractReply(data);
+
+  console.log(
+    "HOMEUP WEB SOURCES:",
+    data.sources
+);
+
+
+addMessage(
+    aiReply,
     "ai-message",
     data.sources || []
 );
 
+
+/*
+   Save the AI response
+   to the current conversation.
+*/
+
+if (
+    currentConversation
+) {
+
+    
+const userMessageCount =
+    currentConversation.messages.filter(
+        item => item.role === "user"
+    ).length;
+
+const proposedTitle =
+    typeof data?.title === "string"
+        ? data.title.trim()
+        : "";
+
+if (
+    proposedTitle &&
+    userMessageCount === 1 &&
+    currentConversation.title === "New chat"
+) {
+    currentConversation.title =
+        proposedTitle.slice(0, 60);
+}
+
+
+    currentConversation.messages.push({
+
+    role:
+        "assistant",
+
+    content:
+        aiReply,
+
+    sources:
+        Array.isArray(data.sources)
+            ? data.sources
+            : [],
+
+    timestamp:
+        Date.now()
+
+});
+
+    currentConversation.updatedAt =
+        Date.now();
+
+
+    const conversations =
+        loadChatHistory();
+
+
+    const existingIndex =
+        conversations.findIndex(
+            conversation =>
+                conversation.id ===
+                currentConversation.id
+        );
+
+
+    if (
+        existingIndex === -1
+    ) {
+
+        conversations.push(
+            currentConversation
+        );
+
+    }
+    else {
+
+        conversations[existingIndex] =
+            currentConversation;
+
+    }
+
+
+    saveChatHistory(
+        conversations
+    );
+
+  
+
+
+    /*
+       Keep the AI conversation
+       history synchronized.
+    */
+
+    currentConversationHistory =
+        currentConversation.messages
+            .map(
+                item => ({
+                    role:
+                        item.role,
+
+                    content:
+                        item.content
+                })
+            );
+
+
+    window.currentConversationHistory =
+        currentConversationHistory;
+
+}
 
         if (files.length) {
 
